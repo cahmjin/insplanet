@@ -137,7 +137,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
   let mx=innerWidth/2,my=innerHeight/2,cx=mx,cy=my;
   addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
   // grow over interactive elements
-  document.querySelectorAll('#letsTalk,#fullMenu').forEach(el=>{
+  document.querySelectorAll('#ciLogo,#letsTalk,#fullMenu').forEach(el=>{
     el.addEventListener('mouseenter',()=>{cur.style.width='80px';cur.style.height='80px';});
     el.addEventListener('mouseleave',()=>{cur.style.width='32px';cur.style.height='32px';});
   });
