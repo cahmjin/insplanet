@@ -21,11 +21,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
 /* layer 1: background line shape (behind blob) = two circles, each parallax-moved by mouse.
    geometry derived from Figma (frame coords) scaled px->vw by 100/1920=0.0520833 */
 #bgLine{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
-#bgLine .circ{position:absolute;width:74.79vw;height:74.79vw;border-radius:50%;
+#bgLine .circ{position:absolute;border-radius:50%;
   border:1px solid #000;opacity:.06;will-change:transform;
   transition:transform .6s cubic-bezier(.2,.8,.2,1)}
-#bgLine .c1{left:39.71vw;top:-27.01vw}
-#bgLine .c2{left:23.57vw;top:-20.23vw}
+/* size & position are set in JS so they scale with the same factor as the blob */
 
 /* layer 2: blob canvas fills the stage */
 #blob{position:absolute;left:0;top:0;width:100%;height:100%;z-index:2;pointer-events:none}
@@ -118,14 +117,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
 </div>
 
 <script>
-/* ===== background circles: subtle individual parallax following the mouse ===== */
+/* ===== background circles =====
+   scale with the SAME factor as the blob: k = clamp(min(W,H),864,1296)/1080,
+   positioned around the viewport center (like the blob), + subtle mouse parallax. */
 (function(){
   const c1=document.querySelector('#bgLine .c1');
   const c2=document.querySelector('#bgLine .c2');
   if(!c1||!c2)return;
+  const R=718; // design circle radius (px @ 1080 baseline)
+  // design circle centers as offset from the 1920x1080 frame center (960,540)
+  const C=[{el:c1,ox:520.5,oy:-340.5},{el:c2,ox:210.5,oy:-210.5}];
+  function k(){return Math.max(0.8,Math.min(Math.min(innerWidth,innerHeight)/1080,1.2));} // == blob factor
+  function layout(){
+    const f=k(),r=R*f,d=r*2,cx=innerWidth/2,cy=innerHeight/2;
+    C.forEach(o=>{
+      o.el.style.width=d+'px';o.el.style.height=d+'px';
+      o.el.style.left=(cx+o.ox*f-r)+'px';
+      o.el.style.top =(cy+o.oy*f-r)+'px';
+    });
+  }
+  layout();
+  window.addEventListener('resize',layout);
   window.addEventListener('mousemove',e=>{
-    const mx=(e.clientX/window.innerWidth-0.5)*2;   // -1..1
-    const my=(e.clientY/window.innerHeight-0.5)*2;  // -1..1
+    const mx=(e.clientX/innerWidth-0.5)*2;   // -1..1
+    const my=(e.clientY/innerHeight-0.5)*2;  // -1..1
     c1.style.transform='translate('+(mx*14)+'px,'+(my*14)+'px)';
     c2.style.transform='translate('+(mx*-22)+'px,'+(my*20)+'px)';
   });
