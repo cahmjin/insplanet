@@ -77,6 +77,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
   #scrollHint .bar{background:#1A1A1A}
   #scrollHint .bar::after{display:none}
 }
+
+/* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
+#cursor{display:none}
+@media (hover:hover) and (pointer:fine){
+  html,body,a,#letsTalk,#fullMenu{cursor:none}
+  #cursor{display:block;position:fixed;top:0;left:0;width:32px;height:32px;border-radius:50%;
+    background:transparent;pointer-events:none;z-index:9999;
+    -webkit-backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
+    backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
+    will-change:transform;transition:width .25s ease,height .25s ease}
+}
 #scrollHint .label{font-size:14px;font-weight:700;line-height:150%;color:#000;
   writing-mode:vertical-rl;letter-spacing:1px}
 </style>
@@ -116,7 +127,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
   </div>
 </div>
 
+<div id="cursor" aria-hidden="true"></div>
+
 <script>
+/* ===== custom inverting (difference) cursor, smooth follow ===== */
+(function(){
+  const cur=document.getElementById('cursor');
+  if(!cur||!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  let mx=innerWidth/2,my=innerHeight/2,cx=mx,cy=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+  // grow over interactive elements
+  document.querySelectorAll('#letsTalk,#fullMenu').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='80px';cur.style.height='80px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='32px';cur.style.height='32px';});
+  });
+  (function loop(){
+    cx+=(mx-cx)*0.32;cy+=(my-cy)*0.32;
+    const r=cur.offsetWidth/2;
+    cur.style.transform='translate3d('+(cx-r)+'px,'+(cy-r)+'px,0)';
+    requestAnimationFrame(loop);
+  })();
+})();
+
 /* ===== background circles =====
    scale with the SAME factor as the blob: k = clamp(min(W,H),864,1296)/1080,
    positioned around the viewport center (like the blob), + subtle mouse parallax. */
