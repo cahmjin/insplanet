@@ -191,16 +191,30 @@
   else go();
 })();
 
-/* ===== pinned swap chapter: play the auto blur sequence ONCE when the area is reached. */
+/* ===== pinned swap chapter: blur SCRUBBED by scroll through the pin -> always synced with
+   scroll speed (fast scroll = fast sequence, no lag). pinned & centered, so only the blur
+   changes (text doesn't move). sequential: Beyond in -> hold -> out, then Frame 26 in. */
 (function(){
   const chapter=document.querySelector('.sec-swap');
   if(!chapter)return;
-  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return; // CSS shows Frame 26 statically
-  function check(){
-    if(chapter.getBoundingClientRect().top<=0){ chapter.classList.add('play'); removeEventListener('scroll',check); }
+  const bLines=[...chapter.querySelectorAll('.beyond-title .bt1,.beyond-title .bt2')];
+  const fLines=[...chapter.querySelectorAll('.f26-title span')];
+  const clamp=v=>Math.min(1,Math.max(0,v));
+  const set=(l,s)=>{l.style.opacity=s.toFixed(3);l.style.filter='blur('+(16*(1-s)).toFixed(2)+'px)';};
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){bLines.forEach(l=>set(l,0));fLines.forEach(l=>set(l,1));return;}
+  let ticking=false;
+  function update(){
+    ticking=false;
+    const scrub=chapter.offsetHeight-innerHeight;                 // pin distance
+    const p=scrub>0?clamp(-chapter.getBoundingClientRect().top/scrub):0;
+    // Beyond: blur IN (0 -> 0.22), hold, blur OUT (0.45 -> 0.62); per-line stagger
+    bLines.forEach((l,i)=>{const o=i*0.06; set(l, clamp(p<0.33 ? (p-o)/0.20 : 1-(p-0.45-o)/0.15));});
+    // Frame 26: blur IN after Beyond has left (0.62 -> 0.82); per-line stagger
+    fLines.forEach((l,i)=>set(l, clamp((p-0.62-i*0.06)/0.18)));
   }
-  addEventListener('scroll',check,{passive:true});
-  check();
+  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+  addEventListener('resize',update);
+  update();
 })();
 
 /* ===== hero parallax exit: layers leave at different speeds (depth) as you scroll away.

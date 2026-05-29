@@ -17,7 +17,7 @@ html.lenis,html.lenis body{height:auto}
 
 /* pinned chapter: tall track + sticky stage, so the text HOLDS in the viewport (doesn't scroll
    up and off) while you scroll through; the blur reveal plays automatically once it's pinned. */
-.pin-chapter{position:relative;z-index:1;height:220vh;background:transparent} /* pin distance for: Beyond in -> out -> Frame26 in */
+.pin-chapter{position:relative;z-index:1;height:260vh;background:transparent} /* taller = sequence spread over more scroll = slower response */
 .pin-stage{position:sticky;top:0;height:100vh;overflow:hidden}
 
 /* both titles live in the SAME centered spot (overlapping) — JS scrub swaps between them */
@@ -33,15 +33,9 @@ html.lenis,html.lenis body{height:auto}
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:120px;
   line-height:1.2;color:#3E3F44;display:flex;flex-direction:column;align-items:flex-start}
 
+/* blur is SCRUBBED by scroll through the pin (JS sets opacity/filter inline) — stays in sync
+   with scroll speed. no animation/transition here. */
 .beyond-title .bt1,.beyond-title .bt2,.f26-title span{opacity:0;filter:blur(16px)}
-/* AUTO sequence: plays once (time-based) when the area is reached (.play added by JS).
-   Beyond blurs in -> holds -> blurs out, then Frame 26 blurs in — same centered spot. */
-@keyframes beyondInOut{0%{opacity:0;filter:blur(16px)} 16%,50%{opacity:1;filter:blur(0)} 66%,100%{opacity:0;filter:blur(16px)}}
-@keyframes f26In{0%,66%{opacity:0;filter:blur(16px)} 84%,100%{opacity:1;filter:blur(0)}}
-.sec-swap.play .bt1{animation:beyondInOut 3.6s ease forwards}
-.sec-swap.play .bt2{animation:beyondInOut 3.6s ease .18s forwards}   /* line stagger */
-.sec-swap.play .f26-title span:first-child{animation:f26In 3.6s ease forwards}
-.sec-swap.play .f26-title span:last-child{animation:f26In 3.6s ease .28s forwards}  /* clearer line-by-line stagger */
 @media (prefers-reduced-motion:reduce){
   .beyond-title .bt1,.beyond-title .bt2{opacity:0}
   .f26-title span{opacity:1;filter:none}}
@@ -213,7 +207,6 @@ html.lenis,html.lenis body{height:auto}
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
 #cursor{display:none}
 @media (hover:hover) and (pointer:fine){
-  html,body,a,#ciLogo,#menuLogo,#letsTalk,#fullMenu,#menuClose{cursor:none}
   #cursor{display:block;position:fixed;top:0;left:0;width:32px;height:32px;border-radius:50%;
     background:transparent;pointer-events:none;z-index:9999;
     -webkit-backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
