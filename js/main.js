@@ -1,3 +1,13 @@
+/* ===== smooth momentum scroll (Lenis): adds elastic inertia to scrolling (up and down).
+   real-scroll mode -> sticky pins, fixed header, and scrollY-based handlers all keep working.
+   skipped for reduced-motion. */
+(function(){
+  if(typeof Lenis==='undefined')return;
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const lenis=new Lenis({lerp:0.09,smoothWheel:true});
+  (function raf(t){lenis.raf(t);requestAnimationFrame(raf);})();
+})();
+
 /* ===== custom inverting (difference) cursor, smooth follow ===== */
 (function(){
   const cur=document.getElementById('cursor');
@@ -179,4 +189,70 @@
   // wait for the serif webfont so the reveal plays with final glyphs, not fallback
   if(document.fonts&&document.fonts.ready){document.fonts.ready.then(go);setTimeout(go,800);}
   else go();
+})();
+
+/* ===== pinned swap chapter: play the auto blur sequence ONCE when the area is reached. */
+(function(){
+  const chapter=document.querySelector('.sec-swap');
+  if(!chapter)return;
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return; // CSS shows Frame 26 statically
+  function check(){
+    if(chapter.getBoundingClientRect().top<=0){ chapter.classList.add('play'); removeEventListener('scroll',check); }
+  }
+  addEventListener('scroll',check,{passive:true});
+  check();
+})();
+
+/* ===== hero parallax exit: layers leave at different speeds (depth) as you scroll away.
+   mapped DIRECTLY to scroll position (no per-layer easing) — the elastic smoothness comes from
+   Lenis, so every layer moves together with the smoothed scroll instead of lagging separately. */
+(function(){
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const layers=[
+    {el:document.getElementById('blob'),     rate: 120},  // background: moves least
+    {el:document.getElementById('subTitle'), rate:-130},
+    {el:document.getElementById('headTitle'),rate:-250},
+    {el:document.getElementById('symbol'),   rate:-380}   // foreground: moves most
+  ].filter(l=>l.el);
+  if(!layers.length)return;
+  let ticking=false;
+  function update(){
+    ticking=false;
+    const p=Math.min(1,(window.scrollY||0)/innerHeight); // 0 at top -> 1 after one viewport
+    for(const l of layers) l.el.style.transform='translateY('+(p*l.rate).toFixed(1)+'px)';
+  }
+  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+  update();
+})();
+
+/* ===== section parallax: [data-parallax] elements drift with inertia as they pass the
+   viewport (same eased feel as the hero), so scrolling up/down isn't a flat 1:1 move. */
+(function(){
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const items=[...document.querySelectorAll('[data-parallax]')].map(el=>({
+    el, rate:parseFloat(el.dataset.parallax)||0, ease:0.09, cur:0, base:0
+  }));
+  if(!items.length)return;
+  function measure(){ // doc-space center of each element, with current transform removed
+    for(const it of items){const r=it.el.getBoundingClientRect();it.base=r.top+window.scrollY-it.cur+r.height/2;}
+  }
+  measure();
+  let mt;addEventListener('resize',()=>{clearTimeout(mt);mt=setTimeout(measure,200);});
+  let raf=0;
+  function loop(){
+    const vc=window.scrollY+innerHeight/2; // viewport center in doc space
+    let moving=false;
+    for(const it of items){
+      // only ease on the way OUT (element above viewport center); entering from below = no drift,
+      // so the clean blur-reveal plays untouched.
+      const target=Math.min(0,(it.base-vc)/innerHeight)*it.rate;
+      it.cur+=(target-it.cur)*it.ease;
+      if(Math.abs(target-it.cur)>0.1)moving=true;
+      it.el.style.transform='translateY('+it.cur.toFixed(2)+'px)';
+    }
+    raf=moving?requestAnimationFrame(loop):0;
+  }
+  const kick=()=>{if(!raf)raf=requestAnimationFrame(loop);};
+  addEventListener('scroll',kick,{passive:true});
+  kick();
 })();

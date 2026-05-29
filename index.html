@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Roboto+Serif:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Roboto+Serif:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -19,11 +19,6 @@
   <canvas id="blob" width="1920" height="1080"></canvas>
 
   <div class="content">
-    <img id="ciLogo" src="assets/ci_logo.svg" alt="Insplanet">
-
-    <div id="letsTalk"><span>Let&rsquo;s Talk</span></div>
-    <div id="fullMenu"><img src="assets/menu_icon.svg" alt="menu"></div>
-
     <div id="leftBlock">
       <img id="symbol" src="assets/symbol.svg" alt="">
 
@@ -38,12 +33,32 @@
       </div>
     </div>
 
-    <div id="scrollHint">
-      <span class="bar"></span>
-      <span class="label">SCROLL</span>
-    </div>
   </div>
 </div>
+
+<!-- global fixed UI — kept at body level so it stays above every section and stays interactive -->
+<img id="ciLogo" src="assets/ci_logo.svg" alt="Insplanet">
+<div id="letsTalk"><span>Let&rsquo;s Talk</span></div>
+<div id="fullMenu"><img src="assets/menu_icon.svg" alt="menu"></div>
+<div id="scrollHint">
+  <span class="bar"></span>
+  <span class="label">SCROLL</span>
+</div>
+
+<!-- chapter 02: pinned swap — Beyond blurs in, then (scroll) it leaves and Frame 26 takes its
+     place in the SAME centered spot. one pinned area, scroll drives the 25 -> 26 swap. -->
+<section class="pin-chapter sec-swap">
+  <div class="pin-stage">
+    <h2 class="beyond-title">
+      <span class="bt1">Beyond UX</span>
+      <span class="bt2">The AX Creator</span>
+    </h2>
+    <p class="f26-title">
+      <span>기술에 가치를 더해,</span>
+      <span>내일의 설렘을 완성합니다.</span>
+    </p>
+  </div>
+</section>
 
 <!-- full-screen menu overlay: dark panel opens as a circle from the menu button -->
 <div id="menuOverlay" aria-hidden="true">
@@ -88,6 +103,7 @@
 
 <div id="cursor" aria-hidden="true"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
 <script src="js/main.js"></script>
 <script src="js/blob.js"></script>
 </body>

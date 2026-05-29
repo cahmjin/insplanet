@@ -1,15 +1,55 @@
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#fff}
-/* responsive stage: fills the viewport */
+html,body{width:100%;background:#fff}
+/* Lenis smooth scroll (recommended) */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
+/* sections sit above the fixed #bgLine (z:0); their bg is transparent so the line shows
+   through, with the white base coming from html/body. */
+/* hero stage = first full-viewport section */
 #stage{
-  position:relative;
-  width:100vw;height:100vh;
-  background:#fff;overflow:hidden;
+  position:relative;z-index:1;
+  width:100%;height:100vh;
+  background:transparent;overflow:hidden;
 }
+/* generic full-viewport sections below the hero */
+.sec{position:relative;z-index:1;width:100%;height:100vh;background:transparent;overflow:hidden}
+
+/* pinned chapter: tall track + sticky stage, so the text HOLDS in the viewport (doesn't scroll
+   up and off) while you scroll through; the blur reveal plays automatically once it's pinned. */
+.pin-chapter{position:relative;z-index:1;height:220vh;background:transparent} /* pin distance for: Beyond in -> out -> Frame26 in */
+.pin-stage{position:sticky;top:0;height:100vh;overflow:hidden}
+
+/* both titles live in the SAME centered spot (overlapping) — JS scrub swaps between them */
+.beyond-title,.f26-title{position:absolute;left:216px;top:50%;transform:translateY(-50%);margin:0;
+  display:flex;flex-direction:column;align-items:flex-start;color:#3E3F44}
+/* Beyond — Cormorant Bold 160, tight two-line stack */
+.beyond-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:160px;line-height:1.211}
+.beyond-title .bt1{margin-left:19px}   /* "Beyond UX" indented to x235 */
+.beyond-title .bt2{margin-top:-83px}   /* "The AX Creator" overlaps upward, like the hero */
+
+/* Frame 26 statement — Pretendard Bold 120, two lines */
+.f26-title{width:1230px;
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:120px;
+  line-height:1.2;color:#3E3F44;display:flex;flex-direction:column;align-items:flex-start}
+
+.beyond-title .bt1,.beyond-title .bt2,.f26-title span{opacity:0;filter:blur(16px)}
+/* AUTO sequence: plays once (time-based) when the area is reached (.play added by JS).
+   Beyond blurs in -> holds -> blurs out, then Frame 26 blurs in — same centered spot. */
+@keyframes beyondInOut{0%{opacity:0;filter:blur(16px)} 16%,50%{opacity:1;filter:blur(0)} 66%,100%{opacity:0;filter:blur(16px)}}
+@keyframes f26In{0%,66%{opacity:0;filter:blur(16px)} 84%,100%{opacity:1;filter:blur(0)}}
+.sec-swap.play .bt1{animation:beyondInOut 3.6s ease forwards}
+.sec-swap.play .bt2{animation:beyondInOut 3.6s ease .18s forwards}   /* line stagger */
+.sec-swap.play .f26-title span:first-child{animation:f26In 3.6s ease forwards}
+.sec-swap.play .f26-title span:last-child{animation:f26In 3.6s ease .28s forwards}  /* clearer line-by-line stagger */
+@media (prefers-reduced-motion:reduce){
+  .beyond-title .bt1,.beyond-title .bt2{opacity:0}
+  .f26-title span{opacity:1;filter:none}}
 
 /* layer 1: background line shape (behind blob) = two circles, each parallax-moved by mouse.
    geometry derived from Figma (frame coords) scaled px->vw by 100/1920=0.0520833 */
-#bgLine{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+/* fixed ambient background line: stays put behind every section while scrolling */
+#bgLine{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 #bgLine .circ{position:absolute;border-radius:50%;
   border:1px solid #000;opacity:.06;will-change:transform;
   transition:transform .6s cubic-bezier(.2,.8,.2,1)}
@@ -22,13 +62,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
 .content{position:absolute;inset:0;z-index:3;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
 
-#ciLogo{position:absolute;left:64px;top:48px;width:140.12px;height:24.04px}
+/* header controls stay fixed so they (and the menu) are reachable while scrolling */
+#ciLogo{position:fixed;z-index:60;left:64px;top:48px;width:140.12px;height:24.04px}
 
-#fullMenu{position:absolute;right:48px;top:32px;width:56px;height:56px;
+#fullMenu{position:fixed;z-index:60;right:48px;top:32px;width:56px;height:56px;
   display:flex;align-items:center;justify-content:center;border-radius:999px;cursor:pointer}
 #fullMenu img{width:24px;height:14px}
 
-#letsTalk{position:absolute;right:134px;top:45px;
+#letsTalk{position:fixed;z-index:60;right:134px;top:45px;
   display:flex;align-items:center;gap:10px;padding:4px 0;
   border-bottom:1px solid #3E3F44;cursor:pointer}
 #letsTalk span{font-size:14px;font-weight:700;line-height:150%}
@@ -66,7 +107,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
 @media (prefers-reduced-motion:reduce){
   #subTitle .st-head,#subTitle .st-body{opacity:1;filter:none;transform:none;transition:none}}
 
-#scrollHint{position:absolute;right:64px;bottom:64px;width:21px;
+#scrollHint{position:fixed;z-index:60;right:64px;bottom:64px;width:21px;
   display:flex;flex-direction:column;align-items:center;gap:16px}
 /* faint track + dark line that draws top->bottom then exits downward, looping */
 #scrollHint .bar{position:relative;width:1px;height:64px;background:rgba(26,26,26,.15);overflow:hidden}
