@@ -3,7 +3,8 @@ html,body{width:100%;background:#fff}
 /* Lenis smooth scroll (recommended) */
 html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
-.lenis.lenis-stopped{overflow:hidden}
+/* NOTE: intentionally NOT hiding overflow when stopped — the menu locks scroll
+   functionally (JS) so the scrollbar stays put and the page doesn't reflow/judder. */
 /* sections sit above the fixed #bg-line (z:0); their bg is transparent so the line shows
    through, with the white base coming from html/body. */
 /* hero stage = first full-viewport section */

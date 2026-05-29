@@ -5,6 +5,7 @@
   if(typeof Lenis==='undefined')return;
   if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
   const lenis=new Lenis({lerp:0.09,smoothWheel:true});
+  window.__lenis=lenis;   // exposed so the menu overlay can lock/unlock scroll
   (function raf(t){lenis.raf(t);requestAnimationFrame(raf);})();
 })();
 
@@ -164,13 +165,27 @@
   }
   function animate(t){fromR=R;toR=t;t0=0;if(!raf)raf=requestAnimationFrame(tick);}
 
+  // lock the background page while the menu is open (modal), WITHOUT touching overflow —
+  // hiding the scrollbar would change the page width and make content judder. Instead we
+  // block the scroll inputs: Lenis.stop() kills wheel/touch, and we swallow scroll keys.
+  let scrollLocked=false;
+  const SCROLL_KEYS=new Set([' ','Spacebar','PageUp','PageDown','Home','End','ArrowUp','ArrowDown']);
+  addEventListener('wheel',e=>{if(scrollLocked)e.preventDefault();},{passive:false});
+  addEventListener('touchmove',e=>{if(scrollLocked)e.preventDefault();},{passive:false});
+  addEventListener('keydown',e=>{if(scrollLocked&&SCROLL_KEYS.has(e.key))e.preventDefault();},{passive:false});
+  const lockScroll=on=>{
+    scrollLocked=on;
+    if(window.__lenis)on?window.__lenis.stop():window.__lenis.start();
+  };
   const open=()=>{
     overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
+    lockScroll(true);
     if(reduce){if(panel)panel.style.clipPath='circle(150vmax '+ORIGIN+')';overlay.classList.add('covered');}
     else animate(maxR);
   };
   const close=()=>{
     overlay.classList.remove('open','covered');overlay.setAttribute('aria-hidden','true');
+    lockScroll(false);
     if(reduce){if(panel)panel.style.clipPath='circle(0 '+ORIGIN+')';}
     else animate(0);
   };
