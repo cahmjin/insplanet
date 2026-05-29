@@ -43,11 +43,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
   display:flex;flex-direction:column;
   font-family:'Cormorant Garamond',serif;font-weight:600;font-size:200px;line-height:1.211;color:#3E3F44}
 #headTitle .ln2{margin-top:-102px}
+/* title reveal: lines settle in from a soft blur on load (.in added by JS) */
+#headTitle .ln1,#headTitle .ln2{
+  opacity:0;filter:blur(18px);transform:translateY(.05em) scale(1.04);transform-origin:left center;
+  transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.22,1,.36,1)}
+#headTitle .ln2{transition-delay:.14s}
+#headTitle.in .ln1,#headTitle.in .ln2{opacity:1;filter:blur(0);transform:none}
+@media (prefers-reduced-motion:reduce){
+  #headTitle .ln1,#headTitle .ln2{opacity:1;filter:none;transform:none;transition:none}}
 
 #subTitle{width:661px;margin-top:40px;
   display:flex;flex-direction:column;gap:12px;color:#3E3F44}
 #subTitle .st-head{font-size:24px;font-weight:600;line-height:150%}
 #subTitle .st-body{font-size:20px;font-weight:400;line-height:150%}
+/* subtitle settles in just after the headline (lighter blur — it's small text) */
+#subTitle .st-head,#subTitle .st-body{
+  opacity:0;filter:blur(8px);transform:translateY(10px);
+  transition:opacity .9s ease,filter .9s ease,transform .9s cubic-bezier(.22,1,.36,1)}
+#subTitle .st-head{transition-delay:.5s}
+#subTitle .st-body{transition-delay:.62s}
+#subTitle.in .st-head,#subTitle.in .st-body{opacity:1;filter:blur(0);transform:none}
+@media (prefers-reduced-motion:reduce){
+  #subTitle .st-head,#subTitle .st-body{opacity:1;filter:none;transform:none;transition:none}}
 
 #scrollHint{position:absolute;right:64px;bottom:64px;width:21px;
   display:flex;flex-direction:column;align-items:center;gap:16px}

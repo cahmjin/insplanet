@@ -74,3 +74,15 @@
     c2.style.transform='translate('+(mx*-22)+'px,'+(my*20)+'px)';
   });
 })();
+
+/* ===== intro reveal: headline then subtitle settle in from a soft blur ===== */
+(function(){
+  const els=['headTitle','subTitle'].map(id=>document.getElementById(id)).filter(Boolean);
+  if(!els.length)return;
+  const reveal=()=>els.forEach(el=>el.classList.add('in'));
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){reveal();return;}
+  const go=()=>requestAnimationFrame(reveal);
+  // wait for the serif webfont so the reveal plays with final glyphs, not fallback
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(go);setTimeout(go,800);}
+  else go();
+})();
