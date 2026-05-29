@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halftone Lab — Insplanet</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:#fff;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
+  #c{position:fixed;inset:0;display:block}
+
+  /* control panel */
+  #ui{position:fixed;left:24px;top:24px;z-index:10;width:300px;
+    background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+    border:1px solid #E3E4EA;border-radius:14px;padding:18px 18px 14px;
+    box-shadow:0 8px 30px rgba(0,0,0,.08)}
+  #ui h1{font-size:15px;font-weight:700;margin-bottom:2px}
+  #ui .sub{font-size:12px;color:#9A9CA8;margin-bottom:14px}
+  .row{margin-bottom:13px}
+  .row label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:6px}
+  .row label b{font-weight:700;color:#5B6BFF}
+  .row input[type=range]{width:100%;accent-color:#3E3F44;cursor:pointer}
+  .btns{display:flex;gap:8px;margin-top:6px}
+  .btns button{flex:1;padding:9px 0;font:inherit;font-size:13px;font-weight:600;
+    border:1px solid #3E3F44;border-radius:8px;background:#3E3F44;color:#fff;cursor:pointer}
+  .btns button.ghost{background:#fff;color:#3E3F44}
+  #out{margin-top:12px;padding:10px;border-radius:8px;background:#F4F5F8;
+    font-family:ui-monospace,Menlo,monospace;font-size:11.5px;line-height:1.7;color:#3E3F44;
+    white-space:pre;user-select:all}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="ui">
+  <h1>Halftone Lab</h1>
+  <div class="sub">메뉴 배경 망점 튜닝 · 값을 조절하세요</div>
+
+  <div class="row"><label>점 크기 최소 (가장자리) <b id="vMin">2</b></label>
+    <input id="sMin" type="range" min="0" max="20" step="0.5" value="2"></div>
+  <div class="row"><label>점 크기 최대 (솔리드 쪽) <b id="vMax">18</b></label>
+    <input id="sMax" type="range" min="2" max="200" step="0.5" value="18"></div>
+  <div class="row"><label>링 간격 <b id="vRing">34</b></label>
+    <input id="sRing" type="range" min="10" max="70" step="1" value="34"></div>
+  <div class="row"><label>점 간격 (둘레) <b id="vArc">34</b></label>
+    <input id="sArc" type="range" min="10" max="70" step="1" value="34"></div>
+  <div class="row"><label>그라데이션 폭 <b id="vFringe">240</b></label>
+    <input id="sFringe" type="range" min="60" max="500" step="10" value="240"></div>
+  <div class="row"><label>파면 위치 (스크럽) <b id="vWave">700</b></label>
+    <input id="sWave" type="range" min="0" max="2400" step="10" value="700"></div>
+
+  <div class="btns">
+    <button id="play">▶ 펼치기 재생</button>
+    <button id="close" class="ghost">◀ 닫기 재생</button>
+  </div>
+  <div id="out"></div>
+</div>
+
+<script>
+(function(){
+  const canvas=document.getElementById('c'), ctx=canvas.getContext('2d');
+  const TAU=6.2831853;
+  let W=0,H=0,cx=0,cy=0,dpr=1,maxR=1;
+
+  // params (live)
+  const P={min:2,max:18,ring:34,arc:34,fringe:240};
+  let wave=700;
+
+  function resize(){
+    dpr=Math.min(devicePixelRatio||1,2);
+    W=innerWidth;H=innerHeight;cx=W-76;cy=60;
+    canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    maxR=Math.hypot(Math.max(cx,W-cx),Math.max(cy,H-cy))+P.fringe+80;
+    sWave.max=Math.round(maxR);
+  }
+
+  function render(w){
+    ctx.clearRect(0,0,W,H);
+    if(w<=0)return;
+    const solidR=Math.max(0,w-P.fringe);
+    ctx.fillStyle='#3E3F44';
+    // solid core
+    ctx.beginPath();ctx.arc(cx,cy,solidR,0,TAU);ctx.fill();
+    // halftone rings — fixed radii, size graded from max (solid edge) to min (leading edge)
+    const innerSkip=solidR-P.ring;
+    for(let ri=1,r=P.ring;r<=w;ri++,r+=P.ring){
+      if(r<innerSkip)continue;
+      const t=Math.min(1,(w-r)/P.fringe);          // 1 at solid edge -> 0 at leading edge
+      const dr=P.min+(P.max-P.min)*t;
+      if(dr<0.3)continue;
+      const n=Math.max(6,Math.round(TAU*r/P.arc));
+      const off=(ri&1)*(Math.PI/n);
+      for(let k=0;k<n;k++){
+        const a=k*TAU/n+off, x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r;
+        if(x<-P.max||x>W+P.max||y<-P.max||y>H+P.max)continue;
+        ctx.beginPath();ctx.arc(x,y,dr,0,TAU);ctx.fill();
+      }
+    }
+  }
+
+  // ---- controls ----
+  const sMin=document.getElementById('sMin'),sMax=document.getElementById('sMax'),
+        sRing=document.getElementById('sRing'),sArc=document.getElementById('sArc'),
+        sFringe=document.getElementById('sFringe'),sWave=document.getElementById('sWave'),
+        out=document.getElementById('out');
+  function readout(){
+    document.getElementById('vMin').textContent=P.min;
+    document.getElementById('vMax').textContent=P.max;
+    document.getElementById('vRing').textContent=P.ring;
+    document.getElementById('vArc').textContent=P.arc;
+    document.getElementById('vFringe').textContent=P.fringe;
+    document.getElementById('vWave').textContent=Math.round(wave);
+    out.textContent='DOT_MIN = '+P.min+'\nDOT_MAX = '+P.max+'\nRINGGAP = '+P.ring+'\nARC = '+P.arc+'\nFRINGE = '+P.fringe;
+  }
+  function sync(){
+    P.min=+sMin.value;P.max=Math.max(P.min,+sMax.value);
+    P.ring=+sRing.value;P.arc=+sArc.value;P.fringe=+sFringe.value;
+    maxR=Math.hypot(Math.max(cx,W-cx),Math.max(cy,H-cy))+P.fringe+80;sWave.max=Math.round(maxR);
+    wave=+sWave.value;
+    readout();render(wave);
+  }
+  [sMin,sMax,sRing,sArc,sFringe,sWave].forEach(s=>s.addEventListener('input',sync));
+
+  // ---- replay animation ----
+  let raf=0,from=0,to=0,t0=0;const DUR=900;
+  const ease=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+  function tick(now){
+    if(!t0)t0=now;let p=(now-t0)/DUR;if(p>1)p=1;
+    wave=from+(to-from)*ease(p);
+    sWave.value=Math.round(wave);document.getElementById('vWave').textContent=Math.round(wave);
+    render(wave);
+    if(p<1)raf=requestAnimationFrame(tick);else raf=0;
+  }
+  function animate(target){from=wave;to=target;t0=0;if(!raf)raf=requestAnimationFrame(tick);}
+  document.getElementById('play').addEventListener('click',()=>animate(maxR));
+  document.getElementById('close').addEventListener('click',()=>animate(0));
+
+  addEventListener('resize',()=>{resize();render(wave);});
+  resize();readout();render(wave);
+})();
+</script>
+</body>
+</html>

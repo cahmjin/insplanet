@@ -1,2 +1,5 @@
 .DS_Store
 .claude/settings.local.json
+
+# scratch reference images (not part of the build)
+assets/_ref/

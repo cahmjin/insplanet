@@ -91,11 +91,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
 #menuOverlay{position:fixed;inset:0;z-index:100;visibility:hidden;pointer-events:none;
   transition:visibility 0s linear 1s}
 #menuOverlay.open{visibility:visible;pointer-events:auto;transition-delay:0s}
-/* dark panel reveals/closes as a circle growing from the menu button (top-right) */
+/* dark solid core — JS sets clip-path radius each frame, synced with the canvas halftone */
 #menuPanel{position:absolute;inset:0;background:#3E3F44;
-  clip-path:circle(0 at calc(100% - 76px) 60px);
-  transition:clip-path 1s cubic-bezier(.86,0,.07,1)}
-#menuOverlay.open #menuPanel{clip-path:circle(135vmax at calc(100% - 76px) 60px)}
+  clip-path:circle(0 at calc(100% - 76px) 60px)}
+/* halftone edge: dots drawn on one canvas (JS). dot size grows as the reveal wavefront
+   passes each grid point -> the advancing edge reads as size-graded dots. cheap: one node. */
+#menuDots{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#menuDots{display:none}}
 
 /* white logo + close button (fade in once the circle has opened) */
 #menuLogo{position:absolute;left:64px;top:48px;width:141px;height:25px;
