@@ -53,7 +53,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
   #headTitle .ln1,#headTitle .ln2{opacity:1;filter:none;transform:none;transition:none}}
 
 #subTitle{width:661px;margin-top:40px;
-  display:flex;flex-direction:column;gap:12px;color:#3E3F44}
+  display:flex;flex-direction:column;gap:20px;color:#3E3F44}
 #subTitle .st-head{font-size:24px;font-weight:600;line-height:150%}
 #subTitle .st-body{font-size:20px;font-weight:400;line-height:150%}
 /* subtitle settles in just after the headline (lighter blur — it's small text) */
