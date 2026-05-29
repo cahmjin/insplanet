@@ -1,0 +1,81 @@
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#fff}
+/* responsive stage: fills the viewport */
+#stage{
+  position:relative;
+  width:100vw;height:100vh;
+  background:#fff;overflow:hidden;
+}
+
+/* layer 1: background line shape (behind blob) = two circles, each parallax-moved by mouse.
+   geometry derived from Figma (frame coords) scaled px->vw by 100/1920=0.0520833 */
+#bgLine{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+#bgLine .circ{position:absolute;border-radius:50%;
+  border:1px solid #000;opacity:.06;will-change:transform;
+  transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+/* size & position are set in JS so they scale with the same factor as the blob */
+
+/* layer 2: blob canvas fills the stage */
+#blob{position:absolute;left:0;top:0;width:100%;height:100%;z-index:2;pointer-events:none}
+
+/* layer 3: content */
+.content{position:absolute;inset:0;z-index:3;
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
+
+#ciLogo{position:absolute;left:64px;top:48px;width:140.12px;height:24.04px}
+
+#fullMenu{position:absolute;right:48px;top:32px;width:56px;height:56px;
+  display:flex;align-items:center;justify-content:center;border-radius:999px;cursor:pointer}
+#fullMenu img{width:24px;height:14px}
+
+#letsTalk{position:absolute;right:134px;top:45px;
+  display:flex;align-items:center;gap:10px;padding:4px 0;
+  border-bottom:1px solid #3E3F44;cursor:pointer}
+#letsTalk span{font-size:14px;font-weight:700;line-height:150%}
+
+/* left content block: symbol + headline + subtitle, anchored bottom-left as a group */
+#leftBlock{position:absolute;left:216px;bottom:120px;
+  display:flex;flex-direction:column;align-items:flex-start}
+
+#symbol{width:156px;height:8px}
+
+#headTitle{width:734px;margin-top:20px;
+  display:flex;flex-direction:column;
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:200px;line-height:1.211;color:#3E3F44}
+#headTitle .ln2{margin-top:-102px}
+
+#subTitle{width:661px;margin-top:40px;
+  display:flex;flex-direction:column;gap:12px;color:#3E3F44}
+#subTitle .st-head{font-size:24px;font-weight:600;line-height:150%}
+#subTitle .st-body{font-size:20px;font-weight:400;line-height:150%}
+
+#scrollHint{position:absolute;right:64px;bottom:64px;width:21px;
+  display:flex;flex-direction:column;align-items:center;gap:16px}
+/* faint track + dark line that draws top->bottom then exits downward, looping */
+#scrollHint .bar{position:relative;width:1px;height:64px;background:rgba(26,26,26,.15);overflow:hidden}
+#scrollHint .bar::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;
+  background:#1A1A1A;transform-origin:top;transform:scaleY(0);
+  animation:scrollDraw 2.2s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes scrollDraw{
+  0%   {transform:scaleY(0);transform-origin:top}
+  45%  {transform:scaleY(1);transform-origin:top}
+  55%  {transform:scaleY(1);transform-origin:bottom}
+  100% {transform:scaleY(0);transform-origin:bottom}
+}
+@media (prefers-reduced-motion:reduce){
+  #scrollHint .bar{background:#1A1A1A}
+  #scrollHint .bar::after{display:none}
+}
+#scrollHint .label{font-size:14px;font-weight:700;line-height:150%;color:#000;
+  writing-mode:vertical-rl;letter-spacing:1px}
+
+/* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
+#cursor{display:none}
+@media (hover:hover) and (pointer:fine){
+  html,body,a,#ciLogo,#letsTalk,#fullMenu{cursor:none}
+  #cursor{display:block;position:fixed;top:0;left:0;width:32px;height:32px;border-radius:50%;
+    background:transparent;pointer-events:none;z-index:9999;
+    -webkit-backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
+    backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
+    will-change:transform;transition:width .25s ease,height .25s ease}
+}
