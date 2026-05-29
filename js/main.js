@@ -23,7 +23,7 @@
 (function(){
   if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
   if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  const STRENGTH=0.3, STIFF=0.12, DAMP=0.78, MAX=20; // spring: mild elastic overshoot; MAX caps pull so large elements don't over-travel
+  const STRENGTH=0.5, STIFF=0.12, DAMP=0.78, MAX=20; // spring: mild elastic overshoot; MAX caps pull (large elements clamp here; higher STRENGTH lets small ones pull more)
   const clamp=v=>Math.max(-MAX,Math.min(MAX,v));
   const items=[];
   document.querySelectorAll('#ciLogo,#menuLogo,#letsTalk,#fullMenu,#menuClose,.m-item').forEach(el=>{
