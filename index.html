@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Roboto+Serif:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -41,6 +41,46 @@
     <div id="scrollHint">
       <span class="bar"></span>
       <span class="label">SCROLL</span>
+    </div>
+  </div>
+</div>
+
+<!-- full-screen menu overlay: dark panel opens as a circle from the menu button -->
+<div id="menuOverlay" aria-hidden="true">
+  <div id="menuPanel"></div>
+  <img id="menuLogo" src="assets/ci_logo_white.svg" alt="Insplanet">
+  <button id="menuClose" type="button" aria-label="메뉴 닫기"><img src="assets/menu_close.svg" alt=""></button>
+
+  <div class="menuInner">
+    <nav class="menuNav">
+      <a class="m-item" href="#"><span>Projects</span><span class="m-badge">42</span></a>
+      <a class="m-item" href="#">About</a>
+      <a class="m-item" href="#">Contact</a>
+    </nav>
+    <p class="menuCopy">Ⓒ 2026. Insplanet all right reserved.</p>
+
+    <ul class="projList">
+      <li>
+        <span class="pj-head"><span class="pj-name">RoAI</span><span class="pj-arrow"><img src="assets/icon_arrow.svg" alt=""></span></span>
+        <span class="pj-desc">로아는 김은경님 부자만들어줄 AI입니다. 일껄요. 이어야해요.</span>
+      </li>
+      <li>
+        <span class="pj-head"><span class="pj-name">Inspick</span><span class="pj-arrow"><img src="assets/icon_arrow.svg" alt=""></span></span>
+        <span class="pj-desc">인스픽도 김은경님 부자만들어줄 AI입니다. 일껄요. 이어야해요.</span>
+      </li>
+      <li>
+        <span class="pj-head"><span class="pj-name">Archy</span><span class="pj-arrow"><img src="assets/icon_arrow.svg" alt=""></span></span>
+        <span class="pj-desc">아키도 김은경님 부자만들어줄 AI입니다. 일껄요. 이어야해요.</span>
+      </li>
+    </ul>
+
+    <a class="briefBtn" href="#">Company Brief Download<span class="dl"><img src="assets/icon_download.svg" alt=""></span></a>
+
+    <div class="menuContact">
+      <p class="ct-addr">서울특별시 중구 퇴계로27길 49, 2층 (저동2가, 센트럴에스빌딩)</p>
+      <p class="ct-email">E&nbsp;&nbsp;hello@insplanet.co.kr</p>
+      <p class="ct-tel">T&nbsp;&nbsp;02.2088.5084</p>
+      <p class="ct-fax">F&nbsp;&nbsp;02.2088.5184</p>
     </div>
   </div>
 </div>

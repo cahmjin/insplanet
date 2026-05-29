@@ -5,7 +5,7 @@
   let mx=innerWidth/2,my=innerHeight/2,cx=mx,cy=my;
   addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
   // grow over interactive elements
-  document.querySelectorAll('#ciLogo,#letsTalk,#fullMenu').forEach(el=>{
+  document.querySelectorAll('#ciLogo,#menuLogo,#letsTalk,#fullMenu,#menuClose,.m-item,.briefBtn,.pj-head').forEach(el=>{
     el.addEventListener('mouseenter',()=>{cur.style.width='80px';cur.style.height='80px';});
     el.addEventListener('mouseleave',()=>{cur.style.width='32px';cur.style.height='32px';});
   });
@@ -23,14 +23,15 @@
 (function(){
   if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
   if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  const STRENGTH=0.3, STIFF=0.12, DAMP=0.78; // spring: mild elastic overshoot
+  const STRENGTH=0.3, STIFF=0.12, DAMP=0.78, MAX=20; // spring: mild elastic overshoot; MAX caps pull so large elements don't over-travel
+  const clamp=v=>Math.max(-MAX,Math.min(MAX,v));
   function magnetic(el){
     let tx=0,ty=0,x=0,y=0,vx=0,vy=0;
     el.addEventListener('mousemove',e=>{
       const r=el.getBoundingClientRect();
       // subtract current translate (x,y) to get the untransformed center -> no feedback drift
-      tx=(e.clientX-(r.left+r.width/2-x))*STRENGTH;
-      ty=(e.clientY-(r.top+r.height/2-y))*STRENGTH;
+      tx=clamp((e.clientX-(r.left+r.width/2-x))*STRENGTH);
+      ty=clamp((e.clientY-(r.top+r.height/2-y))*STRENGTH);
     });
     el.addEventListener('mouseleave',()=>{tx=0;ty=0;});
     // persistent spring loop (cheap; always converges to tx/ty, springs back on leave)
@@ -41,9 +42,8 @@
       requestAnimationFrame(frame);
     })();
   }
-  ['#ciLogo','#letsTalk','#fullMenu'].forEach(sel=>{
-    const el=document.querySelector(sel); if(el)magnetic(el);
-  });
+  document.querySelectorAll('#ciLogo,#menuLogo,#letsTalk,#fullMenu,#menuClose,.m-item')
+    .forEach(magnetic);
 })();
 
 /* ===== background circles =====
@@ -73,6 +73,19 @@
     c1.style.transform='translate('+(mx*14)+'px,'+(my*14)+'px)';
     c2.style.transform='translate('+(mx*-22)+'px,'+(my*20)+'px)';
   });
+})();
+
+/* ===== full-screen menu: circular reveal open/close ===== */
+(function(){
+  const overlay=document.getElementById('menuOverlay');
+  const openBtn=document.getElementById('fullMenu');
+  const closeBtn=document.getElementById('menuClose');
+  if(!overlay||!openBtn||!closeBtn)return;
+  const open=()=>{overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');};
+  const close=()=>{overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');};
+  openBtn.addEventListener('click',open);
+  closeBtn.addEventListener('click',close);
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('open'))close();});
 })();
 
 /* ===== intro reveal: headline then subtitle settle in from a soft blur ===== */

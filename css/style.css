@@ -86,10 +86,91 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff}
 #scrollHint .label{font-size:14px;font-weight:700;line-height:150%;color:#000;
   writing-mode:vertical-rl;letter-spacing:1px}
 
+/* ===== full-screen menu overlay ===== */
+/* keep the overlay visible through the close animation, then hide it */
+#menuOverlay{position:fixed;inset:0;z-index:100;visibility:hidden;pointer-events:none;
+  transition:visibility 0s linear 1s}
+#menuOverlay.open{visibility:visible;pointer-events:auto;transition-delay:0s}
+/* dark panel reveals/closes as a circle growing from the menu button (top-right) */
+#menuPanel{position:absolute;inset:0;background:#3E3F44;
+  clip-path:circle(0 at calc(100% - 76px) 60px);
+  transition:clip-path 1s cubic-bezier(.86,0,.07,1)}
+#menuOverlay.open #menuPanel{clip-path:circle(135vmax at calc(100% - 76px) 60px)}
+
+/* white logo + close button (fade in once the circle has opened) */
+#menuLogo{position:absolute;left:64px;top:48px;width:141px;height:25px;
+  opacity:0;transition:opacity .4s ease}
+#menuClose{position:absolute;right:48px;top:32px;width:56px;height:56px;border:0;padding:0;
+  display:flex;align-items:center;justify-content:center;border-radius:999px;background:#fff;
+  cursor:pointer;opacity:0;transition:opacity .4s ease}
+#menuClose img{width:19px;height:19px}
+#menuOverlay.open #menuLogo,#menuOverlay.open #menuClose{opacity:1;transition-delay:.7s}
+
+/* menu content: centered 1166x677 block, laid out per Figma; appears after the circle */
+.menuInner{position:absolute;left:50%;top:50%;width:1166px;height:677px;
+  transform:translate(-50%,-46%);opacity:0;color:#fff;
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+  transition:opacity .45s ease,transform .55s cubic-bezier(.22,1,.36,1)}
+#menuOverlay.open .menuInner{opacity:1;transform:translate(-50%,-50%);transition-delay:.78s}
+
+/* left column — big nav */
+.menuNav{position:absolute;left:0;top:8px;display:flex;flex-direction:column;gap:16px}
+.menuNav .m-item{display:flex;align-items:center;gap:16px;text-decoration:none;color:#fff;
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:100px;line-height:1;
+  transition:opacity .25s ease}
+.menuNav .m-item:hover{opacity:.6}
+.m-badge{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 24px;
+  border-radius:999px;background:#fff;color:#3E3F44;
+  font-family:'Roboto Serif',serif;font-weight:400;font-size:32px;line-height:1}
+.menuCopy{position:absolute;left:0;top:653px;width:322px;
+  font-size:16px;font-weight:600;line-height:150%}
+
+/* right column — project list */
+.projList{position:absolute;left:760px;top:0;width:379px;list-style:none;
+  display:flex;flex-direction:column;gap:56px}
+.projList li{display:flex;flex-direction:column;gap:12px}
+.pj-head{display:flex;align-items:center;gap:10px}
+.pj-name{font-size:24px;font-weight:600;line-height:1}
+.pj-arrow{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px}
+.pj-arrow img{width:14px;height:14px}
+/* hover a project: arrow exits top-right, re-enters from bottom-left, settles (one cycle) */
+@keyframes pjArrowCycle{
+  0%  {transform:translate(0,0);opacity:1}
+  45% {transform:translate(11px,-11px);opacity:0}
+  46% {transform:translate(-11px,11px);opacity:0}
+  100%{transform:translate(0,0);opacity:1}}
+.projList li:hover .pj-arrow img{animation:pjArrowCycle .55s cubic-bezier(.22,1,.36,1)}
+.pj-desc{font-size:16px;font-weight:400;line-height:150%}
+
+/* right column — company brief button */
+.briefBtn{position:absolute;left:760px;top:445px;display:inline-flex;align-items:center;gap:12px;
+  padding:12px 12px 12px 16px;border:1px solid #fff;border-radius:8px;
+  text-decoration:none;color:#fff;font-size:16px;font-weight:600;line-height:150%;
+  transition:background .25s ease,color .25s ease}
+.briefBtn .dl{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px}
+.briefBtn .dl img{width:13px;height:13px;transition:filter .25s ease}
+.briefBtn:hover{background:#fff;color:#3E3F44}
+/* hover: icon drops down & out, re-enters from the top, settles (one cycle) */
+@keyframes dlCycle{
+  0%  {transform:translateY(0);opacity:1}
+  45% {transform:translateY(11px);opacity:0}
+  46% {transform:translateY(-11px);opacity:0}
+  100%{transform:translateY(0);opacity:1}}
+.briefBtn:hover .dl img{filter:invert(1);animation:dlCycle .55s cubic-bezier(.22,1,.36,1)}
+
+/* right column — contact block */
+.menuContact{position:absolute;left:760px;top:573px;width:406px;height:104px;
+  font-size:16px;font-weight:600;line-height:150%}
+.menuContact p{position:absolute}
+.menuContact .ct-addr{left:0;top:0;width:406px}
+.menuContact .ct-email{left:0;top:40px}
+.menuContact .ct-tel{left:0;top:80px}
+.menuContact .ct-fax{left:159px;top:80px}
+
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
 #cursor{display:none}
 @media (hover:hover) and (pointer:fine){
-  html,body,a,#ciLogo,#letsTalk,#fullMenu{cursor:none}
+  html,body,a,#ciLogo,#menuLogo,#letsTalk,#fullMenu,#menuClose{cursor:none}
   #cursor{display:block;position:fixed;top:0;left:0;width:32px;height:32px;border-radius:50%;
     background:transparent;pointer-events:none;z-index:9999;
     -webkit-backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
