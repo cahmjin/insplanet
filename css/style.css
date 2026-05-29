@@ -4,7 +4,7 @@ html,body{width:100%;background:#fff}
 html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 .lenis.lenis-stopped{overflow:hidden}
-/* sections sit above the fixed #bgLine (z:0); their bg is transparent so the line shows
+/* sections sit above the fixed #bg-line (z:0); their bg is transparent so the line shows
    through, with the white base coming from html/body. */
 /* hero stage = first full-viewport section */
 #stage{
@@ -21,30 +21,30 @@ html.lenis,html.lenis body{height:auto}
 .pin-stage{position:sticky;top:0;height:100vh;overflow:hidden}
 
 /* both titles live in the SAME centered spot (overlapping) — JS scrub swaps between them */
-.beyond-title,.f26-title{position:absolute;left:216px;top:50%;transform:translateY(-50%);margin:0;
+.beyond-title,.frame26-title{position:absolute;left:216px;top:50%;transform:translateY(-50%);margin:0;
   display:flex;flex-direction:column;align-items:flex-start;color:#3E3F44}
 /* Beyond — Cormorant Bold 160, tight two-line stack */
 .beyond-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:160px;line-height:1.211}
-.beyond-title .bt1{margin-left:19px}   /* "Beyond UX" indented to x235 */
-.beyond-title .bt2{margin-top:-83px}   /* "The AX Creator" overlaps upward, like the hero */
+.beyond-title .line-1{margin-left:19px}   /* "Beyond UX" indented to x235 */
+.beyond-title .line-2{margin-top:-83px}   /* "The AX Creator" overlaps upward, like the hero */
 
 /* Frame 26 statement — Pretendard Bold 120, two lines */
-.f26-title{width:1230px;
+.frame26-title{width:1230px;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:120px;
   line-height:1.2;color:#3E3F44;display:flex;flex-direction:column;align-items:flex-start}
 
 /* blur is SCRUBBED by scroll through the pin (JS sets opacity/filter inline) — stays in sync
    with scroll speed. no animation/transition here. */
-.beyond-title .bt1,.beyond-title .bt2,.f26-title span{opacity:0;filter:blur(16px)}
+.beyond-title .line-1,.beyond-title .line-2,.frame26-title span{opacity:0;filter:blur(16px)}
 @media (prefers-reduced-motion:reduce){
-  .beyond-title .bt1,.beyond-title .bt2{opacity:0}
-  .f26-title span{opacity:1;filter:none}}
+  .beyond-title .line-1,.beyond-title .line-2{opacity:0}
+  .frame26-title span{opacity:1;filter:none}}
 
 /* layer 1: background line shape (behind blob) = two circles, each parallax-moved by mouse.
    geometry derived from Figma (frame coords) scaled px->vw by 100/1920=0.0520833 */
 /* fixed ambient background line: stays put behind every section while scrolling */
-#bgLine{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-#bgLine .circ{position:absolute;border-radius:50%;
+#bg-line{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#bg-line .circ{position:absolute;border-radius:50%;
   border:1px solid #000;opacity:.06;will-change:transform;
   transition:transform .6s cubic-bezier(.2,.8,.2,1)}
 /* size & position are set in JS so they scale with the same factor as the blob */
@@ -57,152 +57,152 @@ html.lenis,html.lenis body{height:auto}
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
 
 /* header controls stay fixed so they (and the menu) are reachable while scrolling */
-#ciLogo{position:fixed;z-index:60;left:64px;top:48px;width:140.12px;height:24.04px}
+#ci-logo{position:fixed;z-index:60;left:64px;top:48px;width:140.12px;height:24.04px}
 
-#fullMenu{position:fixed;z-index:60;right:48px;top:32px;width:56px;height:56px;
+#full-menu{position:fixed;z-index:60;right:48px;top:32px;width:56px;height:56px;
   display:flex;align-items:center;justify-content:center;border-radius:999px;cursor:pointer}
-#fullMenu img{width:24px;height:14px}
+#full-menu img{width:24px;height:14px}
 
-#letsTalk{position:fixed;z-index:60;right:134px;top:45px;
+#lets-talk{position:fixed;z-index:60;right:134px;top:45px;
   display:flex;align-items:center;gap:10px;padding:4px 0;
   border-bottom:1px solid #3E3F44;cursor:pointer}
-#letsTalk span{font-size:14px;font-weight:700;line-height:150%}
+#lets-talk span{font-size:14px;font-weight:700;line-height:150%}
 
 /* left content block: symbol + headline + subtitle, anchored bottom-left as a group */
-#leftBlock{position:absolute;left:216px;bottom:120px;
+#left-block{position:absolute;left:216px;bottom:120px;
   display:flex;flex-direction:column;align-items:flex-start}
 
 #symbol{width:156px;height:8px}
 
-#headTitle{width:734px;margin-top:20px;
+#head-title{width:734px;margin-top:20px;
   display:flex;flex-direction:column;
   font-family:'Cormorant Garamond',serif;font-weight:600;font-size:200px;line-height:1.211;color:#3E3F44}
-#headTitle .ln2{margin-top:-102px}
+#head-title .line-2{margin-top:-102px}
 /* title reveal: lines settle in from a soft blur on load (.in added by JS) */
-#headTitle .ln1,#headTitle .ln2{
+#head-title .line-1,#head-title .line-2{
   opacity:0;filter:blur(18px);transform:translateY(.05em) scale(1.04);transform-origin:left center;
   transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.22,1,.36,1)}
-#headTitle .ln2{transition-delay:.14s}
-#headTitle.in .ln1,#headTitle.in .ln2{opacity:1;filter:blur(0);transform:none}
+#head-title .line-2{transition-delay:.14s}
+#head-title.in .line-1,#head-title.in .line-2{opacity:1;filter:blur(0);transform:none}
 @media (prefers-reduced-motion:reduce){
-  #headTitle .ln1,#headTitle .ln2{opacity:1;filter:none;transform:none;transition:none}}
+  #head-title .line-1,#head-title .line-2{opacity:1;filter:none;transform:none;transition:none}}
 
-#subTitle{width:661px;margin-top:40px;
+#sub-title{width:661px;margin-top:40px;
   display:flex;flex-direction:column;gap:20px;color:#3E3F44}
-#subTitle .st-head{font-size:24px;font-weight:600;line-height:150%}
-#subTitle .st-body{font-size:20px;font-weight:400;line-height:150%}
+#sub-title .subtitle-head{font-size:24px;font-weight:600;line-height:150%}
+#sub-title .subtitle-body{font-size:20px;font-weight:400;line-height:150%}
 /* subtitle settles in just after the headline (lighter blur — it's small text) */
-#subTitle .st-head,#subTitle .st-body{
+#sub-title .subtitle-head,#sub-title .subtitle-body{
   opacity:0;filter:blur(8px);transform:translateY(10px);
   transition:opacity .9s ease,filter .9s ease,transform .9s cubic-bezier(.22,1,.36,1)}
-#subTitle .st-head{transition-delay:.5s}
-#subTitle .st-body{transition-delay:.62s}
-#subTitle.in .st-head,#subTitle.in .st-body{opacity:1;filter:blur(0);transform:none}
+#sub-title .subtitle-head{transition-delay:.5s}
+#sub-title .subtitle-body{transition-delay:.62s}
+#sub-title.in .subtitle-head,#sub-title.in .subtitle-body{opacity:1;filter:blur(0);transform:none}
 @media (prefers-reduced-motion:reduce){
-  #subTitle .st-head,#subTitle .st-body{opacity:1;filter:none;transform:none;transition:none}}
+  #sub-title .subtitle-head,#sub-title .subtitle-body{opacity:1;filter:none;transform:none;transition:none}}
 
-#scrollHint{position:fixed;z-index:60;right:64px;bottom:64px;width:21px;
+#scroll-hint{position:fixed;z-index:60;right:64px;bottom:64px;width:21px;
   display:flex;flex-direction:column;align-items:center;gap:16px}
 /* faint track + dark line that draws top->bottom then exits downward, looping */
-#scrollHint .bar{position:relative;width:1px;height:64px;background:rgba(26,26,26,.15);overflow:hidden}
-#scrollHint .bar::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;
+#scroll-hint .bar{position:relative;width:1px;height:64px;background:rgba(26,26,26,.15);overflow:hidden}
+#scroll-hint .bar::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;
   background:#1A1A1A;transform-origin:top;transform:scaleY(0);
-  animation:scrollDraw 2.2s cubic-bezier(.65,0,.35,1) infinite}
-@keyframes scrollDraw{
+  animation:scroll-draw 2.2s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes scroll-draw{
   0%   {transform:scaleY(0);transform-origin:top}
   45%  {transform:scaleY(1);transform-origin:top}
   55%  {transform:scaleY(1);transform-origin:bottom}
   100% {transform:scaleY(0);transform-origin:bottom}
 }
 @media (prefers-reduced-motion:reduce){
-  #scrollHint .bar{background:#1A1A1A}
-  #scrollHint .bar::after{display:none}
+  #scroll-hint .bar{background:#1A1A1A}
+  #scroll-hint .bar::after{display:none}
 }
-#scrollHint .label{font-size:14px;font-weight:700;line-height:150%;color:#000;
+#scroll-hint .label{font-size:14px;font-weight:700;line-height:150%;color:#000;
   writing-mode:vertical-rl;letter-spacing:1px}
 
 /* ===== full-screen menu overlay ===== */
 /* keep the overlay visible through the close animation, then hide it */
-#menuOverlay{position:fixed;inset:0;z-index:100;visibility:hidden;pointer-events:none;
+#menu-overlay{position:fixed;inset:0;z-index:100;visibility:hidden;pointer-events:none;
   transition:visibility 0s linear 1s}
-#menuOverlay.open{visibility:visible;pointer-events:auto;transition-delay:0s}
+#menu-overlay.open{visibility:visible;pointer-events:auto;transition-delay:0s}
 /* dark solid core — JS sets clip-path radius each frame, synced with the canvas halftone */
-#menuPanel{position:absolute;inset:0;background:#3E3F44;
+#menu-panel{position:absolute;inset:0;background:#3E3F44;
   clip-path:circle(0 at calc(100% - 76px) 60px)}
 /* halftone edge: dots drawn on one canvas (JS). dot size grows as the reveal wavefront
    passes each grid point -> the advancing edge reads as size-graded dots. cheap: one node. */
-#menuDots{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-@media (prefers-reduced-motion:reduce){#menuDots{display:none}}
+#menu-dots{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#menu-dots{display:none}}
 
 /* white logo + close button (fade in once the circle has opened) */
-#menuLogo{position:absolute;left:64px;top:48px;width:141px;height:25px;
+#menu-logo{position:absolute;left:64px;top:48px;width:141px;height:25px;
   opacity:0;transition:opacity .4s ease}
-#menuClose{position:absolute;right:48px;top:32px;width:56px;height:56px;border:0;padding:0;
+#menu-close{position:absolute;right:48px;top:32px;width:56px;height:56px;border:0;padding:0;
   display:flex;align-items:center;justify-content:center;border-radius:999px;background:#fff;
   cursor:pointer;opacity:0;transition:opacity .4s ease}
-#menuClose img{width:19px;height:19px}
-#menuOverlay.open #menuLogo,#menuOverlay.open #menuClose{opacity:1;transition-delay:.7s}
+#menu-close img{width:19px;height:19px}
+#menu-overlay.open #menu-logo,#menu-overlay.open #menu-close{opacity:1;transition-delay:.7s}
 
 /* menu content: centered 1166x677 block, laid out per Figma; appears after the circle */
-.menuInner{position:absolute;left:50%;top:50%;width:1166px;height:677px;
+.menu-inner{position:absolute;left:50%;top:50%;width:1166px;height:677px;
   transform:translate(-50%,-46%);opacity:0;color:#fff;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
   transition:opacity .45s ease,transform .55s cubic-bezier(.22,1,.36,1)}
-#menuOverlay.open .menuInner{opacity:1;transform:translate(-50%,-50%);transition-delay:.78s}
+#menu-overlay.open .menu-inner{opacity:1;transform:translate(-50%,-50%);transition-delay:.78s}
 
 /* left column — big nav */
-.menuNav{position:absolute;left:0;top:8px;display:flex;flex-direction:column;gap:16px}
-.menuNav .m-item{display:flex;align-items:center;gap:16px;text-decoration:none;color:#fff;
+.menu-nav{position:absolute;left:0;top:8px;display:flex;flex-direction:column;gap:16px}
+.menu-nav .menu-item{display:flex;align-items:center;gap:16px;text-decoration:none;color:#fff;
   font-family:'Cormorant Garamond',serif;font-weight:600;font-size:100px;line-height:1;
   transition:opacity .25s ease}
-.menuNav .m-item:hover{opacity:.6}
-.m-badge{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 24px;
+.menu-nav .menu-item:hover{opacity:.6}
+.menu-badge{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 24px;
   border-radius:999px;background:#fff;color:#3E3F44;
   font-family:'Roboto Serif',serif;font-weight:400;font-size:32px;line-height:1}
-.menuCopy{position:absolute;left:0;top:653px;width:322px;
+.menu-copy{position:absolute;left:0;top:653px;width:322px;
   font-size:16px;font-weight:600;line-height:150%}
 
 /* right column — project list */
-.projList{position:absolute;left:760px;top:0;width:440px;list-style:none;
+.project-list{position:absolute;left:760px;top:0;width:440px;list-style:none;
   display:flex;flex-direction:column;gap:56px}
-.projList li{display:flex;flex-direction:column;gap:12px}
-.pj-head{display:flex;align-items:center;gap:10px}
-.pj-name{font-size:24px;font-weight:600;line-height:1}
-.pj-arrow{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px}
-.pj-arrow img{width:14px;height:14px}
+.project-list li{display:flex;flex-direction:column;gap:12px}
+.project-head{display:flex;align-items:center;gap:10px}
+.project-name{font-size:24px;font-weight:600;line-height:1}
+.project-arrow{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px}
+.project-arrow img{width:14px;height:14px}
 /* hover a project: arrow exits top-right, re-enters from bottom-left, settles (one cycle) */
-@keyframes pjArrowCycle{
+@keyframes project-arrow-cycle{
   0%  {transform:translate(0,0);opacity:1}
   45% {transform:translate(11px,-11px);opacity:0}
   46% {transform:translate(-11px,11px);opacity:0}
   100%{transform:translate(0,0);opacity:1}}
-.projList li:hover .pj-arrow img{animation:pjArrowCycle .55s cubic-bezier(.22,1,.36,1)}
-.pj-desc{font-size:16px;font-weight:400;line-height:150%}
+.project-list li:hover .project-arrow img{animation:project-arrow-cycle .55s cubic-bezier(.22,1,.36,1)}
+.project-desc{font-size:16px;font-weight:400;line-height:150%}
 
 /* right column — company brief button */
-.briefBtn{position:absolute;left:760px;top:445px;display:inline-flex;align-items:center;gap:12px;
+.brief-btn{position:absolute;left:760px;top:445px;display:inline-flex;align-items:center;gap:12px;
   padding:12px 12px 12px 16px;border:1px solid #fff;border-radius:8px;
   text-decoration:none;color:#fff;font-size:16px;font-weight:600;line-height:150%;
   transition:background .25s ease,color .25s ease}
-.briefBtn .dl{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px}
-.briefBtn .dl img{width:13px;height:13px;transition:filter .25s ease}
-.briefBtn:hover{background:#fff;color:#3E3F44}
+.brief-btn .download-icon{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px}
+.brief-btn .download-icon img{width:13px;height:13px;transition:filter .25s ease}
+.brief-btn:hover{background:#fff;color:#3E3F44}
 /* hover: icon drops down & out, re-enters from the top, settles (one cycle) */
-@keyframes dlCycle{
+@keyframes download-cycle{
   0%  {transform:translateY(0);opacity:1}
   45% {transform:translateY(11px);opacity:0}
   46% {transform:translateY(-11px);opacity:0}
   100%{transform:translateY(0);opacity:1}}
-.briefBtn:hover .dl img{filter:invert(1);animation:dlCycle .55s cubic-bezier(.22,1,.36,1)}
+.brief-btn:hover .download-icon img{filter:invert(1);animation:download-cycle .55s cubic-bezier(.22,1,.36,1)}
 
 /* right column — contact block */
-.menuContact{position:absolute;left:760px;top:573px;width:406px;height:104px;
+.menu-contact{position:absolute;left:760px;top:573px;width:406px;height:104px;
   font-size:16px;font-weight:600;line-height:150%}
-.menuContact p{position:absolute}
-.menuContact .ct-addr{left:0;top:0;width:406px}
-.menuContact .ct-email{left:0;top:40px}
-.menuContact .ct-tel{left:0;top:80px}
-.menuContact .ct-fax{left:159px;top:80px}
+.menu-contact p{position:absolute}
+.menu-contact .contact-addr{left:0;top:0;width:406px}
+.menu-contact .contact-email{left:0;top:40px}
+.menu-contact .contact-tel{left:0;top:80px}
+.menu-contact .contact-fax{left:159px;top:80px}
 
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
 #cursor{display:none}

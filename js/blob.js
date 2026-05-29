@@ -138,7 +138,7 @@ const lSpd=P.lSpeed/100;
 let st=0,phase=0,last=performance.now();
 /* skip the (heavy) shader render once the menu has fully covered the blob (overlay '.covered').
    keep the rAF alive so it resumes instantly on close; reset `last` to avoid a time jump. */
-const _menu=document.getElementById('menuOverlay');
+const _menu=document.getElementById('menu-overlay');
 function draw(now){
   requestAnimationFrame(draw);
   if(_menu&&_menu.classList.contains('covered')){last=now;return;}

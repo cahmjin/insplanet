@@ -15,7 +15,7 @@
   let mx=innerWidth/2,my=innerHeight/2,cx=mx,cy=my;
   addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
   // grow over interactive elements
-  document.querySelectorAll('#ciLogo,#menuLogo,#letsTalk,#fullMenu,#menuClose,.m-item,.briefBtn,.pj-head').forEach(el=>{
+  document.querySelectorAll('#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.brief-btn,.project-head').forEach(el=>{
     el.addEventListener('mouseenter',()=>{cur.style.width='80px';cur.style.height='80px';});
     el.addEventListener('mouseleave',()=>{cur.style.width='32px';cur.style.height='32px';});
   });
@@ -36,7 +36,7 @@
   const STRENGTH=0.5, STIFF=0.12, DAMP=0.78, MAX=20; // spring: mild elastic overshoot; MAX caps pull (large elements clamp here; higher STRENGTH lets small ones pull more)
   const clamp=v=>Math.max(-MAX,Math.min(MAX,v));
   const items=[];
-  document.querySelectorAll('#ciLogo,#menuLogo,#letsTalk,#fullMenu,#menuClose,.m-item').forEach(el=>{
+  document.querySelectorAll('#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item').forEach(el=>{
     const it={el,tx:0,ty:0,x:0,y:0,vx:0,vy:0,zeroed:true};
     el.addEventListener('mousemove',e=>{
       const r=el.getBoundingClientRect();
@@ -69,8 +69,8 @@
    scale with the SAME factor as the blob: k = clamp(min(W,H),864,1296)/1080,
    positioned around the viewport center (like the blob), + subtle mouse parallax. */
 (function(){
-  const c1=document.querySelector('#bgLine .c1');
-  const c2=document.querySelector('#bgLine .c2');
+  const c1=document.querySelector('#bg-line .circ-1');
+  const c2=document.querySelector('#bg-line .circ-2');
   if(!c1||!c2)return;
   const R=718; // design circle radius (px @ 1080 baseline)
   // design circle centers as offset from the 1920x1080 frame center (960,540)
@@ -95,15 +95,15 @@
 })();
 
 /* ===== full-screen menu: circular reveal + radial (polar) halftone edge =====
-   one JS clock drives BOTH the solid core (#menuPanel clip-path) and the canvas halftone,
+   one JS clock drives BOTH the solid core (#menu-panel clip-path) and the canvas halftone,
    so they stay locked. dots sit on rings concentric with the menu button (matching the
    reveal's wavefront): big at the solid edge, shrinking to nothing at the leading edge. */
 (function(){
-  const overlay=document.getElementById('menuOverlay');
-  const panel=document.getElementById('menuPanel');
-  const canvas=document.getElementById('menuDots');
-  const openBtn=document.getElementById('fullMenu');
-  const closeBtn=document.getElementById('menuClose');
+  const overlay=document.getElementById('menu-overlay');
+  const panel=document.getElementById('menu-panel');
+  const canvas=document.getElementById('menu-dots');
+  const openBtn=document.getElementById('full-menu');
+  const closeBtn=document.getElementById('menu-close');
   if(!overlay||!openBtn||!closeBtn)return;
   const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
   const ctx=(!reduce&&canvas&&canvas.getContext)?canvas.getContext('2d'):null;
@@ -181,7 +181,7 @@
 
 /* ===== intro reveal: headline then subtitle settle in from a soft blur ===== */
 (function(){
-  const els=['headTitle','subTitle'].map(id=>document.getElementById(id)).filter(Boolean);
+  const els=['head-title','sub-title'].map(id=>document.getElementById(id)).filter(Boolean);
   if(!els.length)return;
   const reveal=()=>els.forEach(el=>el.classList.add('in'));
   if(matchMedia('(prefers-reduced-motion:reduce)').matches){reveal();return;}
@@ -197,8 +197,8 @@
 (function(){
   const chapter=document.querySelector('.sec-swap');
   if(!chapter)return;
-  const bLines=[...chapter.querySelectorAll('.beyond-title .bt1,.beyond-title .bt2')];
-  const fLines=[...chapter.querySelectorAll('.f26-title span')];
+  const bLines=[...chapter.querySelectorAll('.beyond-title .line-1,.beyond-title .line-2')];
+  const fLines=[...chapter.querySelectorAll('.frame26-title span')];
   const clamp=v=>Math.min(1,Math.max(0,v));
   const set=(l,s)=>{l.style.opacity=s.toFixed(3);l.style.filter='blur('+(16*(1-s)).toFixed(2)+'px)';};
   if(matchMedia('(prefers-reduced-motion:reduce)').matches){bLines.forEach(l=>set(l,0));fLines.forEach(l=>set(l,1));return;}
@@ -223,10 +223,10 @@
 (function(){
   if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
   const layers=[
-    {el:document.getElementById('blob'),     rate: 120},  // background: moves least
-    {el:document.getElementById('subTitle'), rate:-130},
-    {el:document.getElementById('headTitle'),rate:-250},
-    {el:document.getElementById('symbol'),   rate:-380}   // foreground: moves most
+    {el:document.getElementById('blob'),      rate: 120},  // background: moves least
+    {el:document.getElementById('sub-title'), rate:-130},
+    {el:document.getElementById('head-title'),rate:-250},
+    {el:document.getElementById('symbol'),    rate:-380}   // foreground: moves most
   ].filter(l=>l.el);
   if(!layers.length)return;
   let ticking=false;
