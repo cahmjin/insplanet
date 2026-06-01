@@ -50,42 +50,42 @@
 <!-- global fixed UI — kept at body level so it stays above every section and stays interactive -->
 <img id="ci-logo" src="assets/ci_logo.svg" alt="Insplanet">
 <div id="lets-talk"><span>Let&rsquo;s Talk</span></div>
-<div id="full-menu"><img src="assets/menu_icon.svg" alt="menu"></div>
+<div id="full-menu" tabindex="-1"><img src="assets/menu_icon.svg" alt="menu"></div>
 <div id="scroll-hint">
   <span class="bar"></span>
   <span class="label">SCROLL</span>
 </div>
 
-<!-- chapter 02: pinned swap — Beyond blurs in, then (scroll) it leaves and Frame 26 takes its
-     place in the SAME centered spot. one pinned area, scroll drives the 25 -> 26 swap. -->
+<!-- chapter 02: pinned swap — "Beyond UX" blurs in, then (scroll) it leaves and the closing
+     statement takes its place in the SAME centered spot. one pinned area, scroll drives the swap. -->
 <section class="pin-chapter sec-swap">
   <div class="pin-stage">
     <h2 class="beyond-title">
       <span class="line-1">Beyond UX</span>
       <span class="line-2">The AX Creator</span>
     </h2>
-    <p class="frame26-title">
+    <p class="beyond-statement">
       <span>기술에 가치를 더해,</span>
       <span>내일의 설렘을 완성합니다.</span>
     </p>
   </div>
 </section>
 
-<!-- chapter 03: Frame 27 "Insight" — pinned fractal-glass card. Scrolling through the pin
-     swaps the foreground steps (01 Insight, 02 Interest, 03 …) over the same card, while the
-     faint oversized tagline drifts (top left / bottom right). -->
+<!-- chapter 03: "Insight" — pinned glass card. Scrolling through the pin swaps the foreground
+     steps (01 Insight, 02 Interest, 03 Innovation) over the same card, while the faint oversized
+     tagline auto-scrolls (top left / bottom right). -->
 <section class="pin-insight">
   <div class="pin-insight-stage">
-    <div class="frame27-board">
+    <div class="insight-board">
       <!-- oversized faint tagline behind the card (Group 5): scroll-reactive marquee —
            top line drifts left, bottom line drifts right. Phrase repeated so the peeking
            edges never reveal a gap as it drifts. -->
-      <span class="fg-tagline fg-tagline-1">새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.&nbsp;&nbsp;새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.&nbsp;&nbsp;새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.</span>
-      <span class="fg-tagline fg-tagline-2">새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.&nbsp;&nbsp;새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.&nbsp;&nbsp;새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.</span>
+      <span class="insight-tagline insight-tagline-1">새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.&nbsp;&nbsp;새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.&nbsp;&nbsp;새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.</span>
+      <span class="insight-tagline insight-tagline-2">새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.&nbsp;&nbsp;새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.&nbsp;&nbsp;새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.</span>
 
-      <!-- rounded fractal-glass card (Frame 29) -->
-      <div class="frame27-card">
-        <div id="fg-shader"></div>
+      <!-- rounded glass card -->
+      <div class="insight-card">
+        <div id="insight-shader"></div>
       </div>
 
       <!-- foreground steps, swapped by scroll. Each step overlays the card at the same spot.
@@ -95,17 +95,17 @@
         <div class="insight-step" data-step="0">
           <p class="insight-eyebrow">Insight</p>
           <h2 class="insight-title">비즈니스의<br>본질을 읽고,<br>더 깊은 아이디어를<br>제안합니다.</h2>
-          <img class="insight-num" src="assets/frame27_num01.svg" alt="01" aria-hidden="true">
+          <img class="insight-num" src="assets/insight-num-01.svg" alt="01" aria-hidden="true">
         </div>
         <div class="insight-step" data-step="1">
           <p class="insight-eyebrow">Interest</p>
           <h2 class="insight-title insight-title--wide">끊임없는<br>트렌드 탐구를 통해<br>남다른 사용자 경험을<br>설계합니다.</h2>
-          <img class="insight-num insight-num--02" src="assets/frame27_num02.svg" alt="02" aria-hidden="true">
+          <img class="insight-num insight-num--02" src="assets/insight-num-02.svg" alt="02" aria-hidden="true">
         </div>
         <div class="insight-step" data-step="2">
           <p class="insight-eyebrow">Innovation</p>
           <h2 class="insight-title insight-title--wide">검증된<br>프로젝트 노하우로<br>완벽한 디지털 전환을<br>실현합니다.</h2>
-          <img class="insight-num insight-num--03" src="assets/frame27_num03.svg" alt="03" aria-hidden="true">
+          <img class="insight-num insight-num--03" src="assets/insight-num-03.svg" alt="03" aria-hidden="true">
         </div>
       </div>
     </div>
@@ -159,23 +159,8 @@
 <script src="js/main.js"></script>
 <script src="js/blob.js"></script>
 
-<!-- Frame 27 background: animated gradient through fluted glass (shaders package).
-     Replaces the old Three.js donut "fractal glass". -->
-<script type="module">
-  import React from 'react';
-  import { createRoot } from 'react-dom/client';
-  import htm from 'htm';
-  import { Shader, Swirl, FlowingGradient, FlutedGlass, FilmGrain } from 'shaders/react';
-  const html = htm.bind(React.createElement);
-  const el = document.getElementById('fg-shader');
-  if (el) createRoot(el).render(html`
-    <${Shader} style=${{ width:'100%', height:'100%' }}>
-      <${FlowingGradient} colorA="#1b0731" colorB="#ae87e8" colorC="#1b0731" colorD="#b54f63" speed=${2.6} distortion=${0.4} seed=${81} />
-      <${Swirl} colorA="#ffffff" colorB="#f0f0f0" detail=${3.4} blendMode="multiply" opacity=${1} />
-      <${FlutedGlass} aberration=${1.0} angle=${31} frequency=${12} highlight=${0.1} highlightSoftness=${0} lightAngle=${-90} refraction=${4.3} shape="rounded" softness=${1} speed=${0.2} waveAmplitude=${0} waveFrequency=${0} />
-      <${FilmGrain} strength=${0} />
-    <//>
-  `);
-</script>
+<!-- Insight section background: animated gradient through fluted glass (shaders package).
+     Params live in js/insight-background.js (kept out of the HTML source). -->
+<script type="module" src="js/insight-background.js"></script>
 </body>
 </html>

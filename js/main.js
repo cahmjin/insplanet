@@ -177,14 +177,20 @@
     scrollLocked=on;
     if(window.__lenis)on?window.__lenis.stop():window.__lenis.start();
   };
+  overlay.inert=true;   // closed by default: keep it out of focus order / assistive tech
   const open=()=>{
+    overlay.inert=false;
     overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
     lockScroll(true);
     if(reduce){if(panel)panel.style.clipPath='circle(150vmax '+ORIGIN+')';overlay.classList.add('covered');}
     else animate(maxR);
+    closeBtn.focus({preventScroll:true});   // move focus into the dialog
   };
   const close=()=>{
+    // move focus out BEFORE hiding, so a focused descendant isn't trapped under aria-hidden/inert
+    if(overlay.contains(document.activeElement))openBtn.focus({preventScroll:true});
     overlay.classList.remove('open','covered');overlay.setAttribute('aria-hidden','true');
+    overlay.inert=true;
     lockScroll(false);
     if(reduce){if(panel)panel.style.clipPath='circle(0 '+ORIGIN+')';}
     else animate(0);
@@ -213,7 +219,7 @@
   const chapter=document.querySelector('.sec-swap');
   if(!chapter)return;
   const bLines=[...chapter.querySelectorAll('.beyond-title .line-1,.beyond-title .line-2')];
-  const fLines=[...chapter.querySelectorAll('.frame26-title span')];
+  const fLines=[...chapter.querySelectorAll('.beyond-statement span')];
   const clamp=v=>Math.min(1,Math.max(0,v));
   const set=(l,s)=>{l.style.opacity=s.toFixed(3);l.style.filter='blur('+(16*(1-s)).toFixed(2)+'px)';};
   if(matchMedia('(prefers-reduced-motion:reduce)').matches){bLines.forEach(l=>set(l,0));fLines.forEach(l=>set(l,1));return;}
@@ -289,9 +295,9 @@
 /* ===== Frame 27 board scale: same min/max clamp as the hero background
    (k = clamp(min(W,H)/1080, 0.8, 1.2)) — NOT a fit-to-viewport scale. */
 (function(){
-  const board=document.querySelector('.frame27-board');
+  const board=document.querySelector('.insight-board');
   if(!board)return;
-  const k=()=>board.style.setProperty('--fg-k',
+  const k=()=>board.style.setProperty('--insight-scale',
     Math.max(0.8,Math.min(Math.min(innerWidth,innerHeight)/1080,1.2)));
   k();
   addEventListener('resize',k);
@@ -300,7 +306,7 @@
 /* ===== Frame 27 entry: grow the fractal card from 576x576 to full, once the pinned stage
    is in view (one-shot per entry via .is-grown on the board). */
 (function(){
-  const board=document.querySelector('.frame27-board');
+  const board=document.querySelector('.insight-board');
   const stage=document.querySelector('.pin-insight-stage');
   if(!board||!stage)return;
   if(matchMedia('(prefers-reduced-motion:reduce)').matches||!('IntersectionObserver'in window)){

@@ -22,7 +22,7 @@ html.lenis,html.lenis body{height:auto}
 .pin-stage{position:sticky;top:0;height:100vh;overflow:hidden}
 
 /* both titles live in the SAME centered spot (overlapping) — JS scrub swaps between them */
-.beyond-title,.frame26-title{position:absolute;left:216px;top:50%;transform:translateY(-50%);margin:0;
+.beyond-title,.beyond-statement{position:absolute;left:216px;top:50%;transform:translateY(-50%);margin:0;
   display:flex;flex-direction:column;align-items:flex-start;color:#3E3F44}
 /* Beyond — Cormorant Bold 160, tight two-line stack */
 .beyond-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:160px;line-height:1.211}
@@ -30,16 +30,16 @@ html.lenis,html.lenis body{height:auto}
 .beyond-title .line-2{margin-top:-83px}   /* "The AX Creator" overlaps upward, like the hero */
 
 /* Frame 26 statement — Pretendard Bold 120, two lines */
-.frame26-title{width:1230px;
+.beyond-statement{width:1230px;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:120px;
   line-height:1.2;color:#3E3F44;display:flex;flex-direction:column;align-items:flex-start}
 
 /* blur is SCRUBBED by scroll through the pin (JS sets opacity/filter inline) — stays in sync
    with scroll speed. no animation/transition here. */
-.beyond-title .line-1,.beyond-title .line-2,.frame26-title span{opacity:0;filter:blur(16px)}
+.beyond-title .line-1,.beyond-title .line-2,.beyond-statement span{opacity:0;filter:blur(16px)}
 @media (prefers-reduced-motion:reduce){
   .beyond-title .line-1,.beyond-title .line-2{opacity:0}
-  .frame26-title span{opacity:1;filter:none}}
+  .beyond-statement span{opacity:1;filter:none}}
 
 /* layer 1: background line shape (behind blob) = two circles, each parallax-moved by mouse.
    geometry derived from Figma (frame coords) scaled px->vw by 100/1920=0.0520833 */
@@ -212,38 +212,38 @@ html.lenis,html.lenis body{height:auto}
 
 /* 1920x1080 design board centered in the stage, scaled by the SAME min/max clamp as the hero
    background (k = clamp(min(W,H)/1080, 0.8, 1.2), set by JS) — not a fit-to-viewport scale. */
-.frame27-board{position:absolute;left:50%;top:50%;width:1920px;height:1080px;
-  transform:translate(-50%,-50%) scale(var(--fg-k,1));transform-origin:center;
+.insight-board{position:absolute;left:50%;top:50%;width:1920px;height:1080px;
+  transform:translate(-50%,-50%) scale(var(--insight-scale,1));transform-origin:center;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
 
 /* oversized faint tagline behind the card (Group 5): repeated phrase that drifts (top line
    left, bottom line right). Start far to the LEFT with the phrase repeated, so copies exist on
    BOTH sides of the visible area — neither drift direction ever reveals a gap. */
-.fg-tagline{position:absolute;white-space:nowrap;z-index:1;
+.insight-tagline{position:absolute;white-space:nowrap;z-index:1;
   font-size:120px;font-weight:700;line-height:120%}
-.fg-tagline-1{left:-2524px;top:396px;color:#3E3F44;animation:tagline-left 30s linear infinite}
-.fg-tagline-2{left:-1777px;top:540px;color:#F4F5F6;animation:tagline-right 30s linear infinite}
+.insight-tagline-1{left:-2524px;top:396px;color:#3E3F44;animation:tagline-left 30s linear infinite}
+.insight-tagline-2{left:-1777px;top:540px;color:#F4F5F6;animation:tagline-right 30s linear infinite}
 /* phrase is repeated 3x; shifting by 1/3 of the strip loops seamlessly */
 @keyframes tagline-left{to{transform:translateX(-33.333%)}}
 @keyframes tagline-right{from{transform:translateX(-33.333%)}to{transform:translateX(0)}}
-@media (prefers-reduced-motion:reduce){.fg-tagline-1,.fg-tagline-2{animation:none}}
+@media (prefers-reduced-motion:reduce){.insight-tagline-1,.insight-tagline-2{animation:none}}
 
 /* rounded fractal-glass card (Frame 29). On entry it grows from a 576x576 square to the full
    1486x880 (one-shot, ease-out). The card is a MASK centered at the board center; the canvases
    render at the FINAL size and stay put, so the growing card reveals more of the fractal. */
-.frame27-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+.insight-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:576px;height:576px;border-radius:64px;overflow:hidden;background:#0F0E0E;z-index:2;
   transition:width .9s cubic-bezier(.22,1,.36,1),height .9s cubic-bezier(.22,1,.36,1)}
-.frame27-board.is-grown .frame27-card{width:1486px;height:880px}
-.frame27-card #fg-shader{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+.insight-board.is-grown .insight-card{width:1486px;height:880px}
+.insight-card #insight-shader{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:1486px;height:880px}
-.frame27-card #fg-shader canvas{display:block;width:100%!important;height:100%!important}
+.insight-card #insight-shader canvas{display:block;width:100%!important;height:100%!important}
 
 /* foreground steps (Group 4 / Group 2 / …): each step overlays the card; the scroll-swap JS
    sets opacity/blur per step inline. The wrapper reveals only after the card has grown, so the
    text never floats outside the small card during the entry. */
 .insight-steps{position:absolute;inset:0;z-index:3;opacity:0;transition:opacity .5s ease .55s}
-.frame27-board.is-grown .insight-steps{opacity:1}
+.insight-board.is-grown .insight-steps{opacity:1}
 .insight-step{position:absolute;inset:0;opacity:0;will-change:opacity,filter}
 .insight-step[data-step="0"]{opacity:1}
 .insight-eyebrow{position:absolute;left:368px;top:260px;
@@ -258,7 +258,7 @@ html.lenis,html.lenis body{height:auto}
 
 /* reduced-motion: skip the grow — show the full card and text immediately */
 @media (prefers-reduced-motion:reduce){
-  .frame27-card{width:1486px;height:880px;transition:none}
+  .insight-card{width:1486px;height:880px;transition:none}
   .insight-steps{opacity:1;transition:none}
 }
 
