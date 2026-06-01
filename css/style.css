@@ -244,8 +244,9 @@ html.lenis,html.lenis body{height:auto}
    text never floats outside the small card during the entry. */
 .insight-steps{position:absolute;inset:0;z-index:3;opacity:0;transition:opacity .5s ease .55s}
 .insight-board.is-grown .insight-steps{opacity:1}
-.insight-step{position:absolute;inset:0;opacity:0;will-change:opacity,filter}
+.insight-step{position:absolute;inset:0;opacity:0;will-change:opacity}
 .insight-step[data-step="0"]{opacity:1}
+.insight-eyebrow,.insight-title{will-change:filter,transform}
 .insight-eyebrow{position:absolute;left:368px;top:260px;
   font-size:20px;font-weight:600;line-height:120%;text-transform:uppercase;
   letter-spacing:.04em;color:#fff}

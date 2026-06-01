@@ -327,10 +327,41 @@
   const N=steps.length;
   sec.style.height=(N*120)+'vh';              // 1.2 viewport of scroll per step (slower swap)
   const clamp=v=>Math.min(1,Math.max(0,v));
-  const setStep=(el,s)=>{el.style.opacity=s.toFixed(3);el.style.filter='blur('+(16*(1-s)).toFixed(2)+'px)';};
+  const EXIT_Y=48;                             // px the leaving text slides down as it fades
+  const STAGGER=0.10;                          // title trails the eyebrow on exit (elastic cascade)
+  const easeIn=x=>x*x;                          // accelerate downward — no upward wind-up
+  const parts=steps.map(el=>({
+    step:el,
+    eyebrow:el.querySelector('.insight-eyebrow'),
+    title:el.querySelector('.insight-title')
+  }));
+  // enter: text blurs + fades in place. exit: text accelerates DOWN + fades (no blur), title leading
+  // and eyebrow trailing slightly for an elastic cascade. The 01/02/03 number swaps in place, no blur/move.
+  const exitText=(el,e,delay)=>{
+    if(!el)return;
+    const eShift=clamp((e-delay)/(1-delay));
+    el.style.filter='none';
+    el.style.transform='translateY('+(easeIn(eShift)*EXIT_Y).toFixed(2)+'px)';
+  };
+  const enterText=(el,s)=>{
+    if(!el)return;
+    el.style.filter='blur('+(16*(1-s)).toFixed(2)+'px)';
+    el.style.transform='none';
+  };
+  const setStep=(part,s,leaving)=>{
+    part.step.style.opacity=s.toFixed(3);
+    if(leaving){
+      const e=1-s;                             // 0..1 as the step leaves
+      exitText(part.title,e,0);
+      exitText(part.eyebrow,e,STAGGER);
+    }else{
+      enterText(part.eyebrow,s);
+      enterText(part.title,s);
+    }
+  };
 
   if(matchMedia('(prefers-reduced-motion:reduce)').matches){
-    steps.forEach((el,i)=>setStep(el,i===0?1:0)); return;
+    parts.forEach((part,i)=>setStep(part,i===0?1:0,false)); return;
   }
   let ticking=false;
   function update(){
@@ -339,7 +370,7 @@
     const p=track>0?clamp(-sec.getBoundingClientRect().top/track):0;
     // step swap: each step holds visible around its slot, crossfading to the next
     const sp=p*(N>1?N-1:1);                    // 0..N-1
-    steps.forEach((el,i)=>setStep(el, N>1?clamp((0.75-Math.abs(sp-i))/0.5):1));
+    parts.forEach((part,i)=>setStep(part, N>1?clamp((0.75-Math.abs(sp-i))/0.5):1, sp>i));
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
   addEventListener('resize',update);
