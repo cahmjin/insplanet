@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Axion Studio — Hero (FlutedGlass tuner)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  html,body,#root{height:100%}
+  body{margin:0}
+  canvas{display:block}
+  input[type=range]{height:4px}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1?deps=react@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1",
+    "htm": "https://esm.sh/htm@3.1.1",
+    "shaders/react": "https://esm.sh/shaders@2.5.128/react?deps=react@18.3.1",
+    "lucide-react": "https://esm.sh/lucide-react@0.468.0?deps=react@18.3.1"
+  }
+}
+</script>
+</head>
+<body class="bg-[#EFEFEF]">
+<div id="root"></div>
+
+<script type="module">
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import htm from 'htm';
+import * as Shaders from 'shaders/react';
+import { ArrowRight, Clock, Menu, X, SlidersHorizontal, Copy, RotateCcw } from 'lucide-react';
+
+const html = htm.bind(React.createElement);
+const { useState, useEffect } = React;
+const { Shader, Swirl, ChromaFlow, FlutedGlass, FilmGrain } = Shaders;
+
+const PARTNER_SVG_PATH = "m19.6 66.5 19.7-11 .3-1-.3-.5h-1l-3.3-.2-11.2-.3L14 53l-9.5-.5-2.4-.5L0 49l.2-1.5 2-1.3 2.9.2 6.3.5 9.5.6 6.9.4L38 49.1h1.6l.2-.7-.5-.4-.4-.4L29 41l-10.6-7-5.6-4.1-3-2-1.5-2-.6-4.2 2.7-3 3.7.3.9.2 3.7 2.9 8 6.1L37 36l1.5 1.2.6-.4.1-.3-.7-1.1L33 25l-6-10.4-2.7-4.3-.7-2.6c-.3-1-.4-2-.4-3l3-4.2L28 0l4.2.6L33.8 2l2.6 6 4.1 9.3L47 29.9l2 3.8 1 3.4.3 1h.7v-.5l.5-7.2 1-8.7 1-11.2.3-3.2 1.6-3.8 3-2L61 2.6l2 2.9-.3 1.8-1.1 7.7L59 27.1l-1.5 8.2h.9l1-1.1 4.1-5.4 6.9-8.6 3-3.5L77 13l2.3-1.8h4.3l3.1 4.7-1.4 4.9-4.4 5.6-3.7 4.7-5.3 7.1-3.2 5.7.3.4h.7l12-2.6 6.4-1.1 7.6-1.3 3.5 1.6.4 1.6-1.4 3.4-8.2 2-9.6 2-14.3 3.3-.2.1.2.3 6.4.6 2.8.2h6.8l12.6 1 3.3 2 1.9 2.7-.3 2-5.1 2.6-6.8-1.6-16-3.8-5.4-1.3h-.8v.4l4.6 4.5 8.3 7.5L89 80.1l.5 2.4-1.3 2-1.4-.2-9.2-7-3.6-3-8-6.8h-.5v.7l1.8 2.7 9.8 14.7.5 4.5-.7 1.4-2.6 1-2.7-.6-5.8-8-6-9-4.7-8.2-.5.4-2.9 30.2-1.3 1.5-3 1.2-2.5-2-1.4-3 1.4-6.2 1.6-8 1.3-6.4 1.2-7.9.7-2.6v-.2H49L43 72l-9 12.3-7.2 7.6-1.7.7-3-1.5.3-2.8L24 86l10-12.8 6-7.9 4-4.6-.1-.5h-.3L17.2 77.4l-4.7.6-2-2 .2-3 1-1 8-5.5Z";
+
+// ---- tunable parameter defaults (FlutedGlass + the other 3 layers) ----
+const FG_DEFAULTS = { aberration:0.61, angle:31, frequency:8, highlight:0.12, highlightSoftness:0, lightAngle:-90, refraction:4, softness:1, speed:0.15, waveAmplitude:0, waveFrequency:0, shape:'rounded' };
+const OT_DEFAULTS = { cfMomentum:13, cfRadius:3.5, cfColor:'#ff5f03', cfBase:'#ffffff', swirlDetail:1.7, swirlA:'#ffffff', swirlB:'#f0f0f0', grain:0.05 };
+const FG_SLIDERS = [
+  ['aberration',0,2,0.01], ['angle',0,180,1], ['frequency',1,40,1], ['refraction',0,20,0.1],
+  ['highlight',0,1,0.01], ['highlightSoftness',0,1,0.01], ['lightAngle',-180,180,1],
+  ['softness',0,5,0.01], ['speed',0,2,0.01], ['waveAmplitude',0,2,0.01], ['waveFrequency',0,20,0.1],
+];
+const SHAPES = ['rounded','flat','triangle','wave','lens'];
+
+// reusable hover "text roll"
+function TextRoll({ children }) {
+  return html`
+    <span className="block overflow-hidden h-[20px]">
+      <span className="flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-1/2">
+        <span className="h-[20px] flex items-center">${children}</span>
+        <span className="h-[20px] flex items-center">${children}</span>
+      </span>
+    </span>`;
+}
+
+function Slider({ label, val, min, max, step, on }) {
+  const dec = step < 1 ? (step < 0.1 ? 2 : 2) : 0;
+  return html`
+    <div className="flex items-center gap-2 mb-1.5">
+      <label className="text-[11px] text-white/55 w-[112px] shrink-0">${label}</label>
+      <input type="range" min=${min} max=${max} step=${step} value=${val}
+        onInput=${e => on(parseFloat(e.target.value))}
+        className="flex-1 accent-[#F26522] cursor-pointer" />
+      <span className="text-[11px] text-white/45 w-[42px] text-right tabular-nums">${dec ? val.toFixed(dec) : val}</span>
+    </div>`;
+}
+
+function Panel({ fg, setFg, ot, setOt, open, setOpen }) {
+  const setF = (k, v) => setFg(s => ({ ...s, [k]: v }));
+  const setO = (k, v) => setOt(s => ({ ...s, [k]: v }));
+  const copy = () => {
+    const s = `<FlutedGlass\n  aberration={${fg.aberration}} angle={${fg.angle}} frequency={${fg.frequency}}\n  highlight={${fg.highlight}} highlightSoftness={${fg.highlightSoftness}} lightAngle={${fg.lightAngle}}\n  refraction={${fg.refraction}} shape="${fg.shape}" softness={${fg.softness}} speed={${fg.speed}}\n  waveAmplitude={${fg.waveAmplitude}} waveFrequency={${fg.waveFrequency}}\n/>`;
+    navigator.clipboard && navigator.clipboard.writeText(s);
+  };
+  const reset = () => { setFg(FG_DEFAULTS); setOt(OT_DEFAULTS); };
+
+  if (!open) return html`
+    <button onClick=${() => setOpen(true)}
+      className="fixed top-4 right-4 z-[60] bg-gray-900 text-white rounded-full p-2.5 shadow-lg pointer-events-auto">
+      <${SlidersHorizontal} size=${16}/>
+    </button>`;
+
+  return html`
+    <div className="fixed top-0 right-0 z-[60] h-full w-[300px] bg-[#0f0f0f]/95 backdrop-blur border-l border-white/10 overflow-y-auto pointer-events-auto">
+      <div className="flex items-center justify-between px-4 py-3 sticky top-0 bg-[#0f0f0f]/95 border-b border-white/10">
+        <span className="text-white/80 text-[12px] font-semibold tracking-wide uppercase">FlutedGlass</span>
+        <div className="flex items-center gap-1">
+          <button title="Copy props" onClick=${copy} className="text-white/60 hover:text-white p-1.5 rounded hover:bg-white/10"><${Copy} size=${14}/></button>
+          <button title="Reset" onClick=${reset} className="text-white/60 hover:text-white p-1.5 rounded hover:bg-white/10"><${RotateCcw} size=${14}/></button>
+          <button title="Close" onClick=${() => setOpen(false)} className="text-white/60 hover:text-white p-1.5 rounded hover:bg-white/10"><${X} size=${14}/></button>
+        </div>
+      </div>
+
+      <div className="px-4 py-3">
+        ${FG_SLIDERS.map(([k, mn, mx, st]) => html`<${Slider} key=${k} label=${k} val=${fg[k]} min=${mn} max=${mx} step=${st} on=${v => setF(k, v)} />`)}
+        <div className="flex items-center gap-2 mb-1.5">
+          <label className="text-[11px] text-white/55 w-[112px] shrink-0">shape</label>
+          <select value=${fg.shape} onChange=${e => setF('shape', e.target.value)}
+            className="flex-1 bg-white/10 text-white/80 text-[11px] rounded px-2 py-1 outline-none">
+            ${SHAPES.map(s => html`<option key=${s} value=${s}>${s}</option>`)}
+          </select>
+        </div>
+      </div>
+
+      <div className="px-4 py-3 border-t border-white/10">
+        <div className="text-white/40 text-[10px] font-semibold tracking-wider uppercase mb-2">Other layers</div>
+        <${Slider} label="ChromaFlow momentum" val=${ot.cfMomentum} min=${0} max=${30} step=${0.5} on=${v => setO('cfMomentum', v)} />
+        <${Slider} label="ChromaFlow radius" val=${ot.cfRadius} min=${0} max=${10} step=${0.1} on=${v => setO('cfRadius', v)} />
+        <${Slider} label="Swirl detail" val=${ot.swirlDetail} min=${0} max=${5} step=${0.1} on=${v => setO('swirlDetail', v)} />
+        <${Slider} label="FilmGrain strength" val=${ot.grain} min=${0} max=${0.5} step=${0.005} on=${v => setO('grain', v)} />
+        <div className="flex items-center gap-3 mt-2">
+          <label className="text-[11px] text-white/55 flex items-center gap-1.5">accent
+            <input type="color" value=${ot.cfColor} onInput=${e => setO('cfColor', e.target.value)} className="w-6 h-5 rounded bg-transparent cursor-pointer" /></label>
+          <label className="text-[11px] text-white/55 flex items-center gap-1.5">base
+            <input type="color" value=${ot.cfBase} onInput=${e => setO('cfBase', e.target.value)} className="w-6 h-5 rounded bg-transparent cursor-pointer" /></label>
+        </div>
+      </div>
+    </div>`;
+}
+
+function App() {
+  const [time, setTime] = useState('--:--');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [fg, setFg] = useState(FG_DEFAULTS);
+  const [ot, setOt] = useState(OT_DEFAULTS);
+  const [panelOpen, setPanelOpen] = useState(true);
+
+  useEffect(() => {
+    const fmt = () => new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
+    setTime(fmt());
+    const id = setInterval(() => setTime(fmt()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const navLinks = ['Projects', 'Studio', 'Journal', 'Connect'];
+
+  return html`
+  <section className="relative min-h-screen w-full overflow-hidden bg-[#EFEFEF] flex flex-col">
+
+    <!-- ===== animated shader glass background (live-tunable) ===== -->
+    <div className="absolute inset-0 z-10 pointer-events-none">
+      <${Shader} className="w-full h-full" style=${{ width: '100%', height: '100%' }}>
+        <${Swirl} colorA=${ot.swirlA} colorB=${ot.swirlB} detail=${ot.swirlDetail} />
+        <${ChromaFlow} baseColor=${ot.cfBase} downColor=${ot.cfColor} leftColor=${ot.cfColor} rightColor=${ot.cfColor} upColor=${ot.cfColor} momentum=${ot.cfMomentum} radius=${ot.cfRadius} />
+        <${FlutedGlass} aberration=${fg.aberration} angle=${fg.angle} frequency=${fg.frequency} highlight=${fg.highlight} highlightSoftness=${fg.highlightSoftness} lightAngle=${fg.lightAngle} refraction=${fg.refraction} shape=${fg.shape} softness=${fg.softness} speed=${fg.speed} waveAmplitude=${fg.waveAmplitude} waveFrequency=${fg.waveFrequency} />
+        <${FilmGrain} strength=${ot.grain} />
+      <//>
+    </div>
+
+    <!-- ===== nav ===== -->
+    <div className="relative z-20 w-full max-w-[1440px] mx-auto p-2 sm:p-3">
+      <nav className="bg-white rounded-full flex items-center justify-between p-[5px]">
+        <div className="flex items-center gap-6 pl-1">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-900 rounded-full flex items-center justify-center shrink-0">
+            <span className="text-white text-[10px] sm:text-[11px] font-bold tracking-tight">AX</span>
+          </div>
+          <div className="hidden md:flex items-center gap-6">
+            ${navLinks.map(l => html`<a key=${l} href="#" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300">${l}</a>`)}
+          </div>
+        </div>
+        <div className="hidden md:flex items-center gap-4 pr-1">
+          <span className="hidden lg:inline text-[13px] text-gray-600">Taking on projects for Q1 2026</span>
+          <span className="flex items-center gap-1.5 text-[13px] text-gray-600"><${Clock} size=${14}/> ${time} in London</span>
+          <button className="group flex items-center gap-2 bg-gray-900 text-white text-[13px] font-medium rounded-full pl-5 pr-2 py-2">
+            <${TextRoll}>Book a strategy call<//>
+            <span className="w-6 h-6 bg-white rounded-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45 shrink-0">
+              <${ArrowRight} size=${14} className="text-gray-900"/>
+            </span>
+          </button>
+        </div>
+        <button onClick=${() => setMenuOpen(true)} className="md:hidden bg-gray-900 text-white rounded-full pl-4 pr-4 py-2 flex items-center gap-2 text-[13px] font-medium">
+          <${Menu} size=${16}/> Menu
+        </button>
+      </nav>
+    </div>
+
+    <div className="flex-1"></div>
+
+    <!-- ===== hero content ===== -->
+    <div className="relative z-20 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
+      <p className="text-[13px] sm:text-[14px] text-gray-900 tracking-wide mb-5 sm:mb-8">Axion Studio</p>
+      <h1 className="font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)]">
+        We craft digital experiences<span className="sm:hidden"> </span><br className="hidden sm:block"/>for brands ready to dominate<span className="sm:hidden"> </span><br className="hidden sm:block"/>their category online.
+      </h1>
+      <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5 items-start sm:items-center">
+        <button className="group flex items-center gap-3 bg-[#F26522] hover:bg-[#e05a1a] text-white text-[13px] sm:text-[14px] rounded-full pl-5 sm:pl-6 pr-2 py-2 transition-colors">
+          <${TextRoll}>Start a project<//>
+          <span className="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45 shrink-0">
+            <${ArrowRight} size=${16} className="text-[#F26522]"/>
+          </span>
+        </button>
+        <div className="group bg-white rounded-[4px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-shadow flex items-center gap-2 px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-5 h-5 sm:w-6 sm:h-6 fill-current text-[#E8704E]"><path d=${PARTNER_SVG_PATH}/></svg>
+          <span className="text-[13px] sm:text-[14px] font-medium text-gray-900">Certified Partner</span>
+          <span className="text-[10px] sm:text-[11px] bg-gray-900 text-white px-1.5 sm:px-2 py-0.5 rounded">Featured</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== mobile menu ===== -->
+    ${menuOpen && html`
+      <div className="fixed inset-0 z-50 flex flex-col justify-end">
+        <div className="absolute inset-0 bg-black/60" onClick=${() => setMenuOpen(false)}></div>
+        <div className="relative bg-white rounded-2xl mx-3 mb-3 p-6">
+          <div className="flex items-center justify-between mb-8">
+            <span className="flex items-center gap-1.5 text-[13px] text-gray-600"><${Clock} size=${14}/> ${time} in London</span>
+            <button onClick=${() => setMenuOpen(false)} className="bg-gray-900 text-white rounded-full p-2"><${X} size=${18}/></button>
+          </div>
+          <div className="flex flex-col gap-4 mb-8">
+            ${navLinks.map(l => html`<a key=${l} href="#" className="text-[28px] leading-[32px] font-medium text-gray-900">${l}</a>`)}
+          </div>
+        </div>
+      </div>`}
+
+    <!-- ===== FlutedGlass tuner panel ===== -->
+    <${Panel} fg=${fg} setFg=${setFg} ot=${ot} setOt=${setOt} open=${panelOpen} setOpen=${setPanelOpen} />
+  </section>`;
+}
+
+createRoot(document.getElementById('root')).render(html`<${App}/>`);
+</script>
+</body>
+</html>

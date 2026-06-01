@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gradient + FlutedGlass · tuner</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  html,body,#root{height:100%}
+  body{margin:0;background:#0d0d0f}
+  canvas{display:block}
+  input[type=range]{height:4px}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1?deps=react@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1",
+    "htm": "https://esm.sh/htm@3.1.1",
+    "shaders/react": "https://esm.sh/shaders@2.5.128/react?deps=react@18.3.1"
+  }
+}
+</script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="module">
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import htm from 'htm';
+import * as Shaders from 'shaders/react';
+const html = htm.bind(React.createElement);
+const { useState, useEffect } = React;
+const { Shader, Swirl, FlowingGradient, FlutedGlass, FilmGrain } = Shaders;
+const BASE_DPR = window.devicePixelRatio || 1;   // captured before any override
+
+const DEFAULTS = {
+  // gradient content (FlowingGradient) + grain
+  colorA:'#1b0731', colorB:'#ae87e8', colorC:'#1b0731', colorD:'#b54f63',
+  gradSpeed:2.6, seed:81, gradDistortion:0.4, grain:0,
+  swirlDetail:3.4, swirlA:'#ffffff', swirlB:'#f0f0f0', swirlOpacity:1, swirlBlend:'multiply',
+  renderScale:0.65,
+  // FlutedGlass
+  fgAberration:1.0, fgAngle:31, fgFrequency:12, fgRefraction:4.3, fgHighlight:0.1,
+  fgHighlightSoftness:0, fgLightAngle:-90, fgSoftness:1, fgSpeed:0.2,
+  fgWaveAmplitude:0, fgWaveFrequency:0, fgShape:'rounded'
+};
+// FlutedGlass sliders: [stateKey, label, min, max, step]
+const FG_SLIDERS = [
+  ['fgAberration','aberration',0,2,0.01], ['fgAngle','angle',0,180,1], ['fgFrequency','frequency',1,40,1],
+  ['fgRefraction','refraction',0,20,0.1], ['fgHighlight','highlight',0,1,0.01], ['fgHighlightSoftness','highlightSoftness',0,1,0.01],
+  ['fgLightAngle','lightAngle',-180,180,1], ['fgSoftness','softness',0,5,0.01], ['fgSpeed','speed',0,2,0.01],
+  ['fgWaveAmplitude','waveAmplitude',0,2,0.01], ['fgWaveFrequency','waveFrequency',0,20,0.1],
+];
+const SHAPES = ['rounded','sine','triangle'];
+
+function ColorRow({ label, val, on }) {
+  return html`
+    <div className="mb-3">
+      <div className="text-[12px] text-white/70 mb-1.5">${label}</div>
+      <div className="flex gap-2">
+        <input type="color" value=${val} onInput=${e=>on(e.target.value)} className="w-11 h-9 rounded-md bg-transparent border border-white/15 cursor-pointer p-0.5" />
+        <input type="text" value=${val} onChange=${e=>on(e.target.value)} className="flex-1 bg-white/[0.04] border border-white/10 text-white/70 text-[12px] rounded-md px-3 text-center font-mono outline-none" />
+      </div>
+    </div>`;
+}
+function SliderRow({ label, val, min, max, step, on }) {
+  return html`
+    <div className="flex items-center gap-2 mb-1.5">
+      <label className="text-[11px] text-white/55 w-[120px] shrink-0">${label}</label>
+      <input type="range" min=${min} max=${max} step=${step} value=${val} onInput=${e=>on(parseFloat(e.target.value))} className="flex-1 accent-[#7b3cc2] cursor-pointer" />
+      <span className="w-[44px] text-right text-[11px] text-white/45 tabular-nums">${Number.isInteger(step)?val:val.toFixed(step<0.1?2:1)}</span>
+    </div>`;
+}
+function Section({ title }) {
+  return html`<div className="text-white/40 text-[10px] font-semibold tracking-wider uppercase mt-4 mb-2 border-t border-white/10 pt-3">${title}</div>`;
+}
+
+function App() {
+  const [p, setP] = useState(DEFAULTS);
+  const set = (k, v) => setP(s => ({ ...s, [k]: v }));
+  // Render scale: lower the effective devicePixelRatio so the shader renders fewer pixels.
+  // Set synchronously so the Shader (remounted via key below) reads the reduced dpr at init.
+  try { Object.defineProperty(window, 'devicePixelRatio', { configurable:true, get:()=>BASE_DPR * p.renderScale }); } catch(e){}
+  return html`
+    <div className="fixed inset-0">
+      <${Shader} key=${p.renderScale} style=${{ width:'100%', height:'100%' }}>
+        <${FlowingGradient} colorA=${p.colorA} colorB=${p.colorB} colorC=${p.colorC} colorD=${p.colorD}
+          speed=${p.gradSpeed} distortion=${p.gradDistortion} seed=${p.seed} />
+        <!-- Swirl ON TOP of the gradient, blended via opacity so it's visible (not hidden) -->
+        <${Swirl} colorA=${p.swirlA} colorB=${p.swirlB} detail=${p.swirlDetail} blendMode=${p.swirlBlend} opacity=${p.swirlOpacity} />
+        <${FlutedGlass} aberration=${p.fgAberration} angle=${p.fgAngle} frequency=${p.fgFrequency}
+          highlight=${p.fgHighlight} highlightSoftness=${p.fgHighlightSoftness} lightAngle=${p.fgLightAngle}
+          refraction=${p.fgRefraction} shape=${p.fgShape} softness=${p.fgSoftness} speed=${p.fgSpeed}
+          waveAmplitude=${p.fgWaveAmplitude} waveFrequency=${p.fgWaveFrequency} />
+        <${FilmGrain} strength=${p.grain} />
+      <//>
+
+      <div className="fixed top-0 right-0 h-full w-[300px] bg-[#0b0b0d]/95 backdrop-blur border-l border-white/10 overflow-y-auto px-4 py-4">
+        <!-- FlutedGlass (existing options, kept) -->
+        <div className="text-white/80 text-[12px] font-semibold tracking-wide uppercase mb-3">FlutedGlass</div>
+        ${FG_SLIDERS.map(([k,lbl,mn,mx,st]) => html`<${SliderRow} key=${k} label=${lbl} val=${p[k]} min=${mn} max=${mx} step=${st} on=${v=>set(k,v)} />`)}
+        <div className="flex items-center gap-2 mb-1.5">
+          <label className="text-[11px] text-white/55 w-[120px] shrink-0">shape</label>
+          <select value=${p.fgShape} onChange=${e=>set('fgShape',e.target.value)} className="flex-1 bg-white/10 text-white/80 text-[11px] rounded px-2 py-1 outline-none">
+            ${SHAPES.map(s=>html`<option key=${s} value=${s}>${s}</option>`)}
+          </select>
+        </div>
+
+        <!-- Gradient content (added) -->
+        <${Section} title="Gradient — Colors" />
+        ${[['Background','colorA'],['Primary Accent','colorB'],['Secondary Accent','colorC'],['Tertiary Accent','colorD']]
+          .map(([lbl,k]) => html`<${ColorRow} key=${k} label=${lbl} val=${p[k]} on=${v=>set(k,v)} />`)}
+        <${Section} title="Gradient — Animation" />
+        <${SliderRow} label="Animation Speed" val=${p.gradSpeed} min=${0} max=${10} step=${0.1} on=${v=>set('gradSpeed',v)} />
+        <${SliderRow} label="Variation Seed" val=${p.seed} min=${0} max=${100} step=${1} on=${v=>set('seed',v)} />
+        <${Section} title="Gradient — Distortion" />
+        <${SliderRow} label="Distortion" val=${p.gradDistortion} min=${0} max=${1} step=${0.01} on=${v=>set('gradDistortion',v)} />
+        <${Section} title="Other layers" />
+        <${SliderRow} label="Swirl detail" val=${p.swirlDetail} min=${0} max=${5} step=${0.1} on=${v=>set('swirlDetail',v)} />
+        <${SliderRow} label="Swirl opacity" val=${p.swirlOpacity} min=${0} max=${1} step=${0.01} on=${v=>set('swirlOpacity',v)} />
+        <div className="flex items-center gap-2 mb-1.5">
+          <label className="text-[11px] text-white/55 w-[120px] shrink-0">Swirl blend</label>
+          <select value=${p.swirlBlend} onChange=${e=>set('swirlBlend',e.target.value)} className="flex-1 bg-white/10 text-white/80 text-[11px] rounded px-2 py-1 outline-none">
+            ${['normal','multiply','screen','overlay','softLight','hardLight','lighten','darken','colorDodge','difference'].map(b=>html`<option key=${b} value=${b}>${b}</option>`)}
+          </select>
+        </div>
+        <${SliderRow} label="Film Grain" val=${p.grain} min=${0} max=${1} step=${0.01} on=${v=>set('grain',v)} />
+        <${Section} title="Performance" />
+        <${SliderRow} label="Render scale" val=${p.renderScale} min=${0.25} max=${1} step=${0.05} on=${v=>set('renderScale',v)} />
+      </div>
+    </div>`;
+}
+createRoot(document.getElementById('root')).render(html`<${App}/>`);
+</script>
+</body>
+</html>

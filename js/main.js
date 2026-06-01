@@ -285,3 +285,57 @@
   addEventListener('scroll',kick,{passive:true});
   kick();
 })();
+
+/* ===== Frame 27 board scale: same min/max clamp as the hero background
+   (k = clamp(min(W,H)/1080, 0.8, 1.2)) — NOT a fit-to-viewport scale. */
+(function(){
+  const board=document.querySelector('.frame27-board');
+  if(!board)return;
+  const k=()=>board.style.setProperty('--fg-k',
+    Math.max(0.8,Math.min(Math.min(innerWidth,innerHeight)/1080,1.2)));
+  k();
+  addEventListener('resize',k);
+})();
+
+/* ===== Frame 27 entry: grow the fractal card from 576x576 to full, once the pinned stage
+   is in view (one-shot per entry via .is-grown on the board). */
+(function(){
+  const board=document.querySelector('.frame27-board');
+  const stage=document.querySelector('.pin-insight-stage');
+  if(!board||!stage)return;
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches||!('IntersectionObserver'in window)){
+    board.classList.add('is-grown'); return;
+  }
+  new IntersectionObserver(es=>{
+    es.forEach(e=>e.isIntersecting?board.classList.add('is-grown'):board.classList.remove('is-grown'));
+  },{threshold:0.5}).observe(stage);
+})();
+
+/* ===== Frame 27 pinned scroll: progress p (0..1 through the pin) drives the step swap
+   (01 -> 02 -> 03 …, blur/fade with a hold per step). Pin height scales with step count.
+   (The faint tagline marquee now auto-animates via CSS, independent of scroll.) */
+(function(){
+  const sec=document.querySelector('.pin-insight');
+  const steps=[...document.querySelectorAll('.insight-step')];
+  if(!sec||!steps.length)return;
+  const N=steps.length;
+  sec.style.height=(N*120)+'vh';              // 1.2 viewport of scroll per step (slower swap)
+  const clamp=v=>Math.min(1,Math.max(0,v));
+  const setStep=(el,s)=>{el.style.opacity=s.toFixed(3);el.style.filter='blur('+(16*(1-s)).toFixed(2)+'px)';};
+
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){
+    steps.forEach((el,i)=>setStep(el,i===0?1:0)); return;
+  }
+  let ticking=false;
+  function update(){
+    ticking=false;
+    const track=sec.offsetHeight-innerHeight;
+    const p=track>0?clamp(-sec.getBoundingClientRect().top/track):0;
+    // step swap: each step holds visible around its slot, crossfading to the next
+    const sp=p*(N>1?N-1:1);                    // 0..N-1
+    steps.forEach((el,i)=>setStep(el, N>1?clamp((0.75-Math.abs(sp-i))/0.5):1));
+  }
+  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+  addEventListener('resize',update);
+  update();
+})();

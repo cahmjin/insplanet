@@ -139,9 +139,15 @@ let st=0,phase=0,last=performance.now();
 /* skip the (heavy) shader render once the menu has fully covered the blob (overlay '.covered').
    keep the rAF alive so it resumes instantly on close; reset `last` to avoid a time jump. */
 const _menu=document.getElementById('menu-overlay');
+/* pause the (heavy) shader when the hero canvas is scrolled off screen — keep the rAF alive
+   so it resumes instantly; reset `last` to avoid a time jump on return. */
+let _onScreen=true;
+if('IntersectionObserver'in window){
+  new IntersectionObserver(es=>{_onScreen=es[0].isIntersecting;},{threshold:0.01}).observe(canvas);
+}
 function draw(now){
   requestAnimationFrame(draw);
-  if(_menu&&_menu.classList.contains('covered')){last=now;return;}
+  if(!_onScreen||(_menu&&_menu.classList.contains('covered'))){last=now;return;}
   const dt=Math.min((now-last)/1000,.05);last=now;
   st+=dt*(0.5+sSpd*3.0);
   phase+=dt*(lSpd*lSpd*8.0);
