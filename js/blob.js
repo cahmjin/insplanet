@@ -120,9 +120,10 @@ function bq(p){const l=gl.getAttribLocation(p,'a');gl.enableVertexAttribArray(l)
 const u1={res:gl.getUniformLocation(p1,'u_res'),st:gl.getUniformLocation(p1,'u_st'),ss:gl.getUniformLocation(p1,'u_ss'),sb:gl.getUniformLocation(p1,'u_sb'),sw:gl.getUniformLocation(p1,'u_sw'),s:gl.getUniformLocation(p1,'u_s')};
 const u2={res:gl.getUniformLocation(p2,'u_res'),tex:gl.getUniformLocation(p2,'u_tex'),ph:gl.getUniformLocation(p2,'u_ph'),ls:gl.getUniformLocation(p2,'u_ls'),lb:gl.getUniformLocation(p2,'u_lb'),lw:gl.getUniformLocation(p2,'u_lw'),lp:gl.getUniformLocation(p2,'u_lp'),s:gl.getUniformLocation(p2,'u_s')};
 
-/* blob size basis: design baseline (min side = 1080), clamped to 80%~120%. */
+/* blob size basis: scales with the viewport's min side (capped at 120%), NO lower floor so on
+   short/small windows the blob shrinks proportionally instead of overflowing & clipping at the bottom. */
 const BASE=1080;
-function blobS(W,H){return Math.max(BASE*0.8,Math.min(Math.min(W,H),BASE*1.2));}
+function blobS(W,H){return Math.min(Math.min(W,H),BASE*1.2);}
 
 /* precomputed fixed param values */
 const ss=Math.max(.001,P.sSize/1000);

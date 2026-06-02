@@ -30,7 +30,7 @@ html.lenis,html.lenis body{height:auto}
 .beyond-title .line-2{margin-top:clamp(-63px, calc(-1.5625vw - 33px), -49px)}   /* "The AX Creator" overlap */
 
 /* Frame 26 statement — Pretendard Bold 120, two lines */
-.beyond-statement{width:clamp(738px, calc(32.03vw + 410px), 1230px);
+.beyond-statement{white-space:nowrap;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:clamp(72px, calc(3.125vw + 40px), 120px);
   line-height:1.2;color:#3E3F44;display:flex;flex-direction:column;align-items:flex-start}
 
