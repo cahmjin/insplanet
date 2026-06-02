@@ -235,6 +235,10 @@ html.lenis,html.lenis body{height:auto}
   width:576px;height:576px;border-radius:64px;overflow:hidden;background:#0F0E0E;z-index:2;
   transition:width .9s cubic-bezier(.22,1,.36,1),height .9s cubic-bezier(.22,1,.36,1)}
 .insight-board.is-grown .insight-card{width:1486px;height:880px}
+/* no-anim: apply the grown state instantly (used when entering while scrolling UP — no grow animation) */
+.insight-board.no-anim .insight-card,
+.insight-board.no-anim .insight-steps,
+.insight-board.no-anim .insight-indicator{transition:none}
 .insight-card #insight-shader{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:1486px;height:880px}
 .insight-card #insight-shader canvas{display:block;width:100%!important;height:100%!important}
@@ -271,6 +275,18 @@ html.lenis,html.lenis body{height:auto}
   .insight-card{width:1486px;height:880px;transition:none}
   .insight-steps{opacity:1;transition:none}
   .insight-indicator{opacity:1;transition:none}
+}
+
+/* chapter 04: "Our Services" intro (Figma Frame 31) — Cormorant Bold 160 at x217,
+   vertically centered on a white screen. Pinned (sticky) so the title holds in place
+   and blurs in when the section enters view (does NOT scroll up while appearing). */
+.services-intro{position:relative;z-index:1;height:150vh;background:#fff}
+.services-stage{position:sticky;top:0;height:100vh;overflow:hidden}
+.services-title{position:absolute;left:216px;top:50%;transform:translateY(-50%);margin:0;
+  font-family:'Cormorant Garamond',serif;font-weight:700;font-size:160px;line-height:1.211;color:#3E3F44;
+  opacity:0;filter:blur(16px)}              /* opacity/blur SCRUBBED by scroll (see js/main.js) */
+@media (prefers-reduced-motion:reduce){
+  .services-title{opacity:1;filter:none}
 }
 
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */

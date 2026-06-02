@@ -312,9 +312,25 @@
   if(matchMedia('(prefers-reduced-motion:reduce)').matches||!('IntersectionObserver'in window)){
     board.classList.add('is-grown'); return;
   }
+  // The grow animation should play ONLY on a downward entry. To avoid any flicker on an upward
+  // entry, we pre-set the off-screen state based on WHICH edge the section left by:
+  //   left via TOP (scrolled down past it)  -> keep it FULL  -> a later upward entry shows no change
+  //   left via BOTTOM (scrolled up past it) -> reset to SMALL -> a later downward entry animates grow
+  // The off-screen state change is wrapped in .no-anim so it's instant (and invisible anyway).
   new IntersectionObserver(es=>{
-    es.forEach(e=>e.isIntersecting?board.classList.add('is-grown'):board.classList.remove('is-grown'));
-  },{threshold:0.5}).observe(stage);
+    es.forEach(e=>{
+      if(e.isIntersecting && e.intersectionRatio>=0.5){
+        board.classList.add('is-grown');        // small -> animates on the way in; already full -> no-op
+      } else if(!e.isIntersecting){
+        const r=stage.getBoundingClientRect();
+        board.classList.add('no-anim');
+        if(r.top>=innerHeight) board.classList.remove('is-grown');   // below viewport -> arm small
+        else if(r.bottom<=0)   board.classList.add('is-grown');      // above viewport -> keep full
+        void board.offsetWidth;                 // commit the no-transition state
+        board.classList.remove('no-anim');
+      }
+    });
+  },{threshold:[0,0.5]}).observe(stage);
 })();
 
 /* ===== Frame 27 pinned scroll: progress p (0..1 through the pin) drives the step swap
@@ -374,6 +390,27 @@
     const sp=p*(N>1?N-1:1);                    // 0..N-1
     parts.forEach((part,i)=>setStep(part, N>1?clamp((0.75-Math.abs(sp-i))/0.5):1, sp>i));
     setActiveDot(Math.max(0,Math.min(N-1,Math.round(sp))));  // current step's dot fills
+  }
+  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+  addEventListener('resize',update);
+  update();
+})();
+
+/* ===== Our Services intro (Frame 31): blur SCRUBBED by scroll through the pin (like Beyond UX).
+   pinned & centered, so the title stays in place and only sharpens — it never scrolls up. ===== */
+(function(){
+  const sec=document.querySelector('.services-intro');
+  const title=document.querySelector('.services-title');
+  if(!sec||!title)return;
+  const clamp=v=>Math.min(1,Math.max(0,v));
+  const set=s=>{title.style.opacity=s.toFixed(3);title.style.filter='blur('+(16*(1-s)).toFixed(2)+'px)';};
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){set(1);return;}
+  let ticking=false;
+  function update(){
+    ticking=false;
+    const scrub=sec.offsetHeight-innerHeight;                  // pin distance
+    const p=scrub>0?clamp(-sec.getBoundingClientRect().top/scrub):0;
+    set(clamp(p/0.4));                                          // blur IN over first 40%, then hold clear
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
   addEventListener('resize',update);
