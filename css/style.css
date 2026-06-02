@@ -257,10 +257,20 @@ html.lenis,html.lenis body{height:auto}
 .insight-num--02{top:817px;width:291px;height:170px}
 .insight-num--03{top:818px;width:283px;height:275px}
 
+/* step progress dots (Figma: x1643/y510 in the 1920x1080 board, 12px circles, 12px gap).
+   appears with the steps after the card grows; active dot fills, others are 2px rings. */
+.insight-indicator{position:absolute;left:1643px;top:510px;z-index:3;
+  display:flex;flex-direction:column;gap:12px;opacity:0;transition:opacity .5s ease .55s}
+.insight-board.is-grown .insight-indicator{opacity:1}
+.insight-dot{width:12px;height:12px;border-radius:50%;box-sizing:border-box;
+  border:2px solid #fff;background:transparent;transition:background .35s ease}
+.insight-dot.is-active{background:#fff}
+
 /* reduced-motion: skip the grow — show the full card and text immediately */
 @media (prefers-reduced-motion:reduce){
   .insight-card{width:1486px;height:880px;transition:none}
   .insight-steps{opacity:1;transition:none}
+  .insight-indicator{opacity:1;transition:none}
 }
 
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */

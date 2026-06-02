@@ -335,6 +335,8 @@
     eyebrow:el.querySelector('.insight-eyebrow'),
     title:el.querySelector('.insight-title')
   }));
+  const dots=[...document.querySelectorAll('.insight-indicator .insight-dot')];
+  const setActiveDot=i=>dots.forEach((d,k)=>d.classList.toggle('is-active',k===i));
   // enter: text blurs + fades in place. exit: text accelerates DOWN + fades (no blur), title leading
   // and eyebrow trailing slightly for an elastic cascade. The 01/02/03 number swaps in place, no blur/move.
   const exitText=(el,e,delay)=>{
@@ -361,7 +363,7 @@
   };
 
   if(matchMedia('(prefers-reduced-motion:reduce)').matches){
-    parts.forEach((part,i)=>setStep(part,i===0?1:0,false)); return;
+    parts.forEach((part,i)=>setStep(part,i===0?1:0,false)); setActiveDot(0); return;
   }
   let ticking=false;
   function update(){
@@ -371,6 +373,7 @@
     // step swap: each step holds visible around its slot, crossfading to the next
     const sp=p*(N>1?N-1:1);                    // 0..N-1
     parts.forEach((part,i)=>setStep(part, N>1?clamp((0.75-Math.abs(sp-i))/0.5):1, sp>i));
+    setActiveDot(Math.max(0,Math.min(N-1,Math.round(sp))));  // current step's dot fills
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
   addEventListener('resize',update);
