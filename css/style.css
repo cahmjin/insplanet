@@ -22,8 +22,7 @@ html.lenis,html.lenis body{height:auto}
 .pin-stage{position:sticky;top:0;height:100vh;overflow:hidden}
 
 /* both titles live in the SAME centered spot (overlapping) — JS scrub swaps between them */
-.beyond-title,.beyond-statement{position:absolute;left:calc(216px*var(--f,1));top:50%;
-  transform:translateY(-50%) scale(var(--f,1));transform-origin:left center;margin:0;
+.beyond-title,.beyond-statement{position:absolute;left:216px;top:50%;transform:translateY(-50%);margin:0;
   display:flex;flex-direction:column;align-items:flex-start;color:#3E3F44}
 /* Beyond — Cormorant Bold 160, tight two-line stack */
 .beyond-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:160px;line-height:1.211}
@@ -71,8 +70,7 @@ html.lenis,html.lenis body{height:auto}
 #lets-talk span{font-size:14px;font-weight:700;line-height:150%}
 
 /* left content block: symbol + headline + subtitle, anchored bottom-left as a group */
-#left-block{position:absolute;left:calc(216px*var(--f,1));bottom:calc(120px*var(--f,1));
-  transform:scale(var(--f,1));transform-origin:left bottom;
+#left-block{position:absolute;left:216px;bottom:120px;
   display:flex;flex-direction:column;align-items:flex-start}
 
 #symbol{width:156px;height:8px}
