@@ -303,6 +303,17 @@
   addEventListener('resize',k);
 })();
 
+/* ===== Our Services frame scale: SAME factor as the Insight board, so the 1486px content frame
+   lines up with the Insight card's left/right edges at every viewport size. ===== */
+(function(){
+  const sec=document.querySelector('.services');
+  if(!sec)return;
+  const k=()=>sec.style.setProperty('--svc-k',
+    Math.max(0.8,Math.min(Math.min(innerWidth,innerHeight)/1080,1.2)));
+  k();
+  addEventListener('resize',k);
+})();
+
 /* ===== Frame 27 entry: grow the fractal card from 576x576 to full, once the pinned stage
    is in view (one-shot per entry via .is-grown on the board). */
 (function(){
@@ -396,23 +407,48 @@
   update();
 })();
 
-/* ===== Our Services intro (Frame 31): blur SCRUBBED by scroll through the pin (like Beyond UX).
-   pinned & centered, so the title stays in place and only sharpens — it never scrolls up. ===== */
+/* ===== Our Services (Frame 31 -> 28): scrub the title scale big->small as you enter the section.
+   origin top-left + a translateY so it starts big & vertically-centered and settles small at its
+   sticky top-left resting spot. After that the sticky label keeps it fixed while the cards scroll. ===== */
 (function(){
-  const sec=document.querySelector('.services-intro');
+  const sec=document.querySelector('.services');
   const title=document.querySelector('.services-title');
   if(!sec||!title)return;
   const clamp=v=>Math.min(1,Math.max(0,v));
-  const set=s=>{title.style.opacity=s.toFixed(3);title.style.filter='blur('+(16*(1-s)).toFixed(2)+'px)';};
-  if(matchMedia('(prefers-reduced-motion:reduce)').matches){set(1);return;}
+  const SMALL=48/160;                                // shrink target scale (160px base -> 48px)
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){
+    title.style.opacity='1';title.style.filter='none';return;
+  }
   let ticking=false;
   function update(){
     ticking=false;
-    const scrub=sec.offsetHeight-innerHeight;                  // pin distance
-    const p=scrub>0?clamp(-sec.getBoundingClientRect().top/scrub):0;
-    set(clamp(p/0.4));                                          // blur IN over first 40%, then hold clear
+    const vh=innerHeight;
+    const scrolled=-sec.getBoundingClientRect().top;
+    const bi=clamp(scrolled/(0.25*vh));              // blur IN over the first 0.25 screen (like Beyond)
+    const q=clamp((scrolled-0.2*vh)/(0.5*vh));       // hold big, then SHRINK over 0.2 -> 0.7 screens
+                                                     // (done well before the cards rise, so no overlap)
+    const s=1+(SMALL-1)*q;                           // 1 (160px) -> 0.3 (48px)
+    const bigH=title.offsetHeight;                   // ~194 at 160px
+    const ty=(-bigH/2)*(1-q)+(240-vh/2)*q;           // big & vertically-centered -> small at top:240
+    title.style.opacity=bi.toFixed(3);
+    title.style.filter='blur('+(16*(1-bi)).toFixed(2)+'px)';
+    title.style.transform='translateY('+ty.toFixed(1)+'px) scale('+s.toFixed(3)+')';
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
   addEventListener('resize',update);
   update();
+})();
+
+/* ===== Our Services cards (Frame 28): each card rises in with an elastic ease as it enters view.
+   one-shot per card; they sit far apart so they reveal sequentially as you scroll. ===== */
+(function(){
+  const cards=[...document.querySelectorAll('.svc-card')];
+  if(!cards.length)return;
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches||!('IntersectionObserver'in window)){
+    cards.forEach(c=>c.classList.add('in')); return;
+  }
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:0.2});
+  cards.forEach(c=>io.observe(c));
 })();

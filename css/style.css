@@ -277,16 +277,39 @@ html.lenis,html.lenis body{height:auto}
   .insight-indicator{opacity:1;transition:none}
 }
 
-/* chapter 04: "Our Services" intro (Figma Frame 31) — Cormorant Bold 160 at x217,
-   vertically centered on a white screen. Pinned (sticky) so the title holds in place
-   and blurs in when the section enters view (does NOT scroll up while appearing). */
-.services-intro{position:relative;z-index:1;height:150vh;background:#fff}
-.services-stage{position:sticky;top:0;height:100vh;overflow:hidden}
-.services-title{position:absolute;left:216px;top:50%;transform:translateY(-50%);margin:0;
+/* chapter 04: "Our Services" (Figma Frame 31 -> 28). A pinned title (same start as Beyond UX:
+   left 216, vertically centered, Cormorant 160, blurs in) that then SHRINKS to the small top-left
+   label as you scroll (js/main.js); it stays pinned while the right card column scrolls past it. */
+.services{position:relative;z-index:1;background:transparent;padding-bottom:200px} /* transparent so the fixed #bg-line circles keep showing (body is #fff) */
+/* shared content frame. Width tracks the SAME scale as the Insight board (--svc-k, set in js/main.js)
+   so the frame's left/right edges line up with the Insight card at every viewport size. All inner
+   sizes scale by the same --svc-k too, matching Insight's scaled content. */
+.services-inner{width:calc(1486px * var(--svc-k,1));max-width:100%;margin:0 auto;position:relative}
+/* sticky overlay holds the title; negative margin pulls the cards up to overlap (so the title pins
+   over them), pointer-events none so the cards underneath stay interactive. */
+.services-title-wrap{position:sticky;top:0;height:100vh;margin-bottom:-100vh;z-index:2;pointer-events:none}
+.services-title-wrap .services-inner{height:100%}
+.services-title{position:absolute;left:0;top:50%;margin:0;          /* left:0 of the frame */
   font-family:'Cormorant Garamond',serif;font-weight:700;font-size:160px;line-height:1.211;color:#3E3F44;
-  opacity:0;filter:blur(16px)}              /* opacity/blur SCRUBBED by scroll (see js/main.js) */
+  transform-origin:left top;will-change:transform,opacity,filter;opacity:0;filter:blur(16px)}
+/* right card column — anchored to the RIGHT of the frame. fixed card sizes (not scaled); pushed
+   well down so they only rise in AFTER the title has shrunk (no overlap), each with an elastic ease. */
+.services-cards-wrap{position:relative;z-index:1}
+.services-cards{margin-left:auto;width:728px;padding-top:170vh;
+  display:flex;flex-direction:column;gap:160px}
+.svc-card{opacity:0;transform:translateY(64px);
+  transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}  /* elastic rise */
+.svc-card.in{opacity:1;transform:none}
+.svc-title{margin:0;font-family:'Pretendard',sans-serif;font-weight:700;font-size:56px;line-height:1.2;color:#3E3F44}
+.svc-tags{list-style:none;margin:32px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:12px}
+.svc-tags li{display:inline-flex;align-items:center;height:48px;padding:0 20px;border-radius:999px;
+  background:#F4F5F6;font-family:'Pretendard',sans-serif;font-weight:600;font-size:16px;line-height:1.5;color:#3E3F44}
+.svc-desc{margin:24px 0 0;font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5;color:#3E3F44}
+.svc-media{margin-top:40px;width:728px;max-width:100%;aspect-ratio:728/480;border-radius:32px;overflow:hidden}
+.svc-media img{display:block;width:100%;height:100%;object-fit:cover}
 @media (prefers-reduced-motion:reduce){
-  .services-title{opacity:1;filter:none}
+  .svc-card{opacity:1;transform:none;transition:none}
+  .services-title{opacity:1;filter:none;transform:scale(.3)}
 }
 
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
