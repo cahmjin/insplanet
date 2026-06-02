@@ -270,9 +270,12 @@ html.lenis,html.lenis body{height:auto}
 .insight-board.no-anim .insight-card,
 .insight-board.no-anim .insight-steps,
 .insight-board.no-anim .insight-indicator{transition:none}
-/* shader: fixed plane >= largest card, centered; the mask reveals it (does not zoom on grow) */
+/* shader plane: sized to the FRAME (not an oversized fixed 1520) so the render buffer ≈ the
+   displayed size at every viewport — otherwise the library renders ~viewport-res while we stretch
+   it onto a fixed 1520 plane, which upscales and aliases (worst on small windows). still a fixed-px
+   plane (matches the frame clamps), so it does NOT zoom during the card grow; the mask just crops it. */
 .insight-card #insight-shader{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:1520px;height:900px}
+  width:clamp(808px, calc(80.134vw - 12.6px), 1548px);height:clamp(600px, calc(35.714vw + 234.3px), 920px)}
 .insight-card #insight-shader canvas{display:block;width:100%!important;height:100%!important}
 
 /* foreground steps: fill the frame; positioned as % of the card so they track its size, fonts fluid */
@@ -313,7 +316,9 @@ html.lenis,html.lenis body{height:auto}
 /* shared content frame. Width tracks the SAME scale as the Insight board (--svc-k, set in js/main.js)
    so the frame's left/right edges line up with the Insight card at every viewport size. All inner
    sizes scale by the same --svc-k too, matching Insight's scaled content. */
-.services-inner{width:clamp(928px, calc(62.277vw + 290.3px), 1486px);max-width:100%;margin:0 auto;position:relative}
+/* keep a >=48px side gutter (like the hero/Beyond left clamp min) so the title never sticks to the
+   viewport edge when the window is narrower than the frame (below the 1024 anchor). */
+.services-inner{width:clamp(928px, calc(62.277vw + 290.3px), 1486px);max-width:calc(100% - 96px);margin:0 auto;position:relative}
 /* sticky overlay holds the title; negative margin pulls the cards up to overlap (so the title pins
    over them), pointer-events none so the cards underneath stay interactive. */
 .services-title-wrap{position:sticky;top:0;height:100vh;margin-bottom:-100vh;z-index:2;pointer-events:none}

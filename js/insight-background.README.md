@@ -35,15 +35,24 @@ npx esbuild insight-background.js \
 # copy the resulting insight-background.bundle.js back into this project's js/
 
 # IMPORTANT: re-apply the render-scale patch (the library hardcodes the canvas
-# pixel ratio and exposes no prop for it), or the shader renders at full res again:
-perl -i -pe 's/setPixelRatio\(Math\.min\(window\.devicePixelRatio,2\)\)/setPixelRatio(1)/g' insight-background.bundle.js
+# pixel ratio and exposes no prop for it), or the shader renders at full dpr again:
+perl -i -pe 's/setPixelRatio\(Math\.min\(window\.devicePixelRatio,2\)\)/setPixelRatio(Math.min(window.devicePixelRatio,2)*.65)/g' insight-background.bundle.js
 ```
 
 Notes:
-- **Render scale 1.0**: the shader renders at 1.0x resolution (softer + cheaper).
-  The `shaders` build hardcodes `setPixelRatio(Math.min(devicePixelRatio,2))` with no
-  prop override, so this is a post-build patch on the bundle (see the perl line above).
-  A rebuild WIPES it — re-run the patch after every rebuild.
+- **Render scale 0.65 (dpr-AWARE)**: the patch keeps the library's dynamic
+  `setPixelRatio(Math.min(devicePixelRatio,2))` and just multiplies it by `0.65`, so on a
+  retina (dpr 2) screen the buffer renders at an effective pixelRatio of 1.3 — same as the
+  `fractal_fluted.html` playground at renderScale 0.65. This is the SMOOTH setting.
+  Do NOT replace it with a flat `setPixelRatio(1)`: that hardcode ignores dpr and breaks the
+  library's resize path, so on retina the buffer drops to half-resolution and the diagonal
+  flutes alias/stair-step (worst when the window is small). The earlier `setPixelRatio(1)`
+  patch was exactly that bug.
+- **The shader plane (`#insight-shader`) must be sized to the FRAME, not an oversized fixed
+  1520px.** The library caps the render buffer at the viewport size, so a fixed 1520 plane on
+  a smaller viewport gets a viewport-sized buffer stretched onto 1520 → upscale → aliasing.
+  Sizing the plane to the frame (same clamps) keeps buffer ≈ display (1.3x) at every viewport.
+  See `.insight-card #insight-shader` in css/style.css. A rebuild WIPES the perl patch — re-run it.
 - `--define:process.env.NODE_ENV='"production"'` is **required** — without it the
   bundle references `process`, which is undefined in the browser and throws.
 - Pin the same versions (`shaders@2.5.128`, `react@18.3.1`) to keep the visual output
