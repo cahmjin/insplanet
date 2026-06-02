@@ -107,7 +107,7 @@ html.lenis,html.lenis body{height:auto}
   #sub-title .subtitle-head,#sub-title .subtitle-body{opacity:1;filter:none;transform:none;transition:none}}
 
 /* hero fluid — segment 1920 -> 2560 (overrides the base 1024->1920 segment above) */
-@media (min-width:1920px){
+@media (min-width:1900px){ /* 1920 design segment; 1900 (not 1920) so a 1920 window with a scrollbar still triggers it */
   #left-block{left:clamp(216px, calc(0.3125vw + 210px), 218px);bottom:clamp(80px, calc(12.5vw - 160px), 160px)}
   #head-title{font-size:clamp(172px, calc(4.375vw + 88px), 200px)}
   #head-title .line-2{margin-top:clamp(-102px, calc(-3.4375vw - 14px), -80px)}
@@ -118,6 +118,14 @@ html.lenis,html.lenis body{height:auto}
   .beyond-title,.beyond-statement{left:clamp(216px, calc(0.3125vw + 210px), 218px)}
   .beyond-title{font-size:clamp(132px, calc(4.375vw + 48px), 160px)}
   .beyond-title .line-2{margin-top:clamp(-83px, calc(-3.125vw - 3px), -63px)}
+  /* Insight (these base rules live LATER in the file, so bump specificity to win over them) */
+  .insight-board .insight-frame{width:clamp(1486px, calc(3.4375vw + 1420px), 1508px)}
+  /* num (01/02/03) — 1920 position (1900-2540); base 86.5% above is the 1024 value */
+  .insight-steps .insight-num{top:87%}
+}
+/* 2560 segment (2540 so a 2560 window with a scrollbar still triggers it) — tune the 2560 num here */
+@media (min-width:2540px){
+  .insight-steps .insight-num{top:84%}
 }
 
 #scroll-hint{position:fixed;z-index:60;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);bottom:64px;width:21px;
@@ -228,60 +236,58 @@ html.lenis,html.lenis body{height:auto}
 .pin-insight{position:relative;z-index:1;height:200vh;background:transparent} /* height set by JS to step count */
 .pin-insight-stage{position:sticky;top:0;height:100vh;overflow:hidden}
 
-/* 1920x1080 design board centered in the stage, scaled by the SAME min/max clamp as the hero
-   background (k = clamp(min(W,H)/1080, 0.8, 1.2), set by JS) — not a fit-to-viewport scale. */
-.insight-board{position:absolute;left:50%;top:50%;width:1920px;height:1080px;
-  transform:translate(-50%,-50%) scale(var(--insight-scale,1));transform-origin:center;
+/* Insight — board is a full-stage container (whole-board zoom removed). The card FRAME is a
+   centered box sized PER BREAKPOINT (mask shape changes); card + steps + dots live in it. */
+.insight-board{position:absolute;inset:0;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
 
-/* oversized faint tagline behind the card (Group 5): repeated phrase that drifts (top line
-   left, bottom line right). Start far to the LEFT with the phrase repeated, so copies exist on
-   BOTH sides of the visible area — neither drift direction ever reveals a gap. */
+/* oversized faint tagline that drifts BEHIND the card (z:1, below the frame z:2). font fluid 64/100/120 */
 .insight-tagline{position:absolute;white-space:nowrap;z-index:1;
-  font-size:120px;font-weight:700;line-height:120%}
-.insight-tagline-1{left:-2524px;top:396px;color:#3E3F44;animation:tagline-left 30s linear infinite}
-.insight-tagline-2{left:-1777px;top:540px;color:#F4F5F6;animation:tagline-right 30s linear infinite}
-/* phrase is repeated 3x; shifting by 1/3 of the strip loops seamlessly */
+  font-size:clamp(64px, calc(3.6458vw + 26.67px), 120px);font-weight:700;line-height:120%}
+/* left offset in em so the repeated strip scales with the (fluid) font -> seamless loop at any size.
+   the two lines sit one line-height apart (adjacent), straddling the card center (matches Figma). */
+.insight-tagline-1{left:-21em;top:calc(50% - 1.2em);color:#3E3F44;animation:tagline-left 30s linear infinite}
+.insight-tagline-2{left:-14.8em;top:50%;color:#F4F5F6;animation:tagline-right 30s linear infinite}
 @keyframes tagline-left{to{transform:translateX(-33.333%)}}
 @keyframes tagline-right{from{transform:translateX(-33.333%)}to{transform:translateX(0)}}
 @media (prefers-reduced-motion:reduce){.insight-tagline-1,.insight-tagline-2{animation:none}}
 
-/* rounded fractal-glass card (Frame 29). On entry it grows from a 576x576 square to the full
-   1486x880 (one-shot, ease-out). The card is a MASK centered at the board center; the canvases
-   render at the FINAL size and stay put, so the growing card reveals more of the fractal. */
+/* card frame: centered, fluid size per breakpoint (1024:768x560 / 1920:1486x880 / 2560:1508x880).
+   z-index:2 so the whole card group sits ABOVE the drifting tagline. */
+.insight-frame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+  width:clamp(768px, calc(80.134vw - 52.6px), 1486px);height:clamp(560px, calc(35.714vw + 194.3px), 880px)}
+
+/* rounded glass card = MASK filling the frame. grows from a small square to fill (reveals shader). */
 .insight-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:576px;height:576px;border-radius:64px;overflow:hidden;background:#0F0E0E;z-index:2;
+  width:min(480px,80%);height:min(480px,80%);border-radius:clamp(32px, calc(2.4vw + 7.4px), 64px);overflow:hidden;background:#0F0E0E;z-index:2;
   transition:width .9s cubic-bezier(.22,1,.36,1),height .9s cubic-bezier(.22,1,.36,1)}
-.insight-board.is-grown .insight-card{width:1486px;height:880px}
-/* no-anim: apply the grown state instantly (used when entering while scrolling UP — no grow animation) */
+.insight-board.is-grown .insight-card{width:100%;height:100%}
 .insight-board.no-anim .insight-card,
 .insight-board.no-anim .insight-steps,
 .insight-board.no-anim .insight-indicator{transition:none}
+/* shader: fixed plane >= largest card, centered; the mask reveals it (does not zoom on grow) */
 .insight-card #insight-shader{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:1486px;height:880px}
+  width:1520px;height:900px}
 .insight-card #insight-shader canvas{display:block;width:100%!important;height:100%!important}
 
-/* foreground steps (Group 4 / Group 2 / …): each step overlays the card; the scroll-swap JS
-   sets opacity/blur per step inline. The wrapper reveals only after the card has grown, so the
-   text never floats outside the small card during the entry. */
+/* foreground steps: fill the frame; positioned as % of the card so they track its size, fonts fluid */
 .insight-steps{position:absolute;inset:0;z-index:3;opacity:0;transition:opacity .5s ease .55s}
 .insight-board.is-grown .insight-steps{opacity:1}
 .insight-step{position:absolute;inset:0;opacity:0;will-change:opacity}
 .insight-step[data-step="0"]{opacity:1}
 .insight-eyebrow,.insight-title{will-change:filter,transform}
-.insight-eyebrow{position:absolute;left:368px;top:260px;
-  font-size:20px;font-weight:600;line-height:120%;text-transform:uppercase;
+.insight-eyebrow{position:absolute;left:8%;top:18%;
+  font-size:clamp(16px, calc(0.26vw + 13.33px), 20px);font-weight:600;line-height:120%;text-transform:uppercase;
   letter-spacing:.04em;color:#fff}
-.insight-title{position:absolute;left:368px;top:324px;width:531px;
-  font-size:72px;font-weight:700;line-height:120%;color:#fff}
-.insight-title--wide{width:610px}
-.insight-num{position:absolute;left:1292px;top:822px;width:259px;height:165px}
-.insight-num--02{top:817px;width:291px;height:170px}
-.insight-num--03{top:818px;width:283px;height:275px}
+.insight-title{position:absolute;left:8%;top:26%;white-space:nowrap;
+  font-size:clamp(48px, calc(1.5625vw + 32px), 72px);font-weight:700;line-height:120%;color:#fff}
+/* num (01/02/03) top-left anchored; position differs per breakpoint (base = 1024; @media >=1920 below) */
+.insight-num{position:absolute;left:74.5%;top:86.5%;width:clamp(126px, calc(6.94vw + 55px), 259px);height:auto}
+.insight-num--02{width:clamp(142px, calc(7.8vw + 62px), 291px)}
+.insight-num--03{width:clamp(138px, calc(7.57vw + 61px), 283px)}
 
-/* step progress dots (Figma: x1643/y510 in the 1920x1080 board, 12px circles, 12px gap).
-   appears with the steps after the card grows; active dot fills, others are 2px rings. */
-.insight-indicator{position:absolute;left:1643px;top:510px;z-index:3;
+/* step progress dots: at the card's right edge, vertically centered. 12px circles. */
+.insight-indicator{position:absolute;right:5%;top:50%;transform:translateY(-50%);z-index:3;
   display:flex;flex-direction:column;gap:12px;opacity:0;transition:opacity .5s ease .55s}
 .insight-board.is-grown .insight-indicator{opacity:1}
 .insight-dot{width:12px;height:12px;border-radius:50%;box-sizing:border-box;

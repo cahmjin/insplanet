@@ -33,9 +33,17 @@ npx esbuild insight-background.js \
   --outfile=insight-background.bundle.js
 
 # copy the resulting insight-background.bundle.js back into this project's js/
+
+# IMPORTANT: re-apply the render-scale patch (the library hardcodes the canvas
+# pixel ratio and exposes no prop for it), or the shader renders at full res again:
+perl -i -pe 's/setPixelRatio\(Math\.min\(window\.devicePixelRatio,2\)\)/setPixelRatio(1)/g' insight-background.bundle.js
 ```
 
 Notes:
+- **Render scale 1.0**: the shader renders at 1.0x resolution (softer + cheaper).
+  The `shaders` build hardcodes `setPixelRatio(Math.min(devicePixelRatio,2))` with no
+  prop override, so this is a post-build patch on the bundle (see the perl line above).
+  A rebuild WIPES it — re-run the patch after every rebuild.
 - `--define:process.env.NODE_ENV='"production"'` is **required** — without it the
   bundle references `process`, which is undefined in the browser and throws.
 - Pin the same versions (`shaders@2.5.128`, `react@18.3.1`) to keep the visual output
