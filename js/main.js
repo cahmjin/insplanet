@@ -1,3 +1,12 @@
+/* ===== unified design scale: 2560 baseline. --f = 1 at >=2560, scales DOWN proportionally below.
+   Sections multiply their design sizes by --f (via transform/calc) so the whole page keeps the
+   2560 balance at smaller widths. NOT a page zoom (that breaks Lenis/scroll) — per-element only. */
+(function(){
+  const f=()=>document.documentElement.style.setProperty('--f', Math.min(1, innerWidth/2560));
+  f();
+  addEventListener('resize',f);
+})();
+
 /* ===== smooth momentum scroll (Lenis): adds elastic inertia to scrolling (up and down).
    real-scroll mode -> sticky pins, fixed header, and scrollY-based handlers all keep working.
    skipped for reduced-motion. */
@@ -76,7 +85,7 @@
   const R=718; // design circle radius (px @ 1080 baseline)
   // design circle centers as offset from the 1920x1080 frame center (960,540)
   const C=[{el:c1,ox:520.5,oy:-340.5},{el:c2,ox:210.5,oy:-210.5}];
-  function k(){return Math.max(0.8,Math.min(Math.min(innerWidth,innerHeight)/1080,1.2));} // == blob factor
+  function k(){return 1.2*Math.min(1, innerWidth/2560);} // unified: 2560 baseline (=1.2), scales down
   function layout(){
     const f=k(),r=R*f,d=r*2,cx=innerWidth/2,cy=innerHeight/2;
     C.forEach(o=>{
@@ -297,8 +306,8 @@
 (function(){
   const board=document.querySelector('.insight-board');
   if(!board)return;
-  const k=()=>board.style.setProperty('--insight-scale',
-    Math.max(0.8,Math.min(Math.min(innerWidth,innerHeight)/1080,1.2)));
+  // unified scale: 2560 baseline (=1.2), scales DOWN proportionally below 2560, never up.
+  const k=()=>board.style.setProperty('--insight-scale', 1.2*Math.min(1, innerWidth/2560));
   k();
   addEventListener('resize',k);
 })();
@@ -308,8 +317,8 @@
 (function(){
   const sec=document.querySelector('.services');
   if(!sec)return;
-  const k=()=>sec.style.setProperty('--svc-k',
-    Math.max(0.8,Math.min(Math.min(innerWidth,innerHeight)/1080,1.2)));
+  // unified scale: same 2560 baseline as the Insight board (=1.2), scales down below 2560.
+  const k=()=>sec.style.setProperty('--svc-k', 1.2*Math.min(1, innerWidth/2560));
   k();
   addEventListener('resize',k);
 })();
