@@ -295,7 +295,7 @@ html.lenis,html.lenis body{height:auto}
 /* right card column — anchored to the RIGHT of the frame. fixed card sizes (not scaled); pushed
    well down so they only rise in AFTER the title has shrunk (no overlap), each with an elastic ease. */
 .services-cards-wrap{position:relative;z-index:1}
-.services-cards{margin-left:auto;width:728px;padding-top:170vh;
+.services-cards{margin-left:auto;width:728px;padding-top:160vh;
   display:flex;flex-direction:column;gap:160px}
 .svc-card{opacity:0;transform:translateY(64px);
   transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}  /* elastic rise */

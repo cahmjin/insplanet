@@ -425,8 +425,8 @@
     const vh=innerHeight;
     const scrolled=-sec.getBoundingClientRect().top;
     const bi=clamp(scrolled/(0.25*vh));              // blur IN over the first 0.25 screen (like Beyond)
-    const q=clamp((scrolled-0.2*vh)/(0.5*vh));       // hold big, then SHRINK over 0.2 -> 0.7 screens
-                                                     // (done well before the cards rise, so no overlap)
+    const q=clamp((scrolled-0.65*vh)/(0.45*vh));     // HOLD sharp & full-size to 0.65, then SHRINK to 1.1
+                                                     // (clear pause before it shrinks; cards rise after)
     const s=1+(SMALL-1)*q;                           // 1 (160px) -> 0.3 (48px)
     const bigH=title.offsetHeight;                   // ~194 at 160px
     const ty=(-bigH/2)*(1-q)+(240-vh/2)*q;           // big & vertically-centered -> small at top:240
