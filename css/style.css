@@ -118,6 +118,11 @@ html.lenis,html.lenis body{height:auto}
   .beyond-title,.beyond-statement{left:clamp(216px, calc(0.3125vw + 210px), 218px)}
   .beyond-title{font-size:clamp(132px, calc(4.375vw + 48px), 160px)}
   .beyond-title .line-2{margin-top:clamp(-83px, calc(-3.125vw - 3px), -63px)}
+  /* Our Services big title — segment 1920->2560 (specificity bumped to win over the later base rule) */
+  .services-title-wrap .services-title{font-size:clamp(132px, calc(4.375vw + 48px), 160px)}
+  /* Our Services frame + card column grow 1920->2560 (card text/gaps stay flat above 1920) */
+  .services .services-inner{width:clamp(1486px, calc(75.47vw + 37px), 1969px)}
+  .services-cards-wrap .services-cards{width:clamp(728px, calc(25.3125vw + 242px), 890px)}
   /* Insight (these base rules live LATER in the file, so bump specificity to win over them) */
   .insight-board .insight-frame{width:clamp(1486px, calc(3.4375vw + 1420px), 1508px)}
   /* num (01/02/03) — 1920 position (1900-2540); base 86.5% above is the 1024 value */
@@ -308,28 +313,28 @@ html.lenis,html.lenis body{height:auto}
 /* shared content frame. Width tracks the SAME scale as the Insight board (--svc-k, set in js/main.js)
    so the frame's left/right edges line up with the Insight card at every viewport size. All inner
    sizes scale by the same --svc-k too, matching Insight's scaled content. */
-.services-inner{width:calc(1486px * var(--svc-k,1));max-width:100%;margin:0 auto;position:relative}
+.services-inner{width:clamp(928px, calc(62.277vw + 290.3px), 1486px);max-width:100%;margin:0 auto;position:relative}
 /* sticky overlay holds the title; negative margin pulls the cards up to overlap (so the title pins
    over them), pointer-events none so the cards underneath stay interactive. */
 .services-title-wrap{position:sticky;top:0;height:100vh;margin-bottom:-100vh;z-index:2;pointer-events:none}
 .services-title-wrap .services-inner{height:100%}
 .services-title{position:absolute;left:0;top:50%;margin:0;          /* left:0 of the frame */
-  font-family:'Cormorant Garamond',serif;font-weight:700;font-size:160px;line-height:1.211;color:#3E3F44;
+  font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(96px, calc(4.0179vw + 54.86px), 132px);line-height:1.211;color:#3E3F44;
   transform-origin:left top;will-change:transform,opacity,filter;opacity:0;filter:blur(16px)}
 /* right card column — anchored to the RIGHT of the frame. fixed card sizes (not scaled); pushed
    well down so they only rise in AFTER the title has shrunk (no overlap), each with an elastic ease. */
 .services-cards-wrap{position:relative;z-index:1}
-.services-cards{margin-left:auto;width:728px;padding-top:160vh;
-  display:flex;flex-direction:column;gap:160px}
+.services-cards{margin-left:auto;width:clamp(448px, calc(31.25vw + 128px), 728px);padding-top:160vh;
+  display:flex;flex-direction:column;gap:clamp(120px, calc(4.4643vw + 74.29px), 160px)}
 .svc-card{opacity:0;transform:translateY(64px);
   transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}  /* elastic rise */
 .svc-card.in{opacity:1;transform:none}
-.svc-title{margin:0;font-family:'Pretendard',sans-serif;font-weight:700;font-size:56px;line-height:1.2;color:#3E3F44}
-.svc-tags{list-style:none;margin:32px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:12px}
-.svc-tags li{display:inline-flex;align-items:center;height:48px;padding:0 20px;border-radius:999px;
-  background:#F4F5F6;font-family:'Pretendard',sans-serif;font-weight:600;font-size:16px;line-height:1.5;color:#3E3F44}
-.svc-desc{margin:24px 0 0;font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5;color:#3E3F44}
-.svc-media{margin-top:40px;width:728px;max-width:100%;aspect-ratio:728/480;border-radius:32px;overflow:hidden}
+.svc-title{margin:0;font-family:'Pretendard',sans-serif;font-weight:700;font-size:clamp(32px, calc(2.6786vw + 4.57px), 56px);line-height:1.2;color:#3E3F44}
+.svc-tags{list-style:none;margin:clamp(32px, calc(0.8929vw + 22.86px), 40px) 0 0;padding:0;display:flex;flex-wrap:wrap;gap:12px}
+.svc-tags li{display:inline-flex;align-items:center;height:clamp(32px, calc(1.7857vw + 13.71px), 48px);padding:0 clamp(16px, calc(0.4464vw + 11.43px), 20px);border-radius:999px;
+  background:#F4F5F6;font-family:'Pretendard',sans-serif;font-weight:600;font-size:clamp(12px, calc(0.4464vw + 7.43px), 16px);line-height:1.5;color:#3E3F44}
+.svc-desc{margin:clamp(32px, calc(0.8929vw + 22.86px), 40px) 0 0;font-family:'Pretendard',sans-serif;font-weight:400;font-size:clamp(14px, calc(0.6696vw + 7.14px), 20px);line-height:1.5;color:#3E3F44}
+.svc-media{margin-top:clamp(48px, calc(1.7857vw + 29.71px), 64px);width:100%;max-width:100%;height:clamp(320px, calc(17.857vw + 137.14px), 480px);border-radius:32px;overflow:hidden}
 .svc-media img{display:block;width:100%;height:100%;object-fit:cover}
 @media (prefers-reduced-motion:reduce){
   .svc-card{opacity:1;transform:none;transition:none}

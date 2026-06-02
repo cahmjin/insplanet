@@ -415,7 +415,11 @@
   const title=document.querySelector('.services-title');
   if(!sec||!title)return;
   const clamp=v=>Math.min(1,Math.max(0,v));
-  const SMALL=48/160;                                // shrink target scale (160px base -> 48px)
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  // shrink TARGET (small label) + resting top per the 3 design anchors (1024/1920/2560).
+  // the big title is fluid (96/132/160), so the scale is target/bigPx, recomputed live.
+  const labelSize=w=> w<=1024?32 : w<=1920?lerp(32,48,(w-1024)/896) : w<=2560?lerp(48,56,(w-1920)/640) : 56;
+  const restTop =w=> w<=1024?160 : w<=1920?lerp(160,240,(w-1024)/896) : 240;
   if(matchMedia('(prefers-reduced-motion:reduce)').matches){
     title.style.opacity='1';title.style.filter='none';return;
   }
@@ -427,9 +431,11 @@
     const bi=clamp(scrolled/(0.25*vh));              // blur IN over the first 0.25 screen (like Beyond)
     const q=clamp((scrolled-0.65*vh)/(0.45*vh));     // HOLD sharp & full-size to 0.65, then SHRINK to 1.1
                                                      // (clear pause before it shrinks; cards rise after)
-    const s=1+(SMALL-1)*q;                           // 1 (160px) -> 0.3 (48px)
-    const bigH=title.offsetHeight;                   // ~194 at 160px
-    const ty=(-bigH/2)*(1-q)+(240-vh/2)*q;           // big & vertically-centered -> small at top:240
+    const bigPx=parseFloat(getComputedStyle(title).fontSize)||160;
+    const SMALL=labelSize(innerWidth)/bigPx;         // big(fluid) -> small label (32/48/56)
+    const s=1+(SMALL-1)*q;                            // full size -> shrunk label
+    const bigH=title.offsetHeight;
+    const ty=(-bigH/2)*(1-q)+(restTop(innerWidth)-vh/2)*q; // centered -> small at the anchor's top (160/240)
     title.style.opacity=bi.toFixed(3);
     title.style.filter='blur('+(16*(1-bi)).toFixed(2)+'px)';
     title.style.transform='translateY('+ty.toFixed(1)+'px) scale('+s.toFixed(3)+')';
