@@ -22,12 +22,12 @@ html.lenis,html.lenis body{height:auto}
 .pin-stage{position:sticky;top:0;height:100vh;overflow:hidden}
 
 /* both titles live in the SAME centered spot (overlapping) — JS scrub swaps between them */
-.beyond-title,.beyond-statement{position:absolute;left:216px;top:50%;transform:translateY(-50%);margin:0;
+.beyond-title,.beyond-statement{position:absolute;left:clamp(48px, calc(18.75vw - 144px), 216px);top:50%;transform:translateY(-50%);margin:0;
   display:flex;flex-direction:column;align-items:flex-start;color:#3E3F44}
-/* Beyond — Cormorant Bold 160, tight two-line stack */
-.beyond-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:160px;line-height:1.211}
-.beyond-title .line-1{margin-left:19px}   /* "Beyond UX" indented to x235 */
-.beyond-title .line-2{margin-top:-83px}   /* "The AX Creator" overlaps upward, like the hero */
+/* Beyond — Cormorant Bold, fluid 96/132/160; tight two-line stack */
+.beyond-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(96px, calc(4.0179vw + 54.86px), 132px);line-height:1.211}
+.beyond-title .line-1{margin-left:clamp(13px, calc(0.6696vw + 6.14px), 19px)}   /* "Beyond UX" indent */
+.beyond-title .line-2{margin-top:clamp(-63px, calc(-1.5625vw - 33px), -49px)}   /* "The AX Creator" overlap */
 
 /* Frame 26 statement — Pretendard Bold 120, two lines */
 .beyond-statement{width:1230px;
@@ -58,27 +58,31 @@ html.lenis,html.lenis body{height:auto}
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
 
 /* header controls stay fixed so they (and the menu) are reachable while scrolling */
-#ci-logo{position:fixed;z-index:60;left:64px;top:48px;width:140.12px;height:24.04px}
+/* header fixed UI — fluid 1024->1920 (flat 1920->2560, so clamp max = 1920 value) */
+#ci-logo{position:fixed;z-index:60;left:clamp(48px, calc(1.7857vw + 29.71px), 64px);top:48px;
+  width:clamp(105px, calc(3.9063vw + 65px), 140.12px);height:clamp(18px, calc(0.6696vw + 11.14px), 24.04px)}
 
-#full-menu{position:fixed;z-index:60;right:48px;top:32px;width:56px;height:56px;
+#full-menu{position:fixed;z-index:60;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);top:clamp(32px, calc(-0.4464vw + 40.57px), 36px);
+  width:clamp(48px, calc(0.8929vw + 38.86px), 56px);height:clamp(48px, calc(0.8929vw + 38.86px), 56px);
   display:flex;align-items:center;justify-content:center;border-radius:999px;cursor:pointer}
 #full-menu img{width:24px;height:14px}
 
-#lets-talk{position:fixed;z-index:60;right:134px;top:45px;
+#lets-talk{position:fixed;z-index:60;right:clamp(118px, calc(1.7857vw + 99.71px), 134px);top:45px;
   display:flex;align-items:center;gap:10px;padding:4px 0;
   border-bottom:1px solid #3E3F44;cursor:pointer}
-#lets-talk span{font-size:14px;font-weight:700;line-height:150%}
+#lets-talk span{font-size:clamp(13px, calc(0.1116vw + 11.86px), 14px);font-weight:700;line-height:150%}
 
 /* left content block: symbol + headline + subtitle, anchored bottom-left as a group */
-#left-block{position:absolute;left:216px;bottom:120px;
+/* fluid: anchors 1024/1920/2560 (segment 1024->1920 here; @media >=1920 below for 1920->2560) */
+#left-block{position:absolute;left:clamp(48px, calc(18.75vw - 144px), 216px);bottom:clamp(64px, calc(1.7857vw + 45.71px), 80px);
   display:flex;flex-direction:column;align-items:flex-start}
 
 #symbol{width:156px;height:8px}
 
 #head-title{width:734px;margin-top:20px;
   display:flex;flex-direction:column;
-  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:200px;line-height:1.211;color:#3E3F44}
-#head-title .line-2{margin-top:-102px}
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(120px, calc(5.8036vw + 60.57px), 172px);line-height:1.211;color:#3E3F44}
+#head-title .line-2{margin-top:clamp(-80px, calc(-1.7857vw - 45.71px), -64px)}
 /* title reveal: lines settle in from a soft blur on load (.in added by JS) */
 #head-title .line-1,#head-title .line-2{
   opacity:0;filter:blur(18px);transform:translateY(.05em) scale(1.04);transform-origin:left center;
@@ -89,9 +93,9 @@ html.lenis,html.lenis body{height:auto}
   #head-title .line-1,#head-title .line-2{opacity:1;filter:none;transform:none;transition:none}}
 
 #sub-title{width:661px;margin-top:40px;
-  display:flex;flex-direction:column;gap:20px;color:#3E3F44}
-#sub-title .subtitle-head{font-size:24px;font-weight:600;line-height:150%}
-#sub-title .subtitle-body{font-size:20px;font-weight:400;line-height:150%}
+  display:flex;flex-direction:column;gap:clamp(16px, calc(0.8929vw + 6.86px), 24px);color:#3E3F44}
+#sub-title .subtitle-head{font-size:clamp(18px, calc(0.4464vw + 13.43px), 22px);font-weight:600;line-height:150%}
+#sub-title .subtitle-body{font-size:clamp(14px, calc(0.4464vw + 9.43px), 18px);font-weight:400;line-height:150%}
 /* subtitle settles in just after the headline (lighter blur — it's small text) */
 #sub-title .subtitle-head,#sub-title .subtitle-body{
   opacity:0;filter:blur(8px);transform:translateY(10px);
@@ -102,7 +106,21 @@ html.lenis,html.lenis body{height:auto}
 @media (prefers-reduced-motion:reduce){
   #sub-title .subtitle-head,#sub-title .subtitle-body{opacity:1;filter:none;transform:none;transition:none}}
 
-#scroll-hint{position:fixed;z-index:60;right:64px;bottom:64px;width:21px;
+/* hero fluid — segment 1920 -> 2560 (overrides the base 1024->1920 segment above) */
+@media (min-width:1920px){
+  #left-block{left:clamp(216px, calc(0.3125vw + 210px), 218px);bottom:clamp(80px, calc(12.5vw - 160px), 160px)}
+  #head-title{font-size:clamp(172px, calc(4.375vw + 88px), 200px)}
+  #head-title .line-2{margin-top:clamp(-102px, calc(-3.4375vw - 14px), -80px)}
+  #sub-title{gap:24px}
+  #sub-title .subtitle-head{font-size:clamp(22px, calc(0.3125vw + 16px), 24px)}
+  #sub-title .subtitle-body{font-size:clamp(18px, calc(0.3125vw + 12px), 20px)}
+  /* Beyond — segment 1920->2560 */
+  .beyond-title,.beyond-statement{left:clamp(216px, calc(0.3125vw + 210px), 218px)}
+  .beyond-title{font-size:clamp(132px, calc(4.375vw + 48px), 160px)}
+  .beyond-title .line-2{margin-top:clamp(-83px, calc(-3.125vw - 3px), -63px)}
+}
+
+#scroll-hint{position:fixed;z-index:60;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);bottom:64px;width:21px;
   display:flex;flex-direction:column;align-items:center;gap:16px}
 /* faint track + dark line that draws top->bottom then exits downward, looping */
 #scroll-hint .bar{position:relative;width:1px;height:64px;background:rgba(26,26,26,.15);overflow:hidden}
@@ -119,7 +137,7 @@ html.lenis,html.lenis body{height:auto}
   #scroll-hint .bar{background:#1A1A1A}
   #scroll-hint .bar::after{display:none}
 }
-#scroll-hint .label{font-size:14px;font-weight:700;line-height:150%;color:#000;
+#scroll-hint .label{font-size:clamp(11px, calc(0.3348vw + 7.57px), 14px);font-weight:700;line-height:150%;color:#000;
   writing-mode:vertical-rl;letter-spacing:1px}
 
 /* ===== full-screen menu overlay ===== */

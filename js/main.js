@@ -152,7 +152,7 @@
 
   // one fixed-duration eased clock; continues smoothly if reversed mid-flight
   let raf=0,R=0,fromR=0,toR=0,t0=0;
-  const ease=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2; // easeInOutCubic
+  const ease=p=>1-Math.pow(1-p,3); // easeOutCubic — moves immediately on click (no slow ease-in start)
   function tick(now){
     if(!t0)t0=now;
     let p=(now-t0)/DUR; if(p>1)p=1;
