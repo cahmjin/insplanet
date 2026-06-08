@@ -607,7 +607,7 @@
   const AF_DUR=800;                                        // ms for the auto-played remainder
   const FRAC=0.20;                                         // how far the manual scroll drags before autoplay
   // scrub windows (pp): leg0 P1->P2, leg1 P2->P3. Between/after triggers af holds at the integer.
-  const SA=[0.06, 0.50], TR=[0.30, 0.74];                  // scrub-start / trigger per leg
+  const SA=[0.06, 0.50], TR=[0.08, 0.52];                  // scrub-start / trigger per leg
   function scrubAf(pp){
     if(pp<SA[0]) return 0;
     if(pp<TR[0]) return FRAC*(pp-SA[0])/(TR[0]-SA[0]);          // leg0: 0 -> FRAC
