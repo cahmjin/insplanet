@@ -452,7 +452,7 @@ html.lenis,html.lenis body{height:auto}
 .proj-meta dd{margin:0;font-weight:400}
 .proj-more{position:absolute;left:0;bottom:clamp(80px, 9vh, 170px);display:inline-flex;align-items:center;gap:12px;white-space:nowrap;
   padding:clamp(10px, calc(0.2232vw + 7.71px), 12px) clamp(8px, calc(0.4464vw + 3.43px), 12px) clamp(10px, calc(0.2232vw + 7.71px), 12px) clamp(12px, calc(0.4464vw + 7.43px), 16px);
-  border:1px solid #3E3F44;border-radius:8px;text-decoration:none;
+  background:#fff;border:1px solid #3E3F44;border-radius:8px;text-decoration:none;
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:clamp(14px, calc(0.2232vw + 11.71px), 16px);line-height:1.5;color:#3E3F44;
   transition:background .25s ease,color .25s ease}
 .proj-more:hover{background:#3E3F44;color:#fff}
