@@ -70,7 +70,7 @@ html.lenis,html.lenis body{height:auto}
 #lets-talk{position:fixed;z-index:60;right:clamp(130px, calc(2.6786vw + 102.57px), 154px);top:45px;
   display:flex;align-items:center;gap:10px;padding:4px 0;
   border-bottom:1px solid #3E3F44;cursor:pointer}
-#lets-talk span{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(13px, calc(0.1116vw + 11.86px), 14px);font-weight:700;line-height:150%}
+#lets-talk span{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(13px, calc(0.1116vw + 11.86px), 14px);font-weight:700;line-height:150%;color:#3E3F44}
 
 /* left content block: symbol + headline + subtitle, anchored bottom-left as a group */
 /* fluid: anchors 1024/1920/2560 (segment 1024->1920 here; @media >=1920 below for 1920->2560) */
@@ -152,9 +152,9 @@ html.lenis,html.lenis body{height:auto}
   pointer-events:none;user-select:none;-webkit-user-select:none}  /* decorative: mouse passes through
     -> no text I-beam, and the custom cursor reads the panel behind it (keeps 'View Project') */
 /* faint track + dark line that draws top->bottom then exits downward, looping */
-#scroll-hint .bar{position:relative;width:1px;height:64px;background:rgba(26,26,26,.15);overflow:hidden}
+#scroll-hint .bar{position:relative;width:1px;height:64px;background:rgba(62,63,68,.15);overflow:hidden}
 #scroll-hint .bar::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;
-  background:#1A1A1A;transform-origin:top;transform:scaleY(0);
+  background:#3E3F44;transform-origin:top;transform:scaleY(0);
   animation:scroll-draw 2.2s cubic-bezier(.65,0,.35,1) infinite}
 @keyframes scroll-draw{
   0%   {transform:scaleY(0);transform-origin:top}
@@ -163,10 +163,10 @@ html.lenis,html.lenis body{height:auto}
   100% {transform:scaleY(0);transform-origin:bottom}
 }
 @media (prefers-reduced-motion:reduce){
-  #scroll-hint .bar{background:#1A1A1A}
+  #scroll-hint .bar{background:#3E3F44}
   #scroll-hint .bar::after{display:none}
 }
-#scroll-hint .label{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(11px, calc(0.3348vw + 7.57px), 14px);font-weight:700;line-height:150%;color:#000;
+#scroll-hint .label{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(11px, calc(0.3348vw + 7.57px), 14px);font-weight:700;line-height:150%;color:#3E3F44;
   writing-mode:vertical-rl;letter-spacing:1px}
 
 /* adaptive header UI: over a DARK part of a project image the fixed controls flip to white
@@ -435,6 +435,15 @@ html.lenis,html.lenis body{height:auto}
    into one image; replace with a real project image any time. Blue is the fallback backdrop. */
 .proj-visual{position:absolute;top:0;right:0;width:calc(50% - 16px);height:100%;background:transparent;
   overflow:hidden;z-index:1;opacity:0;pointer-events:none;will-change:opacity}
+/* step indicator over the image panel (right, vertically centred) — same dots as Insight */
+.proj-indicator{position:absolute;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);top:50%;transform:translateY(-50%);z-index:5;
+  display:flex;flex-direction:column;gap:12px;pointer-events:none}
+.proj-dot{width:12px;height:12px;border-radius:50%;box-sizing:border-box;border:2px solid #3E3F44;
+  background:transparent;transition:background .35s ease,border-color .35s ease}
+.proj-dot.is-active{background:#3E3F44}
+/* same adaptive contrast as Let's Talk/hamburger/SCROLL: white over a DARK part of the image */
+.proj-indicator.on-dark .proj-dot{border-color:#fff}
+.proj-indicator.on-dark .proj-dot.is-active{background:#fff}
 /* a project's visual layer (solid colour now, or an <img> later). Each is full-bleed while active;
    on swap the active one SHRINKS to a centred card then lifts up & out, while the next rises from
    below as a card and expands back to full (JS sets transform/opacity per scroll). */

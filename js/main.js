@@ -545,6 +545,7 @@
   const title=document.querySelector('.projects-title');
   const visual=document.querySelector('.proj-visual');
   const info=document.querySelector('.proj-info');
+  const projDots=[...document.querySelectorAll('.proj-indicator .proj-dot')];
   if(!sec||!title)return;
   const vises=[...sec.querySelectorAll('.proj-vis')];
   const slides=[...sec.querySelectorAll('.proj-slide')];
@@ -554,6 +555,7 @@
   const cta=document.querySelector('.contact-cta');   // solid-dark CTA after projects -> also flips UI white
   const imgEls=[...sec.querySelectorAll('.proj-img')];
   const lum=imgEls.map(()=>({top:false,bot:false}));
+  const projInd=document.querySelector('.proj-indicator');   // right-centre step dots, recoloured per image
   function sampleImg(img,idx){
     try{
       const cw=64,ch=Math.round(cw*img.naturalHeight/img.naturalWidth)||72;
@@ -566,17 +568,11 @@
   imgEls.forEach((img,i)=>{ if(img.complete&&img.naturalWidth)sampleImg(img,i); else img.addEventListener('load',()=>sampleImg(img,i),{once:true}); });
   const clamp=v=>Math.min(1,Math.max(0,v));
   const lerp=(a,b,t)=>a+(b-a)*t;
-  const smooth=x=>x*x*(3-2*x);                           // smoothstep for transitions
+  const smooth=x=>x*x*x*(x*(x*6.0-15.0)+10.0);           // smootherstep (C2) — gentler ease in/out than smoothstep
   const labelSize=w=> w<=1024?32 : w<=1920?lerp(32,48,(w-1024)/896) : w<=2560?lerp(48,56,(w-1920)/640) : 56;
   const restTop =w=> w<=1024?160 : w<=1920?lerp(160,240,(w-1024)/896) : 240;
-  // 3 projects over the swap range: holds at 0/1/2 with quick eased transitions between
-  function projAf(pp){
-    if(pp<0.16) return 0;
-    if(pp<0.42) return smooth((pp-0.16)/0.26);           // P1 -> P2 (wide = slow & smooth)
-    if(pp<0.58) return 1;
-    if(pp<0.84) return 1+smooth((pp-0.58)/0.26);         // P2 -> P3
-    return 2;
-  }
+  // the swap is AUTO-PLAYED (see startTween/animLoop below): crossing a scroll threshold tweens the
+  // active project over a fixed time, so the slide motion is constant & smooth regardless of scroll.
   if(matchMedia('(prefers-reduced-motion:reduce)').matches){
     title.style.opacity='1';title.style.filter='none';
     if(visual)visual.style.opacity='1'; if(info)info.style.opacity='1';
@@ -605,6 +601,80 @@
     return [ty, s, 1-clamp((d-0.6)/0.4)];
   }
   let ticking=false;
+  // ---- hybrid swap: SCROLL drags the card part-way (scrub), then crossing the trigger AUTO-PLAYS
+  //      the rest to the next project over a fixed time. Per leg the scroll scrubs af base->base+FRAC,
+  //      and the discontinuity at the trigger (FRAC -> 1) is bridged by a smootherstep time tween. ----
+  const AF_DUR=800;                                        // ms for the auto-played remainder
+  const FRAC=0.20;                                         // how far the manual scroll drags before autoplay
+  // scrub windows (pp): leg0 P1->P2, leg1 P2->P3. Between/after triggers af holds at the integer.
+  const SA=[0.06, 0.50], TR=[0.30, 0.74];                  // scrub-start / trigger per leg
+  function scrubAf(pp){
+    if(pp<SA[0]) return 0;
+    if(pp<TR[0]) return FRAC*(pp-SA[0])/(TR[0]-SA[0]);          // leg0: 0 -> FRAC
+    if(pp<SA[1]) return 1;                                       // hold P2
+    if(pp<TR[1]) return 1 + FRAC*(pp-SA[1])/(TR[1]-SA[1]);      // leg1: 1 -> 1+FRAC
+    return 2;                                                    // hold P3
+  }
+  let afAnim=0, afFrom=0, afTo=0, afT0=0, playing=false, lastRev=0;
+  const JUMP=0.25;                                         // target gap above this = a trigger -> autoplay
+  function step(pp){
+    if(playing) return;                                   // the autoplay owns af until it finishes
+    const target=scrubAf(pp);
+    if(Math.abs(target-afAnim)<=JUMP){ afAnim=target; }   // continuous scroll -> direct scrub
+    else { afFrom=afAnim; afTo=target; afT0=performance.now(); playing=true; requestAnimationFrame(animLoop); }
+  }
+  function animLoop(now){
+    const k=clamp((now-afT0)/AF_DUR);
+    afAnim=afFrom+(afTo-afFrom)*smooth(k);
+    renderAf();
+    if(k<1){ requestAnimationFrame(animLoop); }
+    else { afAnim=afTo; renderAf(); playing=false; }
+  }
+  // apply the visual layers + text slides + adaptive header contrast for the current `afAnim`
+  function renderAf(){
+    const vh=innerHeight, af=afAnim;
+    const active=Math.max(0,Math.min(2,Math.round(af)));   // step indicator: nearest project
+    for(let i=0;i<projDots.length;i++) projDots[i].classList.toggle('is-active', i===active);
+    for(let i=0;i<3;i++){
+      const d=af-i;
+      // visual: full while active; shrinks to a card + crosses (out up / in from below) on swap
+      if(vises[i]){ const v=visState(d);
+        vises[i].style.transform='translateY('+v[0].toFixed(2)+'%) scale('+v[1].toFixed(3)+')';
+        vises[i].style.opacity=v[2].toFixed(3); }
+      // text: OUTGOING blurs + fades IN PLACE; only the INCOMING rises from below.
+      const sl=slides[i]; if(!sl)continue;
+      const ad=Math.abs(d);
+      sl.style.opacity=clamp(1-ad).toFixed(3);
+      sl.style.filter='blur('+(ad*9).toFixed(2)+'px)';
+      const rise=d<0?-d:0;
+      const name=sl.querySelector('.proj-name'), meta=sl.querySelector('.proj-meta');
+      if(name)name.style.transform='translateY('+(rise*40).toFixed(1)+'px)';
+      if(meta)meta.style.transform='translateY('+(rise*64).toFixed(1)+'px)';
+    }
+    // flip the fixed header controls white over a DARK part of the active image (continuous settle +
+    // hysteresis). Uses the last scroll-derived rev so it stays correct during a time-only tween.
+    const r=sec.getBoundingClientRect();
+    let tTop=0, tBot=0, tLogo=0;   // tLogo only from a fully-dark section (logo isn't over the image)
+    if(r.top<=0 && r.bottom>=vh-4 && lastRev>0.5){
+      const hi=Math.max(0,Math.min(2,Math.round(af)));
+      const settle=clamp(1-Math.abs(af-hi)/0.18);
+      tTop=settle*(lum[hi].top?1:0); tBot=settle*(lum[hi].bot?1:0);
+    }
+    if(cta){
+      const cr=cta.getBoundingClientRect();
+      if(cr.top<=56 && cr.bottom>=56){ tTop=1; tLogo=1; }
+      if(cr.top<=vh-72 && cr.bottom>=vh-72) tBot=1;
+      if(cr.top < vh*0.3) cta.classList.add('in');
+    }
+    if(tTop>0.6)topOn=true; else if(tTop<0.35)topOn=false;
+    if(tBot>0.6)botOn=true; else if(tBot<0.35)botOn=false;
+    if(tLogo>0.6)logoOn=true; else if(tLogo<0.35)logoOn=false;
+    if(ui.lt)ui.lt.classList.toggle('on-dark',topOn);      // top-right: over the project image
+    if(ui.fm)ui.fm.classList.toggle('on-dark',topOn);
+    if(ui.ci)ui.ci.classList.toggle('on-dark',logoOn);     // top-left: only a fully-dark section
+    if(ui.sh)ui.sh.classList.toggle('on-dark',botOn);
+    if(projInd)projInd.classList.toggle('on-dark',topOn);  // indicator: SAME state as Let's Talk/hamburger
+  }
   function update(){
     ticking=false;
     const vh=innerHeight;
@@ -626,60 +696,13 @@
     // showcase reveals as the title finishes shrinking (0.62->0.92)
     const rev=clamp((ip-0.62)/0.30);
     if(visual){visual.style.opacity=rev.toFixed(3);
-      // don't let the (still-invisible) panel capture the pointer during the intro, or the cursor
-      // flips to "View Project" before the image is even shown. only hit-test once it's revealed.
       visual.style.pointerEvents=rev>0.5?'auto':'none';}
     if(info){info.style.opacity=rev.toFixed(3);info.style.transform='translateY('+(30*(1-rev)).toFixed(1)+'px)';}
-    // swap through the 3 projects over the REST of the section (after the intro). af 0..2 (held);
-    // each visual shrinks to a card + crosses, text slides — the change reads clearly.
+    lastRev=rev;
+    // scrub the swap with scroll up to the trigger, then auto-play the remainder (see step/animLoop)
     const pp=clamp((scrolled-INTRO)/((sec.offsetHeight-vh-INTRO)||1));
-    const af=projAf(pp);
-    for(let i=0;i<3;i++){
-      const d=af-i;
-      // visual: full while active; shrinks to a card + crosses (out up / in from below) on swap
-      if(vises[i]){ const v=visState(d);
-        vises[i].style.transform='translateY('+v[0].toFixed(2)+'%) scale('+v[1].toFixed(3)+')';
-        vises[i].style.opacity=v[2].toFixed(3); }
-      // text: OUTGOING blurs + fades IN PLACE; only the INCOMING rises from below (de-blurs + fades
-      // in), like the other sections. meta trails the name slightly for a staggered feel.
-      const sl=slides[i]; if(!sl)continue;
-      const ad=Math.abs(d);
-      sl.style.opacity=clamp(1-ad).toFixed(3);
-      sl.style.filter='blur('+(ad*9).toFixed(2)+'px)';
-      const rise=d<0?-d:0;                                 // only the incoming (d<0) moves up
-      const name=sl.querySelector('.proj-name'), meta=sl.querySelector('.proj-meta');
-      if(name)name.style.transform='translateY('+(rise*40).toFixed(1)+'px)';
-      if(meta)meta.style.transform='translateY('+(rise*64).toFixed(1)+'px)';
-    }
-    // flip the fixed header controls to white when they sit over a DARK part of the active image.
-    // CONTINUOUS darkness (settle fades to 0 during a swap, where the controls are over the white
-    // card-margin) + HYSTERESIS, so smooth-scroll momentum near a hold can't flicker the colour.
-    const r=sec.getBoundingClientRect();
-    let tTop=0, tBot=0, tLogo=0;   // tLogo driven only by a fully-dark section (logo isn't over the project image)
-    // -4px tolerance: at the section's very end r.bottom == vh (last project), and sub-pixel rounding
-    // must not drop the panel out of "showing" and snap the UI back to black.
-    if(r.top<=0 && r.bottom>=vh-4 && rev>0.5){
-      const hi=Math.max(0,Math.min(2,Math.round(af)));
-      const settle=clamp(1-Math.abs(af-hi)/0.18);        // 1 on a hold -> 0 once into a swap
-      tTop=settle*(lum[hi].top?1:0); tBot=settle*(lum[hi].bot?1:0);
-    }
-    // CTA ("Say Hello!") is a solid-dark section after projects: flip the UI white while it sits
-    // behind the top controls (header) / bottom control (SCROLL).
-    if(cta){
-      const cr=cta.getBoundingClientRect();
-      if(cr.top<=56 && cr.bottom>=56){ tTop=1; tLogo=1; }   // whole section dark -> logo flips too
-      if(cr.top<=vh-72 && cr.bottom>=vh-72) tBot=1;
-      // one-shot reveal: blur-fade the title/subtitle/button in (staggered) once the section is well
-      // into view (top at ~30% of the viewport => ~70% scrolled in, centred content clearly on screen)
-      if(cr.top < vh*0.3) cta.classList.add('in');
-    }
-    if(tTop>0.6)topOn=true; else if(tTop<0.35)topOn=false;  // dead-zone between 0.35 and 0.6
-    if(tBot>0.6)botOn=true; else if(tBot<0.35)botOn=false;
-    if(tLogo>0.6)logoOn=true; else if(tLogo<0.35)logoOn=false;
-    if(ui.lt)ui.lt.classList.toggle('on-dark',topOn);      // top-right: over the project image
-    if(ui.fm)ui.fm.classList.toggle('on-dark',topOn);
-    if(ui.ci)ui.ci.classList.toggle('on-dark',logoOn);     // top-left: only a fully-dark section
-    if(ui.sh)ui.sh.classList.toggle('on-dark',botOn);
+    step(pp);
+    renderAf();
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
   addEventListener('resize',update);
