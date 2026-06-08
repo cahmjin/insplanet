@@ -601,27 +601,22 @@
     return [ty, s, 1-clamp((d-0.6)/0.4)];
   }
   let ticking=false;
-  // ---- hybrid swap: SCROLL drags the card part-way (scrub), then crossing the trigger AUTO-PLAYS
-  //      the rest to the next project over a fixed time. Per leg the scroll scrubs af base->base+FRAC,
-  //      and the discontinuity at the trigger (FRAC -> 1) is bridged by a smootherstep time tween. ----
-  const AF_DUR=800;                                        // ms for the auto-played remainder
-  const FRAC=0.20;                                         // how far the manual scroll drags before autoplay
-  // scrub windows (pp): leg0 P1->P2, leg1 P2->P3. Between/after triggers af holds at the integer.
-  const SA=[0.06, 0.50], TR=[0.08, 0.52];                  // scrub-start / trigger per leg
-  function scrubAf(pp){
-    if(pp<SA[0]) return 0;
-    if(pp<TR[0]) return FRAC*(pp-SA[0])/(TR[0]-SA[0]);          // leg0: 0 -> FRAC
-    if(pp<SA[1]) return 1;                                       // hold P2
-    if(pp<TR[1]) return 1 + FRAC*(pp-SA[1])/(TR[1]-SA[1]);      // leg1: 1 -> 1+FRAC
-    return 2;                                                    // hold P3
+  // ---- one-cut swap: scroll only picks WHICH project (threshold zones); each change AUTO-PLAYS the
+  //      full slide to the next over a fixed time (smootherstep). No scrubbing — clean cut per step. ----
+  const AF_DUR=800;                                        // ms per auto-played cut
+  const TR=[0.33, 0.66];                                   // pp thresholds: P1|P2 and P2|P3
+  const HYST=0.05;                                         // hysteresis so a boundary can't flip-flop
+  function targetFromPp(pp){
+    const t=afTo;                                          // bias by the current target (only switch past the edge)
+    if(t<=0) return pp > TR[0]        ? 1 : 0;
+    if(t===1) return pp > TR[1]       ? 2 : (pp < TR[0]-HYST ? 0 : 1);
+    return            pp < TR[1]-HYST ? 1 : 2;
   }
   let afAnim=0, afFrom=0, afTo=0, afT0=0, playing=false, lastRev=0;
-  const JUMP=0.25;                                         // target gap above this = a trigger -> autoplay
-  function step(pp){
-    if(playing) return;                                   // the autoplay owns af until it finishes
-    const target=scrubAf(pp);
-    if(Math.abs(target-afAnim)<=JUMP){ afAnim=target; }   // continuous scroll -> direct scrub
-    else { afFrom=afAnim; afTo=target; afT0=performance.now(); playing=true; requestAnimationFrame(animLoop); }
+  function setTarget(t){
+    if(t===afTo) return;
+    afFrom=afAnim; afTo=t; afT0=performance.now();
+    if(!playing){ playing=true; requestAnimationFrame(animLoop); }
   }
   function animLoop(now){
     const k=clamp((now-afT0)/AF_DUR);
@@ -699,9 +694,9 @@
       visual.style.pointerEvents=rev>0.5?'auto':'none';}
     if(info){info.style.opacity=rev.toFixed(3);info.style.transform='translateY('+(30*(1-rev)).toFixed(1)+'px)';}
     lastRev=rev;
-    // scrub the swap with scroll up to the trigger, then auto-play the remainder (see step/animLoop)
+    // scroll only picks the project; crossing a threshold auto-plays the full cut (see setTarget)
     const pp=clamp((scrolled-INTRO)/((sec.offsetHeight-vh-INTRO)||1));
-    step(pp);
+    setTarget(targetFromPp(pp));
     renderAf();
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});

@@ -6,6 +6,10 @@
   const canvas = document.querySelector('canvas.cta-glow');
   if(!canvas) return;
   if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;   // CSS PNG fallback stays
+
+  let started=false;
+  function start(){
+  if(started) return; started=true;
   const gl = canvas.getContext('webgl', {alpha:true, antialias:false, premultipliedAlpha:false});
   if(!gl) return;
 
@@ -116,4 +120,13 @@
   }
   draw();   // one paint up front so it's ready before it scrolls in
   (function loop(){ if(onScreen()) draw(); requestAnimationFrame(loop); })();
+  }  // end start()
+
+  // Defer creating the WebGL context until the CTA is near. iOS Safari keeps only a few live WebGL
+  // contexts and can drop an older one (the Insight shader) when a new one is made on load; this
+  // keeps just blob + Insight alive until you actually scroll down to the CTA.
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ io.disconnect(); start(); } }, {rootMargin:'100% 0px'});
+    io.observe(canvas);
+  } else { start(); }
 })();

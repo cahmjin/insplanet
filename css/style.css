@@ -283,6 +283,8 @@ html.lenis,html.lenis body{height:auto}
   font-size:clamp(12px, calc(0.2232vw + 9.71px), 14px);font-weight:600;line-height:150%}
 .menu-contact p{margin:0}
 .contact-tf{display:flex;gap:48px}
+/* if iOS still auto-links any contact text, keep it the menu colour (not blue) */
+.menu-contact a{color:inherit;text-decoration:none;-webkit-text-fill-color:currentColor}
 
 /* ===== Frame 27: "Insight" pinned fractal-glass section =====
    tall track + sticky stage: the card holds in view while scrolling swaps the steps. */
