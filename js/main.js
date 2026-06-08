@@ -21,7 +21,7 @@
     el.addEventListener('mouseleave',()=>{cur.style.width='32px';cur.style.height='32px';});
   });
   (function loop(){
-    cx+=(mx-cx)*0.32;cy+=(my-cy)*0.32;
+    cx+=(mx-cx)*0.18;cy+=(my-cy)*0.18;
     const r=cur.offsetWidth/2;
     cur.style.transform='translate3d('+(cx-r)+'px,'+(cy-r)+'px,0)';
     requestAnimationFrame(loop);
@@ -110,7 +110,7 @@
   const ctx=(!reduce&&canvas&&canvas.getContext)?canvas.getContext('2d'):null;
   const ORIGIN='at calc(100% - 76px) 60px';
   const TAU=6.2831853;
-  const RINGGAP=34, ARC=34, DOTMIN=2, DOTMAX=18, FRINGE=240, DUR=900; // ring/arc spacing, dot min/max radius, fringe band, ms
+  const RINGGAP=34, ARC=34, DOTMIN=2, DOTMAX=18, FRINGE=240, DUR=600; // ring/arc spacing, dot min/max radius, fringe band, ms
 
   let cx=0,cy=0,W=0,H=0,maxR=1;
   function resize(){
@@ -123,7 +123,13 @@
     ctx.setTransform(dpr,0,0,dpr,0,0);
   }
   resize();
-  let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{resize();render(R);},200);});
+  let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{
+    resize();
+    // if the menu is open, keep the reveal radius at the NEW full size so it still covers
+    // (settled -> snap R; mid-open-animation -> retarget toR). prevents stale-radius gaps.
+    if(overlay.classList.contains('open')){ if(raf===0){R=toR=maxR;} else {toR=maxR;} }
+    render(R);
+  },200);});
 
   function render(waveR){
     if(!ctx)return;                       // reduced-motion uses the CSS panel instead

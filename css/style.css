@@ -65,12 +65,12 @@ html.lenis,html.lenis body{height:auto}
 #full-menu{position:fixed;z-index:60;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);top:clamp(32px, calc(-0.4464vw + 40.57px), 36px);
   width:clamp(48px, calc(0.8929vw + 38.86px), 56px);height:clamp(48px, calc(0.8929vw + 38.86px), 56px);
   display:flex;align-items:center;justify-content:center;border-radius:999px;cursor:pointer}
-#full-menu img{width:24px;height:14px}
+#full-menu img{width:clamp(20.57px, calc(0.3828vw + 16.65px), 24px);height:clamp(12px, calc(0.2232vw + 9.71px), 14px)}
 
-#lets-talk{position:fixed;z-index:60;right:clamp(118px, calc(1.7857vw + 99.71px), 134px);top:45px;
+#lets-talk{position:fixed;z-index:60;right:clamp(130px, calc(2.6786vw + 102.57px), 154px);top:45px;
   display:flex;align-items:center;gap:10px;padding:4px 0;
   border-bottom:1px solid #3E3F44;cursor:pointer}
-#lets-talk span{font-size:clamp(13px, calc(0.1116vw + 11.86px), 14px);font-weight:700;line-height:150%}
+#lets-talk span{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(13px, calc(0.1116vw + 11.86px), 14px);font-weight:700;line-height:150%}
 
 /* left content block: symbol + headline + subtitle, anchored bottom-left as a group */
 /* fluid: anchors 1024/1920/2560 (segment 1024->1920 here; @media >=1920 below for 1920->2560) */
@@ -150,7 +150,7 @@ html.lenis,html.lenis body{height:auto}
   #scroll-hint .bar{background:#1A1A1A}
   #scroll-hint .bar::after{display:none}
 }
-#scroll-hint .label{font-size:clamp(11px, calc(0.3348vw + 7.57px), 14px);font-weight:700;line-height:150%;color:#000;
+#scroll-hint .label{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(11px, calc(0.3348vw + 7.57px), 14px);font-weight:700;line-height:150%;color:#000;
   writing-mode:vertical-rl;letter-spacing:1px}
 
 /* ===== full-screen menu overlay ===== */
@@ -161,6 +161,10 @@ html.lenis,html.lenis body{height:auto}
 /* dark solid core — JS sets clip-path radius each frame, synced with the canvas halftone */
 #menu-panel{position:absolute;inset:0;background:#3E3F44;
   clip-path:circle(0 at calc(100% - 76px) 60px)}
+/* once the reveal has fully covered the screen, drop the clip so the solid panel fills the
+   viewport outright — stays covered through any window resize (the canvas core was sized for the
+   old viewport and would otherwise leave gaps at the new corners). */
+#menu-overlay.covered #menu-panel{clip-path:none}
 /* halftone edge: dots drawn on one canvas (JS). dot size grows as the reveal wavefront
    passes each grid point -> the advancing edge reads as size-graded dots. cheap: one node. */
 #menu-dots{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -173,14 +177,14 @@ html.lenis,html.lenis body{height:auto}
   display:flex;align-items:center;justify-content:center;border-radius:999px;background:#fff;
   cursor:pointer;opacity:0;transition:opacity .4s ease}
 #menu-close img{width:19px;height:19px}
-#menu-overlay.open #menu-logo,#menu-overlay.open #menu-close{opacity:1;transition-delay:.7s}
+#menu-overlay.open #menu-logo,#menu-overlay.open #menu-close{opacity:1;transition-delay:.26s}
 
 /* menu content: centered 1166x677 block, laid out per Figma; appears after the circle */
 .menu-inner{position:absolute;left:50%;top:50%;width:1166px;height:677px;
   transform:translate(-50%,-46%);opacity:0;color:#fff;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
   transition:opacity .45s ease,transform .55s cubic-bezier(.22,1,.36,1)}
-#menu-overlay.open .menu-inner{opacity:1;transform:translate(-50%,-50%);transition-delay:.78s}
+#menu-overlay.open .menu-inner{opacity:1;transform:translate(-50%,-50%);transition-delay:.3s}
 
 /* left column — big nav */
 .menu-nav{position:absolute;left:0;top:8px;display:flex;flex-direction:column;gap:16px}
