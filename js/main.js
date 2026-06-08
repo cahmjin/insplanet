@@ -20,8 +20,11 @@
     el.addEventListener('mouseenter',()=>{cur.style.width='80px';cur.style.height='80px';});
     el.addEventListener('mouseleave',()=>{cur.style.width='32px';cur.style.height='32px';});
   });
+  // smooth follow (no momentum): each frame closes a fixed fraction of the gap, so it moves fast
+  // when far and decelerates to a slow soft stick as it nears the cursor.
+  const FOLLOW=0.13;
   (function loop(){
-    cx+=(mx-cx)*0.18;cy+=(my-cy)*0.18;
+    cx+=(mx-cx)*FOLLOW;cy+=(my-cy)*FOLLOW;
     const r=cur.offsetWidth/2;
     cur.style.transform='translate3d('+(cx-r)+'px,'+(cy-r)+'px,0)';
     requestAnimationFrame(loop);
