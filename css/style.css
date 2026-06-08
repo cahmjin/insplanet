@@ -129,6 +129,12 @@ html.lenis,html.lenis body{height:auto}
   .partners .partner-grid{margin-top:clamp(80px, calc(6.25vw - 40px), 120px)}
   /* Our Projects — left margin 216 -> 218 */
   .projects-title,.projects .proj-info{left:clamp(216px, calc(0.3125vw + 210px), 218px)}
+  /* full menu — segment 1920->2560 (specificity bumped via #menu-overlay to win over the base rules) */
+  #menu-overlay .menu-inner{width:clamp(1184px, calc(2.5vw + 1136px), 1200px);height:clamp(600px, 31.25vw, 800px)}
+  #menu-overlay .menu-col{width:clamp(424px, calc(0.9375vw + 406px), 430px)}
+  #menu-overlay .menu-nav .menu-item{font-size:clamp(80px, calc(3.125vw + 20px), 100px)}
+  #menu-overlay .menu-copy,#menu-overlay .menu-contact,#menu-overlay .project-desc{font-size:clamp(14px, calc(0.3125vw + 8px), 16px)}
+  #menu-overlay .contact-tf{gap:clamp(32px, calc(-2.5vw + 96px), 48px)}
   /* Insight (these base rules live LATER in the file, so bump specificity to win over them) */
   .insight-board .insight-frame{width:clamp(1486px, calc(3.4375vw + 1420px), 1508px)}
   /* num (01/02/03) — 1920 position (1900-2540); base 86.5% above is the 1024 value */
@@ -192,40 +198,48 @@ html.lenis,html.lenis body{height:auto}
 @media (prefers-reduced-motion:reduce){#menu-dots{display:none}}
 
 /* white logo + close button (fade in once the circle has opened) */
-#menu-logo{position:absolute;left:64px;top:48px;width:141px;height:25px;
+#menu-logo{position:absolute;left:clamp(48px, calc(1.7857vw + 29.71px), 64px);top:48px;
+  width:clamp(105px, calc(3.9063vw + 65px), 140.12px);height:clamp(18px, calc(0.6696vw + 11.14px), 24.04px);
   opacity:0;transition:opacity .4s ease}
-#menu-close{position:absolute;right:48px;top:32px;width:56px;height:56px;border:0;padding:0;
+#menu-close{position:absolute;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);top:clamp(32px, calc(-0.4464vw + 40.57px), 36px);
+  width:clamp(48px, calc(0.8929vw + 38.86px), 56px);height:clamp(48px, calc(0.8929vw + 38.86px), 56px);border:0;padding:0;
   display:flex;align-items:center;justify-content:center;border-radius:999px;background:#fff;
   cursor:pointer;opacity:0;transition:opacity .4s ease}
-#menu-close img{width:19px;height:19px}
+#menu-close img{width:clamp(16.29px, calc(0.3025vw + 13.19px), 19px);height:clamp(16.29px, calc(0.3025vw + 13.19px), 19px)}
 #menu-overlay.open #menu-logo,#menu-overlay.open #menu-close{opacity:1;transition-delay:.26s}
 
-/* menu content: centered 1166x677 block, laid out per Figma; appears after the circle */
-.menu-inner{position:absolute;left:50%;top:50%;width:1166px;height:677px;
+/* menu content: centered 2-column block (Figma full-menu). Left = big nav + copyright; right =
+   project list + brief button + contact. Each column space-between over a fixed height. fonts/gaps
+   per the 3 anchors (1024/1920/2560); >=1920 segment in the media block below. */
+.menu-inner{position:absolute;left:50%;top:50%;
+  width:clamp(928px, calc(28.571vw + 635.43px), 1184px);height:clamp(480px, calc(13.393vw + 342.86px), 600px);
+  max-width:calc(100vw - 96px);
   transform:translate(-50%,-46%);opacity:0;color:#fff;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+  display:flex;justify-content:space-between;align-items:stretch;
   transition:opacity .45s ease,transform .55s cubic-bezier(.22,1,.36,1)}
 #menu-overlay.open .menu-inner{opacity:1;transform:translate(-50%,-50%);transition-delay:.3s}
+.menu-col{width:clamp(424px, calc(-2.6786vw + 475.43px), 448px);min-width:0;display:flex;flex-direction:column;justify-content:space-between}
 
-/* left column — big nav */
-.menu-nav{position:absolute;left:0;top:8px;display:flex;flex-direction:column;gap:16px}
+/* left column — big nav + copyright */
+.menu-nav{display:flex;flex-direction:column;gap:16px}
 .menu-nav .menu-item{display:flex;align-items:center;gap:16px;text-decoration:none;color:#fff;
-  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:100px;line-height:1;
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(64px, calc(1.7857vw + 45.71px), 80px);line-height:1;
   transition:opacity .25s ease}
 .menu-nav .menu-item:hover{opacity:.6}
-.menu-badge{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 24px;
+.menu-badge{display:inline-flex;align-items:center;justify-content:center;
+  height:clamp(40px, calc(2.2321vw + 17.14px), 60px);padding:0 clamp(16px, calc(0.8929vw + 6.86px), 24px);
   border-radius:999px;background:#fff;color:#3E3F44;
-  font-family:'Roboto Serif',serif;font-weight:400;font-size:32px;line-height:1}
-.menu-copy{position:absolute;left:0;top:653px;width:322px;
-  font-size:16px;font-weight:600;line-height:150%}
+  font-family:'Roboto Serif',serif;font-weight:400;font-size:clamp(24px, calc(0.8929vw + 14.86px), 32px);line-height:1}
+.menu-copy{margin:0;font-size:clamp(12px, calc(0.2232vw + 9.71px), 14px);font-weight:600;line-height:150%}
 
 /* right column — project list */
-.project-list{position:absolute;left:760px;top:0;width:440px;list-style:none;
-  display:flex;flex-direction:column;gap:56px}
+.project-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:clamp(32px, calc(2.6786vw + 4.57px), 56px)}
 .project-list li{display:flex;flex-direction:column;gap:12px}
 .project-head{display:flex;align-items:center;gap:10px}
-.project-name{font-size:24px;font-weight:600;line-height:1}
-.project-arrow{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px}
+.project-name{font-size:clamp(16px, calc(0.4464vw + 11.43px), 20px);font-weight:600;line-height:1}
+.project-arrow{display:inline-flex;align-items:center;justify-content:center;
+  width:clamp(24px, calc(0.8929vw + 14.86px), 32px);height:clamp(24px, calc(0.8929vw + 14.86px), 32px)}
 .project-arrow img{width:14px;height:14px}
 /* hover a project: arrow exits top-right, re-enters from bottom-left, settles (one cycle) */
 @keyframes project-arrow-cycle{
@@ -234,12 +248,12 @@ html.lenis,html.lenis body{height:auto}
   46% {transform:translate(-11px,11px);opacity:0}
   100%{transform:translate(0,0);opacity:1}}
 .project-list li:hover .project-arrow img{animation:project-arrow-cycle .55s cubic-bezier(.22,1,.36,1)}
-.project-desc{font-size:16px;font-weight:400;line-height:150%}
+.project-desc{font-size:clamp(12px, calc(0.2232vw + 9.71px), 14px);font-weight:400;line-height:150%}
 
 /* right column — company brief button */
-.brief-btn{position:absolute;left:760px;top:445px;display:inline-flex;align-items:center;gap:12px;
+.brief-btn{display:inline-flex;align-self:flex-start;align-items:center;gap:12px;
   padding:12px 12px 12px 16px;border:1px solid #fff;border-radius:8px;
-  text-decoration:none;color:#fff;font-size:16px;font-weight:600;line-height:150%;
+  text-decoration:none;color:#fff;font-size:clamp(14px, calc(0.2232vw + 11.71px), 16px);font-weight:600;line-height:150%;
   transition:background .25s ease,color .25s ease}
 .brief-btn .download-icon{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px}
 .brief-btn .download-icon img{width:13px;height:13px;transition:filter .25s ease}
@@ -253,13 +267,10 @@ html.lenis,html.lenis body{height:auto}
 .brief-btn:hover .download-icon img{filter:invert(1);animation:download-cycle .55s cubic-bezier(.22,1,.36,1)}
 
 /* right column — contact block */
-.menu-contact{position:absolute;left:760px;top:573px;width:406px;height:104px;
-  font-size:16px;font-weight:600;line-height:150%}
-.menu-contact p{position:absolute}
-.menu-contact .contact-addr{left:0;top:0;width:406px}
-.menu-contact .contact-email{left:0;top:40px}
-.menu-contact .contact-tel{left:0;top:80px}
-.menu-contact .contact-fax{left:159px;top:80px}
+.menu-contact{display:flex;flex-direction:column;gap:16px;
+  font-size:clamp(12px, calc(0.2232vw + 9.71px), 14px);font-weight:600;line-height:150%}
+.menu-contact p{margin:0}
+.contact-tf{display:flex;gap:48px}
 
 /* ===== Frame 27: "Insight" pinned fractal-glass section =====
    tall track + sticky stage: the card holds in view while scrolling swaps the steps. */
