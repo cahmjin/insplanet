@@ -516,7 +516,10 @@
     //    into view from below
     const headerH=grid.offsetTop, contentH=inner.offsetHeight;
     const y0=(vh-headerH)/2, y1=(vh-contentH)/2;
-    const roll=ease(clamp((p-ROLLSTART)/(1-ROLLSTART)));
+    // LINEAR roll (not easeOut): easeOut finishes ~95% by the time the logos are in, leaving a near-
+    // static tail before the pin releases ("stops then jumps"). Linear keeps it moving steadily to
+    // the release, so the handoff to normal scroll reads continuous.
+    const roll=clamp((p-ROLLSTART)/(1-ROLLSTART));
     inner.style.transform='translateY('+lerp(y0,y1,roll).toFixed(1)+'px)';
     // 3) logos fade in row-by-row (top -> down), in place below the desc; the roll-up (above) only
     //    kicks in once ~2 rows are settled, so they don't scroll the instant they appear
@@ -542,6 +545,21 @@
   if(!sec||!title)return;
   const vises=[...sec.querySelectorAll('.proj-vis')];
   const slides=[...sec.querySelectorAll('.proj-slide')];
+  // adaptive header UI: sample each project image's luminance where the fixed controls sit (top-right
+  // for Let's Talk/menu, bottom-right for SCROLL) -> flip them to white over dark images.
+  const ui={lt:document.getElementById('lets-talk'),fm:document.getElementById('full-menu'),sh:document.getElementById('scroll-hint')};
+  const imgEls=[...sec.querySelectorAll('.proj-img')];
+  const lum=imgEls.map(()=>({top:false,bot:false}));
+  function sampleImg(img,idx){
+    try{
+      const cw=64,ch=Math.round(cw*img.naturalHeight/img.naturalWidth)||72;
+      const cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
+      const c=cv.getContext('2d');c.drawImage(img,0,0,cw,ch);
+      const at=(rx,ry)=>{const d=c.getImageData(Math.round(rx*(cw-1)),Math.round(ry*(ch-1)),1,1).data;return 0.299*d[0]+0.587*d[1]+0.114*d[2];};
+      lum[idx]={top:at(0.86,0.06)<110, bot:at(0.86,0.94)<110};
+    }catch(e){}
+  }
+  imgEls.forEach((img,i)=>{ if(img.complete&&img.naturalWidth)sampleImg(img,i); else img.addEventListener('load',()=>sampleImg(img,i),{once:true}); });
   const clamp=v=>Math.min(1,Math.max(0,v));
   const lerp=(a,b,t)=>a+(b-a)*t;
   const smooth=x=>x*x*(3-2*x);                           // smoothstep for transitions
@@ -561,6 +579,7 @@
     if(vises[0]){vises[0].style.transform='translateY(0) scale(1)';vises[0].style.opacity='1';} if(slides[0])slides[0].style.opacity='1';
     return;
   }
+  let topOn=false, botOn=false;                           // current adaptive-UI state (hysteresis below)
   const SLIDE=62, CARD=0.72;                              // card slide distance (% of panel) + card scale
   // a visual layer's state by distance d = af - i : full when active, card+slide during a swap.
   // all eased (smoothstep) over wide windows so the grow/shrink feels smooth, not snappy.
@@ -622,6 +641,23 @@
       if(name)name.style.transform='translateY('+(rise*40).toFixed(1)+'px)';
       if(meta)meta.style.transform='translateY('+(rise*64).toFixed(1)+'px)';
     }
+    // flip the fixed header controls to white when they sit over a DARK part of the active image.
+    // CONTINUOUS darkness (settle fades to 0 during a swap, where the controls are over the white
+    // card-margin) + HYSTERESIS, so smooth-scroll momentum near a hold can't flicker the colour.
+    const r=sec.getBoundingClientRect();
+    let tTop=0, tBot=0;
+    // -4px tolerance: at the section's very end r.bottom == vh (last project), and sub-pixel rounding
+    // must not drop the panel out of "showing" and snap the UI back to black.
+    if(r.top<=0 && r.bottom>=vh-4 && rev>0.5){
+      const hi=Math.max(0,Math.min(2,Math.round(af)));
+      const settle=clamp(1-Math.abs(af-hi)/0.18);        // 1 on a hold -> 0 once into a swap
+      tTop=settle*(lum[hi].top?1:0); tBot=settle*(lum[hi].bot?1:0);
+    }
+    if(tTop>0.6)topOn=true; else if(tTop<0.35)topOn=false;  // dead-zone between 0.35 and 0.6
+    if(tBot>0.6)botOn=true; else if(tBot<0.35)botOn=false;
+    if(ui.lt)ui.lt.classList.toggle('on-dark',topOn);
+    if(ui.fm)ui.fm.classList.toggle('on-dark',topOn);
+    if(ui.sh)ui.sh.classList.toggle('on-dark',botOn);
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
   addEventListener('resize',update);

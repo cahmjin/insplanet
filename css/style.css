@@ -140,7 +140,9 @@ html.lenis,html.lenis body{height:auto}
 }
 
 #scroll-hint{position:fixed;z-index:60;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);bottom:64px;width:21px;
-  display:flex;flex-direction:column;align-items:center;gap:16px}
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  pointer-events:none;user-select:none;-webkit-user-select:none}  /* decorative: mouse passes through
+    -> no text I-beam, and the custom cursor reads the panel behind it (keeps 'View Project') */
 /* faint track + dark line that draws top->bottom then exits downward, looping */
 #scroll-hint .bar{position:relative;width:1px;height:64px;background:rgba(26,26,26,.15);overflow:hidden}
 #scroll-hint .bar::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;
@@ -158,6 +160,19 @@ html.lenis,html.lenis body{height:auto}
 }
 #scroll-hint .label{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(11px, calc(0.3348vw + 7.57px), 14px);font-weight:700;line-height:150%;color:#000;
   writing-mode:vertical-rl;letter-spacing:1px}
+
+/* adaptive header UI: over a DARK part of a project image the fixed controls flip to white
+   (js/main.js samples the active image's luminance behind each one). smooth fade between states. */
+#lets-talk span,#scroll-hint .label{transition:color .35s ease}
+#lets-talk{transition:border-color .35s ease}
+#full-menu img{transition:filter .35s ease}
+#scroll-hint .bar,#scroll-hint .bar::after{transition:background-color .35s ease}
+#lets-talk.on-dark{border-bottom-color:#fff}
+#lets-talk.on-dark span{color:#fff}
+#full-menu.on-dark img{filter:brightness(0) invert(1)}
+#scroll-hint.on-dark .label{color:#fff}
+#scroll-hint.on-dark .bar{background:rgba(255,255,255,.28)}
+#scroll-hint.on-dark .bar::after{background:#fff}
 
 /* ===== full-screen menu overlay ===== */
 /* keep the overlay visible through the close animation, then hide it */
