@@ -127,6 +127,8 @@ html.lenis,html.lenis body{height:auto}
   .partners .partners-inner{width:clamp(1486px, calc(75.47vw + 37px), 1970px)}
   .partners .partners-desc{margin-top:clamp(24px, calc(2.5vw - 24px), 40px)}
   /* (.partner-grid desc gap is a single 6.25vw clamp 64->160 in the base rule — covers 1920->2560 too) */
+  /* Say Hello CTA — subtitle left indent 12 -> 14.5 */
+  .contact-cta .cta-sub{margin-left:clamp(12px, calc(0.3906vw + 4.5px), 14.5px)}
   /* Our Projects — left margin 216 -> 218 */
   .projects-title,.projects .proj-info{left:clamp(216px, calc(0.3125vw + 210px), 218px)}
   /* full menu — segment 1920->2560 (specificity bumped via #menu-overlay to win over the base rules) */
@@ -482,7 +484,7 @@ html.lenis,html.lenis body{height:auto}
 .cta-title{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;
   font-size:clamp(110.16px, calc(11.813vw - 10.81px), 216px);line-height:1;text-align:center;color:#fff}
 .cta-row{display:flex;align-items:center;justify-content:space-between;gap:clamp(24px, calc(2.5vw - 1.6px), 40px)}
-.cta-sub{margin:0;font-weight:400;font-size:clamp(20px, calc(1.3393vw + 6.29px), 32px);line-height:1.5;color:#fff}
+.cta-sub{margin:0 0 0 clamp(8px, calc(0.4464vw + 3.43px), 12px);font-weight:400;font-size:clamp(20px, calc(1.3393vw + 6.29px), 32px);line-height:1.5;color:#fff}
 .cta-arrow{flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:#fff;
   width:clamp(40px, calc(2.6786vw + 12.57px), 64px);height:clamp(40px, calc(2.6786vw + 12.57px), 64px);
   padding:clamp(12.5px, calc(0.8371vw + 3.93px), 20px)}
