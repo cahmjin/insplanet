@@ -477,8 +477,9 @@ html.lenis,html.lenis body{height:auto}
 .contact-cta{position:relative;height:100vh;background:#000;overflow:hidden;
   display:flex;align-items:center;justify-content:center;color:#fff;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
-.cta-glow{position:absolute;left:50%;bottom:-8vh;transform:translateX(-50%);
-  width:clamp(640px, 62.4vw, 1500px);height:auto;pointer-events:none;user-select:none;z-index:0}
+/* animated horizon glow (WebGL canvas, js/cta-glow.js). Covers the whole section behind the content.
+   No-WebGL / reduced-motion falls back to plain black (the canvas stays transparent over this). */
+.cta-glow{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;user-select:none;z-index:0;background:#000}
 .cta-inner{position:relative;z-index:1;display:inline-flex;flex-direction:column;
   gap:clamp(24px, calc(2.7902vw - 4.57px), 49px);align-items:stretch}
 .cta-title{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;

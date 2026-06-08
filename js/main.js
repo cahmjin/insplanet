@@ -583,7 +583,10 @@
     if(vises[0]){vises[0].style.transform='translateY(0) scale(1)';vises[0].style.opacity='1';} if(slides[0])slides[0].style.opacity='1';
     return;
   }
-  let topOn=false, botOn=false;                           // current adaptive-UI state (hysteresis below)
+  let topOn=false, botOn=false, logoOn=false;             // current adaptive-UI state (hysteresis below)
+  // NOTE: the logo (top-LEFT) is tracked separately from Let's Talk/menu (top-RIGHT). In projects the
+  // image only fills the RIGHT half, so the logo sits over the light left column and must NOT follow
+  // the right-side darkness; only a fully-dark section (CTA) flips it.
   const SLIDE=62, CARD=0.72;                              // card slide distance (% of panel) + card scale
   // a visual layer's state by distance d = af - i : full when active, card+slide during a swap.
   // all eased (smoothstep) over wide windows so the grow/shrink feels smooth, not snappy.
@@ -652,7 +655,7 @@
     // CONTINUOUS darkness (settle fades to 0 during a swap, where the controls are over the white
     // card-margin) + HYSTERESIS, so smooth-scroll momentum near a hold can't flicker the colour.
     const r=sec.getBoundingClientRect();
-    let tTop=0, tBot=0;
+    let tTop=0, tBot=0, tLogo=0;   // tLogo driven only by a fully-dark section (logo isn't over the project image)
     // -4px tolerance: at the section's very end r.bottom == vh (last project), and sub-pixel rounding
     // must not drop the panel out of "showing" and snap the UI back to black.
     if(r.top<=0 && r.bottom>=vh-4 && rev>0.5){
@@ -664,7 +667,7 @@
     // behind the top controls (header) / bottom control (SCROLL).
     if(cta){
       const cr=cta.getBoundingClientRect();
-      if(cr.top<=56 && cr.bottom>=56) tTop=1;
+      if(cr.top<=56 && cr.bottom>=56){ tTop=1; tLogo=1; }   // whole section dark -> logo flips too
       if(cr.top<=vh-72 && cr.bottom>=vh-72) tBot=1;
       // one-shot reveal: blur-fade the title/subtitle/button in (staggered) once the section is well
       // into view (top at ~30% of the viewport => ~70% scrolled in, centred content clearly on screen)
@@ -672,9 +675,10 @@
     }
     if(tTop>0.6)topOn=true; else if(tTop<0.35)topOn=false;  // dead-zone between 0.35 and 0.6
     if(tBot>0.6)botOn=true; else if(tBot<0.35)botOn=false;
-    if(ui.lt)ui.lt.classList.toggle('on-dark',topOn);
+    if(tLogo>0.6)logoOn=true; else if(tLogo<0.35)logoOn=false;
+    if(ui.lt)ui.lt.classList.toggle('on-dark',topOn);      // top-right: over the project image
     if(ui.fm)ui.fm.classList.toggle('on-dark',topOn);
-    if(ui.ci)ui.ci.classList.toggle('on-dark',topOn);
+    if(ui.ci)ui.ci.classList.toggle('on-dark',logoOn);     // top-left: only a fully-dark section
     if(ui.sh)ui.sh.classList.toggle('on-dark',botOn);
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
