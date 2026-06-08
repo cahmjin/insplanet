@@ -618,7 +618,10 @@
     title.style.transform='translateY('+ty.toFixed(1)+'px) scale('+s.toFixed(3)+')';
     // showcase reveals as the title finishes shrinking (0.62->0.92)
     const rev=clamp((ip-0.62)/0.30);
-    if(visual)visual.style.opacity=rev.toFixed(3);
+    if(visual){visual.style.opacity=rev.toFixed(3);
+      // don't let the (still-invisible) panel capture the pointer during the intro, or the cursor
+      // flips to "View Project" before the image is even shown. only hit-test once it's revealed.
+      visual.style.pointerEvents=rev>0.5?'auto':'none';}
     if(info){info.style.opacity=rev.toFixed(3);info.style.transform='translateY('+(30*(1-rev)).toFixed(1)+'px)';}
     // swap through the 3 projects over the REST of the section (after the intro). af 0..2 (held);
     // each visual shrinks to a card + crosses, text slides — the change reads clearly.

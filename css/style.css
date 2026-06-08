@@ -211,14 +211,21 @@ html.lenis,html.lenis body{height:auto}
 /* menu content: centered 2-column block (Figma full-menu). Left = big nav + copyright; right =
    project list + brief button + contact. Each column space-between over a fixed height. fonts/gaps
    per the 3 anchors (1024/1920/2560); >=1920 segment in the media block below. */
-.menu-inner{position:absolute;left:50%;top:50%;
+/* horizontal: centered within the content box (scrollbar excluded) with a 48px gutter cap, matching
+   the site's gutter system — left edge lines up with the logo, right edge with the close button at
+   1024 (both reference the same content box). max-width may trim the block ~15px when a scrollbar is
+   present; imperceptible.
+   vertical: NOT centered — Figma sits the block lower (top gap > bottom). The top gap is ~26% of the
+   viewport height across the 3 anchors (200/768, 280/1080, 360/1440), so anchor the TOP edge at 26%
+   (ratio, not px) rather than centering. */
+.menu-inner{position:absolute;left:50%;top:26%;
   width:clamp(928px, calc(28.571vw + 635.43px), 1184px);height:clamp(480px, calc(13.393vw + 342.86px), 600px);
-  max-width:calc(100vw - 96px);
-  transform:translate(-50%,-46%);opacity:0;color:#fff;
+  max-width:calc(100% - 96px);
+  transform:translate(-50%,4%);opacity:0;color:#fff;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
   display:flex;justify-content:space-between;align-items:stretch;
   transition:opacity .45s ease,transform .55s cubic-bezier(.22,1,.36,1)}
-#menu-overlay.open .menu-inner{opacity:1;transform:translate(-50%,-50%);transition-delay:.3s}
+#menu-overlay.open .menu-inner{opacity:1;transform:translate(-50%,0);transition-delay:.3s}
 .menu-col{width:clamp(424px, calc(-2.6786vw + 475.43px), 448px);min-width:0;display:flex;flex-direction:column;justify-content:space-between}
 
 /* left column — big nav + copyright */
@@ -240,7 +247,7 @@ html.lenis,html.lenis body{height:auto}
 .project-name{font-size:clamp(16px, calc(0.4464vw + 11.43px), 20px);font-weight:600;line-height:1}
 .project-arrow{display:inline-flex;align-items:center;justify-content:center;
   width:clamp(24px, calc(0.8929vw + 14.86px), 32px);height:clamp(24px, calc(0.8929vw + 14.86px), 32px)}
-.project-arrow img{width:14px;height:14px}
+.project-arrow img{width:clamp(10.5px, calc(0.3906vw + 6.5px), 14px);height:clamp(10.5px, calc(0.3906vw + 6.5px), 14px)}
 /* hover a project: arrow exits top-right, re-enters from bottom-left, settles (one cycle) */
 @keyframes project-arrow-cycle{
   0%  {transform:translate(0,0);opacity:1}
@@ -252,11 +259,12 @@ html.lenis,html.lenis body{height:auto}
 
 /* right column — company brief button */
 .brief-btn{display:inline-flex;align-self:flex-start;align-items:center;gap:12px;
-  padding:12px 12px 12px 16px;border:1px solid #fff;border-radius:8px;
+  padding:clamp(10px, calc(0.2232vw + 7.71px), 12px) clamp(8px, calc(0.4464vw + 3.43px), 12px) clamp(10px, calc(0.2232vw + 7.71px), 12px) clamp(12px, calc(0.4464vw + 7.43px), 16px);
+  border:1px solid #fff;border-radius:8px;
   text-decoration:none;color:#fff;font-size:clamp(14px, calc(0.2232vw + 11.71px), 16px);font-weight:600;line-height:150%;
   transition:background .25s ease,color .25s ease}
 .brief-btn .download-icon{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px}
-.brief-btn .download-icon img{width:13px;height:13px;transition:filter .25s ease}
+.brief-btn .download-icon img{width:11.31px;height:11.31px;transition:filter .25s ease}
 .brief-btn:hover{background:#fff;color:#3E3F44}
 /* hover: icon drops down & out, re-enters from the top, settles (one cycle) */
 @keyframes download-cycle{
@@ -422,7 +430,7 @@ html.lenis,html.lenis body{height:auto}
    any project image auto-fills correctly. Current asset is the whole Figma panel (blue + logo) baked
    into one image; replace with a real project image any time. Blue is the fallback backdrop. */
 .proj-visual{position:absolute;top:0;right:0;width:calc(50% - 16px);height:100%;background:transparent;
-  overflow:hidden;z-index:1;opacity:0;will-change:opacity}
+  overflow:hidden;z-index:1;opacity:0;pointer-events:none;will-change:opacity}
 /* a project's visual layer (solid colour now, or an <img> later). Each is full-bleed while active;
    on swap the active one SHRINKS to a centred card then lifts up & out, while the next rises from
    below as a card and expands back to full (JS sets transform/opacity per scroll). */
@@ -443,7 +451,8 @@ html.lenis,html.lenis body{height:auto}
 .proj-meta dt{font-weight:700}
 .proj-meta dd{margin:0;font-weight:400}
 .proj-more{position:absolute;left:0;bottom:clamp(80px, 9vh, 170px);display:inline-flex;align-items:center;gap:12px;white-space:nowrap;
-  padding:12px 12px 12px 16px;border:1px solid #3E3F44;border-radius:8px;text-decoration:none;
+  padding:clamp(10px, calc(0.2232vw + 7.71px), 12px) clamp(8px, calc(0.4464vw + 3.43px), 12px) clamp(10px, calc(0.2232vw + 7.71px), 12px) clamp(12px, calc(0.4464vw + 7.43px), 16px);
+  border:1px solid #3E3F44;border-radius:8px;text-decoration:none;
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:clamp(14px, calc(0.2232vw + 11.71px), 16px);line-height:1.5;color:#3E3F44;
   transition:background .25s ease,color .25s ease}
 .proj-more:hover{background:#3E3F44;color:#fff}
