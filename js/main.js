@@ -47,15 +47,17 @@
   const STRENGTH=0.5, STIFF=0.12, DAMP=0.78, MAX=20; // spring: mild elastic overshoot; MAX caps pull (large elements clamp here; higher STRENGTH lets small ones pull more)
   const clamp=v=>Math.max(-MAX,Math.min(MAX,v));
   const items=[];
-  document.querySelectorAll('#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item').forEach(el=>{
-    const it={el,tx:0,ty:0,x:0,y:0,vx:0,vy:0,zeroed:true};
+  document.querySelectorAll('#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.cta-arrow').forEach(el=>{
+    const sMax=el.classList.contains('cta-arrow')?1.4:1;   // the CTA arrow also grows on hover (scale folded into the spring)
+    const it={el,tx:0,ty:0,x:0,y:0,vx:0,vy:0,sMax,s:1,sTo:1,zeroed:true};
     el.addEventListener('mousemove',e=>{
       const r=el.getBoundingClientRect();
       // subtract current translate (x,y) to get the untransformed center -> no feedback drift
       it.tx=clamp((e.clientX-(r.left+r.width/2-it.x))*STRENGTH);
       it.ty=clamp((e.clientY-(r.top+r.height/2-it.y))*STRENGTH);
+      it.sTo=sMax;
     });
-    el.addEventListener('mouseleave',()=>{it.tx=0;it.ty=0;});
+    el.addEventListener('mouseleave',()=>{it.tx=0;it.ty=0;it.sTo=1;});
     items.push(it);
   });
   if(!items.length)return;
@@ -65,12 +67,13 @@
       const it=items[i];
       it.vx=(it.vx+(it.tx-it.x)*STIFF)*DAMP; it.x+=it.vx;
       it.vy=(it.vy+(it.ty-it.y)*STIFF)*DAMP; it.y+=it.vy;
-      if(it.tx===0&&it.ty===0&&Math.abs(it.x)<.01&&Math.abs(it.y)<.01&&Math.abs(it.vx)<.01&&Math.abs(it.vy)<.01){
-        if(!it.zeroed){it.x=it.y=it.vx=it.vy=0;it.el.style.transform='translate(0,0)';it.zeroed=true;}
+      it.s+=(it.sTo-it.s)*0.2;                              // smooth scale toward target (1 or sMax)
+      if(it.tx===0&&it.ty===0&&it.sTo===1&&Math.abs(it.x)<.01&&Math.abs(it.y)<.01&&Math.abs(it.vx)<.01&&Math.abs(it.vy)<.01&&Math.abs(it.s-1)<.001){
+        if(!it.zeroed){it.x=it.y=it.vx=it.vy=0;it.s=1;it.el.style.transform=it.sMax>1?'translate(0,0) scale(1)':'translate(0,0)';it.zeroed=true;}
         continue;
       }
       it.zeroed=false;
-      it.el.style.transform='translate('+it.x.toFixed(2)+'px,'+it.y.toFixed(2)+'px)';
+      it.el.style.transform='translate('+it.x.toFixed(2)+'px,'+it.y.toFixed(2)+'px)'+(it.sMax>1?' scale('+it.s.toFixed(3)+')':'');
     }
     requestAnimationFrame(frame);
   })();
@@ -547,7 +550,8 @@
   const slides=[...sec.querySelectorAll('.proj-slide')];
   // adaptive header UI: sample each project image's luminance where the fixed controls sit (top-right
   // for Let's Talk/menu, bottom-right for SCROLL) -> flip them to white over dark images.
-  const ui={lt:document.getElementById('lets-talk'),fm:document.getElementById('full-menu'),sh:document.getElementById('scroll-hint')};
+  const ui={lt:document.getElementById('lets-talk'),fm:document.getElementById('full-menu'),sh:document.getElementById('scroll-hint'),ci:document.getElementById('ci-logo')};
+  const cta=document.querySelector('.contact-cta');   // solid-dark CTA after projects -> also flips UI white
   const imgEls=[...sec.querySelectorAll('.proj-img')];
   const lum=imgEls.map(()=>({top:false,bot:false}));
   function sampleImg(img,idx){
@@ -656,10 +660,21 @@
       const settle=clamp(1-Math.abs(af-hi)/0.18);        // 1 on a hold -> 0 once into a swap
       tTop=settle*(lum[hi].top?1:0); tBot=settle*(lum[hi].bot?1:0);
     }
+    // CTA ("Say Hello!") is a solid-dark section after projects: flip the UI white while it sits
+    // behind the top controls (header) / bottom control (SCROLL).
+    if(cta){
+      const cr=cta.getBoundingClientRect();
+      if(cr.top<=56 && cr.bottom>=56) tTop=1;
+      if(cr.top<=vh-72 && cr.bottom>=vh-72) tBot=1;
+      // one-shot reveal: blur-fade the title/subtitle/button in (staggered) once the section is well
+      // into view (top at ~30% of the viewport => ~70% scrolled in, centred content clearly on screen)
+      if(cr.top < vh*0.3) cta.classList.add('in');
+    }
     if(tTop>0.6)topOn=true; else if(tTop<0.35)topOn=false;  // dead-zone between 0.35 and 0.6
     if(tBot>0.6)botOn=true; else if(tBot<0.35)botOn=false;
     if(ui.lt)ui.lt.classList.toggle('on-dark',topOn);
     if(ui.fm)ui.fm.classList.toggle('on-dark',topOn);
+    if(ui.ci)ui.ci.classList.toggle('on-dark',topOn);
     if(ui.sh)ui.sh.classList.toggle('on-dark',botOn);
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});

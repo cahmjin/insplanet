@@ -126,7 +126,7 @@ html.lenis,html.lenis body{height:auto}
   /* Our Partners — segment 1920->2560 (grid stays 5-col; gaps/cell-height flat above 1920) */
   .partners .partners-inner{width:clamp(1486px, calc(75.47vw + 37px), 1970px)}
   .partners .partners-desc{margin-top:clamp(24px, calc(2.5vw - 24px), 40px)}
-  .partners .partner-grid{margin-top:clamp(80px, calc(6.25vw - 40px), 120px)}
+  /* (.partner-grid desc gap is a single 6.25vw clamp 64->160 in the base rule — covers 1920->2560 too) */
   /* Our Projects — left margin 216 -> 218 */
   .projects-title,.projects .proj-info{left:clamp(216px, calc(0.3125vw + 210px), 218px)}
   /* full menu — segment 1920->2560 (specificity bumped via #menu-overlay to win over the base rules) */
@@ -172,7 +172,9 @@ html.lenis,html.lenis body{height:auto}
 #lets-talk span,#scroll-hint .label{transition:color .35s ease}
 #lets-talk{transition:border-color .35s ease}
 #full-menu img{transition:filter .35s ease}
+#ci-logo{transition:filter .35s ease}
 #scroll-hint .bar,#scroll-hint .bar::after{transition:background-color .35s ease}
+#ci-logo.on-dark{filter:brightness(0) invert(1)}
 #lets-talk.on-dark{border-bottom-color:#fff}
 #lets-talk.on-dark span{color:#fff}
 #full-menu.on-dark img{filter:brightness(0) invert(1)}
@@ -408,7 +410,7 @@ html.lenis,html.lenis body{height:auto}
   opacity:0;filter:blur(8px);will-change:opacity,filter}   /* fades + de-blurs in place; the block roll-up is what lifts it */
 /* full-width 5-column grid; rows rise in via JS. each logo keeps its design w/h (--lw/--lh) scaled
    by --logo-k (0.8 @1024 -> 1.0 @1920, set in js/main.js). gaps/cell-height per the 3 anchors. */
-.partner-grid{margin-top:clamp(48px, calc(3.5714vw + 11.43px), 80px);
+.partner-grid{margin-top:clamp(64px, 6.25vw, 160px);
   display:grid;grid-template-columns:repeat(5,1fr);place-items:center;
   column-gap:24px;row-gap:clamp(32px, calc(5.357vw - 22.86px), 80px);
   grid-auto-rows:clamp(56px, calc(2.6786vw + 28.57px), 80px)}
@@ -466,6 +468,41 @@ html.lenis,html.lenis body{height:auto}
   .proj-slide:first-child{opacity:1}
   .proj-vis:first-child{transform:translateY(0)}
 }
+
+/* chapter 07: "Say Hello!" contact CTA (Figma Frame 45). Black screen + purple horizon glow at the
+   bottom; centred title with a row beneath (subtitle left / round arrow button right). Title & co.
+   scale 1024->1920 then stay flat to 2560 (no media block needed). Structure only — no scroll yet. */
+.contact-cta{position:relative;height:100vh;background:#000;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
+.cta-glow{position:absolute;left:50%;bottom:-8vh;transform:translateX(-50%);
+  width:clamp(640px, 62.4vw, 1500px);height:auto;pointer-events:none;user-select:none;z-index:0}
+.cta-inner{position:relative;z-index:1;display:inline-flex;flex-direction:column;
+  gap:clamp(24px, calc(2.7902vw - 4.57px), 49px);align-items:stretch}
+.cta-title{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;
+  font-size:clamp(110.16px, calc(11.813vw - 10.81px), 216px);line-height:1;text-align:center;color:#fff}
+.cta-row{display:flex;align-items:center;justify-content:space-between;gap:clamp(24px, calc(2.5vw - 1.6px), 40px)}
+.cta-sub{margin:0;font-weight:400;font-size:clamp(20px, calc(1.3393vw + 6.29px), 32px);line-height:1.5;color:#fff}
+.cta-arrow{flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:#fff;
+  width:clamp(40px, calc(2.6786vw + 12.57px), 64px);height:clamp(40px, calc(2.6786vw + 12.57px), 64px);
+  padding:clamp(12.5px, calc(0.8371vw + 3.93px), 20px)}
+.cta-arrow svg{width:100%;height:100%;display:block}
+/* reveal: title -> subtitle -> button fade in from a soft blur, in place and one-by-one, when the
+   section scrolls into view (.in added by js/main.js). opacity/filter only — no transform, so it
+   never fights the button's magnetic inline transform. */
+.cta-title,.cta-sub,.cta-arrow{opacity:0;filter:blur(8px);transition:opacity .9s ease,filter .9s ease}
+.contact-cta.in .cta-title{opacity:1;filter:blur(0)}
+.contact-cta.in .cta-sub{opacity:1;filter:blur(0);transition-delay:.18s}
+.contact-cta.in .cta-arrow{opacity:1;filter:blur(0);transition-delay:.36s}
+@media (prefers-reduced-motion:reduce){.cta-title,.cta-sub,.cta-arrow{opacity:1;filter:none;transition:none}}
+/* hover: the button is magnetic AND grows (both via the shared spring loop in js/main.js — translate +
+   scale on the same inline transform), and the arrow exits RIGHT / re-enters LEFT, settles (one cycle). */
+@keyframes cta-arrow-cycle{
+  0%  {transform:translateX(0);opacity:1}
+  45% {transform:translateX(150%);opacity:0}
+  46% {transform:translateX(-150%);opacity:0}
+  100%{transform:translateX(0);opacity:1}}
+.cta-arrow:hover svg{animation:cta-arrow-cycle .55s cubic-bezier(.22,1,.36,1)}
 
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
 #cursor{display:none}
