@@ -15,15 +15,22 @@
   if(!cur||!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
   let mx=innerWidth/2,my=innerHeight/2,cx=mx,cy=my;
   addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-  // grow over interactive elements
-  document.querySelectorAll('#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.brief-btn,.project-head').forEach(el=>{
-    el.addEventListener('mouseenter',()=>{cur.style.width='80px';cur.style.height='80px';});
-    el.addEventListener('mouseleave',()=>{cur.style.width='32px';cur.style.height='32px';});
-  });
-  // smooth follow (no momentum): each frame closes a fixed fraction of the gap, so it moves fast
-  // when far and decelerates to a slow soft stick as it nears the cursor.
+  // Decide the cursor MODE each frame from the topmost element under the pointer (single source of
+  // truth via elementFromPoint) instead of per-element mouseenter/leave. The top buttons overlap the
+  // project panel AND drift (magnetic hover), which made enter/leave race and flicker is-view<->grow.
+  const GROW_SEL='#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.brief-btn,.project-head';
+  let mode='';
+  // smooth follow (no momentum): moves fast when far, decelerates to a soft stick as it nears.
   const FOLLOW=0.13;
   (function loop(){
+    const el=document.elementFromPoint(mx,my);
+    let m=''; if(el){ if(el.closest(GROW_SEL))m='grow'; else if(el.closest('.proj-visual'))m='view'; }
+    if(m!==mode){
+      mode=m;
+      cur.classList.toggle('is-view', m==='view');
+      cur.style.width = m==='grow' ? '80px' : '';        // grow=80 inline; view(96)/normal(32) from CSS
+      cur.style.height = m==='grow' ? '80px' : '';
+    }
     cx+=(mx-cx)*FOLLOW;cy+=(my-cy)*FOLLOW;
     const r=cur.offsetWidth/2;
     cur.style.transform='translate3d('+(cx-r)+'px,'+(cy-r)+'px,0)';
@@ -517,6 +524,103 @@
       const t=ease(clamp((p-LOGO0-Math.floor(i/COLS)*STAG)/RDUR));
       imgs[i].style.opacity=t.toFixed(3);
       imgs[i].style.transform='translateY('+(LRISE*(1-t)).toFixed(1)+'px)';
+    }
+  }
+  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+  addEventListener('resize',update);
+  update();
+})();
+
+/* ===== Our Projects (Frame 39 -> 40): pinned. The big title blurs in then SHRINKS to the small
+   top-left label (Services scrub); the split showcase reveals; then scrolling SWAPS through the 3
+   projects (text slides + visual colour layers cross-fade) with the layout fixed. ===== */
+(function(){
+  const sec=document.querySelector('.projects');
+  const title=document.querySelector('.projects-title');
+  const visual=document.querySelector('.proj-visual');
+  const info=document.querySelector('.proj-info');
+  if(!sec||!title)return;
+  const vises=[...sec.querySelectorAll('.proj-vis')];
+  const slides=[...sec.querySelectorAll('.proj-slide')];
+  const clamp=v=>Math.min(1,Math.max(0,v));
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const smooth=x=>x*x*(3-2*x);                           // smoothstep for transitions
+  const labelSize=w=> w<=1024?32 : w<=1920?lerp(32,48,(w-1024)/896) : w<=2560?lerp(48,56,(w-1920)/640) : 56;
+  const restTop =w=> w<=1024?160 : w<=1920?lerp(160,240,(w-1024)/896) : 240;
+  // 3 projects over the swap range: holds at 0/1/2 with quick eased transitions between
+  function projAf(pp){
+    if(pp<0.16) return 0;
+    if(pp<0.42) return smooth((pp-0.16)/0.26);           // P1 -> P2 (wide = slow & smooth)
+    if(pp<0.58) return 1;
+    if(pp<0.84) return 1+smooth((pp-0.58)/0.26);         // P2 -> P3
+    return 2;
+  }
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){
+    title.style.opacity='1';title.style.filter='none';
+    if(visual)visual.style.opacity='1'; if(info)info.style.opacity='1';
+    if(vises[0]){vises[0].style.transform='translateY(0) scale(1)';vises[0].style.opacity='1';} if(slides[0])slides[0].style.opacity='1';
+    return;
+  }
+  const SLIDE=62, CARD=0.72;                              // card slide distance (% of panel) + card scale
+  // a visual layer's state by distance d = af - i : full when active, card+slide during a swap.
+  // all eased (smoothstep) over wide windows so the grow/shrink feels smooth, not snappy.
+  function visState(d){
+    if(d<=-1) return [SLIDE,CARD,0];                      // upcoming, parked below
+    if(d>= 1) return [-SLIDE,CARD,0];                     // gone, lifted out the top
+    if(d<=0){                                             // incoming: rise from below, then grow to full
+      const u=d+1;                                        // 0..1
+      const ty=lerp(SLIDE,0, smooth(clamp(u/0.82)));      // rise (eased), settled by ~0.82
+      const s =lerp(CARD,1, smooth(clamp((u-0.4)/0.6)));  // grow over the second half (eased, gentle)
+      return [ty, s, clamp(u/0.2)];
+    }
+    // outgoing: shrink to a centred card (eased, wide), then lift up & out
+    const s =lerp(1,CARD, smooth(clamp(d/0.6)));
+    const ty=lerp(0,-SLIDE, smooth(clamp((d-0.18)/0.82)));
+    return [ty, s, 1-clamp((d-0.6)/0.4)];
+  }
+  let ticking=false;
+  function update(){
+    ticking=false;
+    const vh=innerHeight;
+    const scrolled=-sec.getBoundingClientRect().top;
+    // INTRO (title shrink + showcase reveal) runs over a FIXED scroll length, independent of the
+    // section height — so making the section taller only slows the SWAP, not the intro.
+    const INTRO=1.4*vh;
+    const ip=clamp(scrolled/INTRO);
+    // title: blur in (0->0.22), then shrink big->small label (0.30->0.72)
+    const bi=clamp(ip/0.22);
+    const q=clamp((ip-0.30)/0.42);
+    const bigPx=parseFloat(getComputedStyle(title).fontSize)||160;
+    const s=1+(labelSize(innerWidth)/bigPx-1)*q;
+    const bigH=title.offsetHeight;
+    const ty=(-bigH/2)*(1-q)+(restTop(innerWidth)-vh/2)*q;
+    title.style.opacity=bi.toFixed(3);
+    title.style.filter='blur('+(16*(1-bi)).toFixed(2)+'px)';
+    title.style.transform='translateY('+ty.toFixed(1)+'px) scale('+s.toFixed(3)+')';
+    // showcase reveals as the title finishes shrinking (0.62->0.92)
+    const rev=clamp((ip-0.62)/0.30);
+    if(visual)visual.style.opacity=rev.toFixed(3);
+    if(info){info.style.opacity=rev.toFixed(3);info.style.transform='translateY('+(30*(1-rev)).toFixed(1)+'px)';}
+    // swap through the 3 projects over the REST of the section (after the intro). af 0..2 (held);
+    // each visual shrinks to a card + crosses, text slides — the change reads clearly.
+    const pp=clamp((scrolled-INTRO)/((sec.offsetHeight-vh-INTRO)||1));
+    const af=projAf(pp);
+    for(let i=0;i<3;i++){
+      const d=af-i;
+      // visual: full while active; shrinks to a card + crosses (out up / in from below) on swap
+      if(vises[i]){ const v=visState(d);
+        vises[i].style.transform='translateY('+v[0].toFixed(2)+'%) scale('+v[1].toFixed(3)+')';
+        vises[i].style.opacity=v[2].toFixed(3); }
+      // text: OUTGOING blurs + fades IN PLACE; only the INCOMING rises from below (de-blurs + fades
+      // in), like the other sections. meta trails the name slightly for a staggered feel.
+      const sl=slides[i]; if(!sl)continue;
+      const ad=Math.abs(d);
+      sl.style.opacity=clamp(1-ad).toFixed(3);
+      sl.style.filter='blur('+(ad*9).toFixed(2)+'px)';
+      const rise=d<0?-d:0;                                 // only the incoming (d<0) moves up
+      const name=sl.querySelector('.proj-name'), meta=sl.querySelector('.proj-meta');
+      if(name)name.style.transform='translateY('+(rise*40).toFixed(1)+'px)';
+      if(meta)meta.style.transform='translateY('+(rise*64).toFixed(1)+'px)';
     }
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});

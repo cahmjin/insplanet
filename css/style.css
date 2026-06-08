@@ -127,6 +127,8 @@ html.lenis,html.lenis body{height:auto}
   .partners .partners-inner{width:clamp(1486px, calc(75.47vw + 37px), 1970px)}
   .partners .partners-desc{margin-top:clamp(24px, calc(2.5vw - 24px), 40px)}
   .partners .partner-grid{margin-top:clamp(80px, calc(6.25vw - 40px), 120px)}
+  /* Our Projects — left margin 216 -> 218 */
+  .projects-title,.projects .proj-info{left:clamp(216px, calc(0.3125vw + 210px), 218px)}
   /* Insight (these base rules live LATER in the file, so bump specificity to win over them) */
   .insight-board .insight-frame{width:clamp(1486px, calc(3.4375vw + 1420px), 1508px)}
   /* num (01/02/03) — 1920 position (1900-2540); base 86.5% above is the 1024 value */
@@ -382,6 +384,54 @@ html.lenis,html.lenis body{height:auto}
   .partners-title,.partners-desc,.partner-grid img{opacity:1;filter:none;transform:none}
 }
 
+/* ===== chapter 06: Our Projects (Frame 39 -> 40) — title shrinks (Services pattern), then a split
+   showcase pins: left project info, right blue visual panel. js/main.js drives shrink + reveal. ===== */
+.projects{position:relative;z-index:1;background:transparent;height:470vh}
+.projects-pin{position:sticky;top:0;height:100vh;overflow:hidden}
+/* big "Our Projects" 96->160 -> shrinks to the small top-left label (32/48/56) */
+.projects-title{position:absolute;left:clamp(48px, calc(18.75vw - 144px), 216px);top:50%;margin:0;
+  font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(96px, calc(7.143vw + 22.86px), 160px);line-height:1.211;color:#3E3F44;
+  transform-origin:left top;will-change:transform,opacity,filter;opacity:0;filter:blur(16px);z-index:3}
+/* right visual panel — right half, full height. The image FILLS it (full-bleed cover), so dropping in
+   any project image auto-fills correctly. Current asset is the whole Figma panel (blue + logo) baked
+   into one image; replace with a real project image any time. Blue is the fallback backdrop. */
+.proj-visual{position:absolute;top:0;right:0;width:calc(50% - 16px);height:100%;background:transparent;
+  overflow:hidden;z-index:1;opacity:0;will-change:opacity}
+/* a project's visual layer (solid colour now, or an <img> later). Each is full-bleed while active;
+   on swap the active one SHRINKS to a centred card then lifts up & out, while the next rises from
+   below as a card and expands back to full (JS sets transform/opacity per scroll). */
+.proj-vis{position:absolute;inset:0;transform-origin:center;opacity:0;will-change:transform,opacity}
+.proj-vis:nth-child(1){z-index:1}
+.proj-vis:nth-child(2){z-index:2}
+.proj-vis:nth-child(3){z-index:3}
+.proj-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+/* left info — positioning context. slides stack at the name area; See More pinned to the bottom */
+.proj-info{position:absolute;left:clamp(48px, calc(18.75vw - 144px), 216px);top:0;height:100%;
+  z-index:2;opacity:0;will-change:opacity,transform}
+.proj-slide{position:absolute;left:0;top:clamp(300px, 40vh, 580px);width:max-content;opacity:0;will-change:opacity,filter}
+.proj-name{margin:0;font-family:'Pretendard',sans-serif;font-weight:700;
+  font-size:clamp(32px, calc(2.6786vw + 4.57px), 56px);line-height:1.4;color:#3E3F44}
+.proj-meta{margin:clamp(48px, calc(2.083vw + 26.67px), 80px) 0 0;display:grid;grid-template-columns:auto auto;
+  column-gap:clamp(56px, calc(4.36vw + 11.3px), 95px);row-gap:clamp(8px, calc(0.89vw - 1.1px), 16px);width:max-content;
+  font-family:'Pretendard',sans-serif;font-size:clamp(14px, calc(0.6696vw + 7.14px), 20px);line-height:1.5;color:#3E3F44}
+.proj-meta dt{font-weight:700}
+.proj-meta dd{margin:0;font-weight:400}
+.proj-more{position:absolute;left:0;bottom:clamp(80px, 9vh, 170px);display:inline-flex;align-items:center;gap:12px;white-space:nowrap;
+  padding:12px 12px 12px 16px;border:1px solid #3E3F44;border-radius:8px;text-decoration:none;
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:clamp(14px, calc(0.2232vw + 11.71px), 16px);line-height:1.5;color:#3E3F44;
+  transition:background .25s ease,color .25s ease}
+.proj-more:hover{background:#3E3F44;color:#fff}
+.proj-more-ico{display:inline-flex;width:clamp(16.67px, calc(0.2174vw + 14.44px), 20px);height:clamp(16.67px, calc(0.2174vw + 14.44px), 20px);align-items:center;justify-content:center}
+.proj-more-ico img{width:100%;height:100%;transition:filter .25s ease}
+/* hover: arrow turns white AND plays the same exit-top-right / re-enter-bottom-left cycle as the
+   full-menu project links (project-arrow-cycle keyframes). */
+.proj-more:hover .proj-more-ico img{filter:brightness(0) invert(1);animation:project-arrow-cycle .55s cubic-bezier(.22,1,.36,1)}
+@media (prefers-reduced-motion:reduce){
+  .projects-title,.proj-visual,.proj-info{opacity:1;filter:none;transform:none}
+  .proj-slide:first-child{opacity:1}
+  .proj-vis:first-child{transform:translateY(0)}
+}
+
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
 #cursor{display:none}
 @media (hover:hover) and (pointer:fine){
@@ -389,5 +439,13 @@ html.lenis,html.lenis body{height:auto}
     background:transparent;pointer-events:none;z-index:9999;
     -webkit-backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
     backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
-    will-change:transform;transition:width .25s ease,height .25s ease}
+    will-change:transform;transition:width .3s cubic-bezier(.22,1,.36,1),height .3s cubic-bezier(.22,1,.36,1)}
+  /* "View Project" label inside the cursor — shown only over the project visual panel */
+  #cursor .cursor-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:'Pretendard',-apple-system,sans-serif;font-weight:700;font-size:13px;line-height:1.15;text-align:center;color:#fff;
+    opacity:0;transition:opacity .2s ease}
+  /* over the blue project panel the cursor becomes a solid "View Project" button (no invert blend) */
+  #cursor.is-view{width:96px;height:96px;background:#3E3F44;
+    -webkit-backdrop-filter:none;backdrop-filter:none}
+  #cursor.is-view .cursor-label{opacity:1;transition-delay:.08s}
 }

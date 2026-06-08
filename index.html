@@ -193,6 +193,41 @@
   </div>
 </section>
 
+<!-- chapter 06: "Our Projects" (Figma Frame 39 -> 40). Big title shrinks to the small top-left
+     label (Services pattern); then a split showcase pins — left: project info, right: blue visual
+     panel. [phase 1: layout + title-shrink + reveal for the featured project. The 3-project
+     scroll-swap and the hover 'View Project' cursor come next.] -->
+<section class="projects">
+  <div class="projects-pin">
+    <!-- "Our Projects" — starts big & centered-left, shrinks to the small top-left label on scroll -->
+    <h2 class="projects-title">Our Projects</h2>
+    <!-- right visual panel (right half). 3 stacked layers cross-fade as you scroll-swap projects.
+         DUMMY: solid colours (blue/red/yellow); drop an <img class="proj-img"> into each .proj-vis
+         for real project images (it'll full-bleed cover). -->
+    <div class="proj-visual">
+      <div class="proj-vis" style="background:#1D53F1"><img class="proj-img" src="images/projects/dm1.png" alt="" loading="lazy"></div>
+      <div class="proj-vis" style="background:#E5392F"><img class="proj-img" src="images/projects/dm2.png" alt="" loading="lazy"></div>
+      <div class="proj-vis" style="background:#F5B400"><img class="proj-img" src="images/projects/dm3.png" alt="" loading="lazy"></div>
+    </div>
+    <!-- left info — 3 project slides cross-fade in place; the label (shrunk title) + See More stay put -->
+    <div class="proj-info">
+      <article class="proj-slide">
+        <h3 class="proj-name">신한 SoL증권<br>모바일 웹 리뉴얼 1</h3>
+        <dl class="proj-meta"><dt>Client</dt><dd>신한투자증권</dd><dt>Launch</dt><dd>Jan, 2024</dd></dl>
+      </article>
+      <article class="proj-slide">
+        <h3 class="proj-name">신한 SoL증권<br>모바일 웹 리뉴얼 2</h3>
+        <dl class="proj-meta"><dt>Client</dt><dd>신한투자증권</dd><dt>Launch</dt><dd>Feb, 2024</dd></dl>
+      </article>
+      <article class="proj-slide">
+        <h3 class="proj-name">신한 SoL증권<br>모바일 웹 리뉴얼 3</h3>
+        <dl class="proj-meta"><dt>Client</dt><dd>신한투자증권</dd><dt>Launch</dt><dd>Mar, 2024</dd></dl>
+      </article>
+      <a class="proj-more" href="#"><span>See More Projects</span><span class="proj-more-ico"><img src="assets/icon_arrow_more.svg" alt=""></span></a>
+    </div>
+  </div>
+</section>
+
 <!-- full-screen menu overlay: dark panel opens as a circle from the menu button -->
 <div id="menu-overlay" aria-hidden="true">
   <canvas id="menu-dots"></canvas>
@@ -234,7 +269,7 @@
   </div>
 </div>
 
-<div id="cursor" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><span class="cursor-label">View<br>Project</span></div>
 
 <!-- smooth scroll (Lenis) — self-hosted, v1.3.23 (no external CDN). -->
 <script src="js/vendor/lenis.min.js"></script>
