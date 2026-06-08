@@ -464,3 +464,59 @@
   },{threshold:0.2});
   cards.forEach(c=>io.observe(c));
 })();
+
+/* ===== Our Partners (Frame 48): pinned reveal. The section is a 200vh track; the top edge scrolling
+   from 0 to -(track-100vh) is the pin progress p (0..1). title+desc fade/de-blur in over the first
+   slice, then the 5 logo rows rise in row-by-row (top -> down). At p=1 all settled; the sticky then
+   releases and the whole section scrolls on. Also sets --logo-k (0.8@1024 -> 1.0@1920). ===== */
+(function(){
+  const sec=document.querySelector('.partners');
+  const inner=document.querySelector('.partners-inner');
+  const title=document.querySelector('.partners-title');
+  const desc=document.querySelector('.partners-desc');
+  const grid=document.querySelector('.partner-grid');
+  if(!sec||!inner||!grid)return;
+  const imgs=[...grid.querySelectorAll('img')];
+  const clamp=v=>Math.min(1,Math.max(0,v));
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const ease=x=>1-Math.pow(1-x,3);                       // easeOutCubic
+  const logoK=w=> w<=1024?0.8 : w<=1920?lerp(0.8,1,(w-1024)/896) : 1;
+  const setK=()=>sec.style.setProperty('--logo-k', logoK(innerWidth).toFixed(4));
+  setK(); addEventListener('resize',setK);
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;   // CSS shows everything static
+
+  const COLS=5;
+  const TH0=0.08, TH1=0.28;                               // title fade-in window (empty beat -> title appears, centered)
+  const DH0=0.18, DH1=0.38;                               // desc fade-in window (sequential — just after the title, in place)
+  const LOGO0=0.50;                                       // logos start fading in (in place, below the desc) here
+  const ROLLSTART=0.66;                                   // block roll-up (scroll) starts LATER — once ~2 rows are in
+  const STAG=0.06, RDUR=0.14;                             // per-row stagger + duration (cascade spans ~0.38: 0.50 -> ~0.88)
+  const LRISE=60;                                         // px each logo rises from (lower start = more "rising up")
+  let ticking=false;
+  function update(){
+    ticking=false;
+    const vh=innerHeight;
+    const p=clamp(-sec.getBoundingClientRect().top/((sec.offsetHeight-vh)||1));
+    // 1) header appears, centered (like the other interstitials): title fades/de-blurs, then the desc
+    const ht=clamp((p-TH0)/(TH1-TH0));
+    title.style.opacity=ht.toFixed(3);
+    title.style.filter='blur('+(16*(1-ht)).toFixed(2)+'px)';
+    if(desc){ const hd=clamp((p-DH0)/(DH1-DH0)); desc.style.opacity=hd.toFixed(3); desc.style.filter='blur('+(8*(1-hd)).toFixed(2)+'px)'; }   // fades + de-blurs in place
+    // 2) roll up: the whole block slides from header-centered to content-centered, lifting the grid
+    //    into view from below
+    const headerH=grid.offsetTop, contentH=inner.offsetHeight;
+    const y0=(vh-headerH)/2, y1=(vh-contentH)/2;
+    const roll=ease(clamp((p-ROLLSTART)/(1-ROLLSTART)));
+    inner.style.transform='translateY('+lerp(y0,y1,roll).toFixed(1)+'px)';
+    // 3) logos fade in row-by-row (top -> down), in place below the desc; the roll-up (above) only
+    //    kicks in once ~2 rows are settled, so they don't scroll the instant they appear
+    for(let i=0;i<imgs.length;i++){
+      const t=ease(clamp((p-LOGO0-Math.floor(i/COLS)*STAG)/RDUR));
+      imgs[i].style.opacity=t.toFixed(3);
+      imgs[i].style.transform='translateY('+(LRISE*(1-t)).toFixed(1)+'px)';
+    }
+  }
+  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+  addEventListener('resize',update);
+  update();
+})();

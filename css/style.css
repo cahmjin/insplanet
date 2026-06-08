@@ -123,6 +123,10 @@ html.lenis,html.lenis body{height:auto}
   /* Our Services frame + card column grow 1920->2560 (card text/gaps stay flat above 1920) */
   .services .services-inner{width:clamp(1486px, calc(75.47vw + 37px), 1969px)}
   .services-cards-wrap .services-cards{width:clamp(728px, calc(25.3125vw + 242px), 890px)}
+  /* Our Partners — segment 1920->2560 (grid stays 5-col; gaps/cell-height flat above 1920) */
+  .partners .partners-inner{width:clamp(1486px, calc(75.47vw + 37px), 1970px)}
+  .partners .partners-desc{margin-top:clamp(24px, calc(2.5vw - 24px), 40px)}
+  .partners .partner-grid{margin-top:clamp(80px, calc(6.25vw - 40px), 120px)}
   /* Insight (these base rules live LATER in the file, so bump specificity to win over them) */
   .insight-board .insight-frame{width:clamp(1486px, calc(3.4375vw + 1420px), 1508px)}
   /* num (01/02/03) — 1920 position (1900-2540); base 86.5% above is the 1024 value */
@@ -348,6 +352,34 @@ html.lenis,html.lenis body{height:auto}
 @media (prefers-reduced-motion:reduce){
   .svc-card{opacity:1;transform:none;transition:none}
   .services-title{opacity:1;filter:none;transform:scale(.3)}
+}
+
+/* ===== chapter 05: Our Partners (Frame 48) — static header + full-width 5-col logo grid ===== */
+/* tall track gives scroll room for the pinned reveal; the pin holds one screen while the logo rows
+   rise in (js/main.js drives opacity/transform per scroll), then releases so the section scrolls on. */
+.partners{position:relative;z-index:1;background:transparent;height:400vh}
+.partners-pin{position:sticky;top:0;height:100vh;overflow:hidden}
+/* centered content frame — 928 / 1486 / 1970, >=48px side gutter (same anchors as the other sections).
+   sits at the top of the pin; js/main.js translateY's it (header-centered -> content-centered) as the
+   logos roll up. */
+.partners-inner{width:clamp(928px, calc(62.277vw + 290.3px), 1486px);max-width:calc(100% - 96px);margin:0 auto;position:relative;will-change:transform}
+/* big "Our Partners" — Cormorant Bold, 96 -> 160 (flat above 1920). stays big (no shrink). */
+.partners-title{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;
+  font-size:clamp(96px, calc(7.143vw + 22.86px), 160px);line-height:1.211;color:#3E3F44;
+  opacity:0;filter:blur(16px);will-change:opacity,filter}
+.partners-desc{margin:24px 0 0;
+  font-family:'Pretendard',sans-serif;font-weight:400;font-size:clamp(14px, calc(0.6696vw + 7.14px), 20px);line-height:1.5;color:#3E3F44;
+  opacity:0;filter:blur(8px);will-change:opacity,filter}   /* fades + de-blurs in place; the block roll-up is what lifts it */
+/* full-width 5-column grid; rows rise in via JS. each logo keeps its design w/h (--lw/--lh) scaled
+   by --logo-k (0.8 @1024 -> 1.0 @1920, set in js/main.js). gaps/cell-height per the 3 anchors. */
+.partner-grid{margin-top:clamp(48px, calc(3.5714vw + 11.43px), 80px);
+  display:grid;grid-template-columns:repeat(5,1fr);place-items:center;
+  column-gap:24px;row-gap:clamp(32px, calc(5.357vw - 22.86px), 80px);
+  grid-auto-rows:clamp(56px, calc(2.6786vw + 28.57px), 80px)}
+.partner-grid img{width:calc(var(--lw,80) * 1px * var(--logo-k,1));height:calc(var(--lh,24) * 1px * var(--logo-k,1));object-fit:contain;
+  opacity:0;will-change:opacity,transform}
+@media (prefers-reduced-motion:reduce){
+  .partners-title,.partners-desc,.partner-grid img{opacity:1;filter:none;transform:none}
 }
 
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
