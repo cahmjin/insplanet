@@ -636,9 +636,8 @@
     const r=sec.getBoundingClientRect();
     let tTop=0, tBot=0, tLogo=0;   // tLogo only from a fully-dark section (logo isn't over the image)
     if(r.top<=0 && r.bottom>=vh-4 && lastRev>0.5){
-      const hi=Math.max(0,Math.min(2,Math.round(af)));
-      const settle=clamp(1-Math.abs(af-hi)/0.18);
-      tTop=settle*(lum[hi].top?1:0); tBot=settle*(lum[hi].bot?1:0);
+      const hi=Math.max(0,Math.min(2,Math.round(af)));     // nearest project's luminance — no settle factor, so
+      tTop=(lum[hi].top?1:0); tBot=(lum[hi].bot?1:0);       // it doesn't drop (and flip the controls) when af isn't exactly settled (iOS-Chrome rAF) or mid-swap
     }
     if(cta){
       const cr=cta.getBoundingClientRect();
