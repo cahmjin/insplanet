@@ -27,8 +27,12 @@ just served from our own origin.
 npm i shaders@2.5.128 react@18.3.1 react-dom@18.3.1 htm@3.1.1 esbuild
 
 # copy this project's js/insight-background.js next to node_modules, then:
+# --target=safari15 is REQUIRED: three.js ships class static blocks (`static {}`, Safari 16.4+).
+# Without down-levelling them, older iPad Safari throws "SyntaxError: Unexpected token '{'" and the
+# whole module fails to parse -> Insight renders black. safari15 transpiles the static blocks while
+# keeping the rest (it's the lowest target that doesn't trip esbuild's destructuring-bug workaround).
 npx esbuild insight-background.js \
-  --bundle --format=esm --minify \
+  --bundle --format=esm --minify --target=safari15 \
   --define:process.env.NODE_ENV='"production"' \
   --outfile=insight-background.bundle.js
 
