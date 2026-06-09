@@ -380,7 +380,7 @@
   const steps=[...document.querySelectorAll('.insight-step')];
   if(!sec||!steps.length)return;
   const N=steps.length;
-  sec.style.height=(N*120)+'vh';              // 1.2 viewport of scroll per step (slower swap)
+  sec.style.height=(N*90)+'vh';               // 0.9 viewport of scroll per step (snappier swap)
   const clamp=v=>Math.min(1,Math.max(0,v));
   const EXIT_Y=48;                             // px the leaving text slides down as it fades
   const STAGGER=0.10;                          // title trails the eyebrow on exit (elastic cascade)
