@@ -592,7 +592,7 @@
   // NOTE: the logo (top-LEFT) is tracked separately from Let's Talk/menu (top-RIGHT). In projects the
   // image only fills the RIGHT half, so the logo sits over the light left column and must NOT follow
   // the right-side darkness; only a fully-dark section (CTA) flips it.
-  const T={dur:1000, slide:40, card:0.8, blur:9, riseW:0.82, growW:0.6, introDwell:600};   // project-swap feel; introDwell = ms the intro holds before input can advance to project 1
+  const T={dur:800, slide:40, card:0.8, blur:9, riseW:0.82, growW:0.6, introDwell:600};   // project-swap feel; introDwell = ms the intro holds before input can advance to project 1
   // a visual layer's state by distance d = af - i : full when active, card+slide during a swap.
   function visState(d){
     const SLIDE=T.slide, CARD=T.card;
