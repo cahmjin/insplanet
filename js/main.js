@@ -581,8 +581,7 @@
   const smooth=x=>x*x*x*(x*(x*6.0-15.0)+10.0);           // smootherstep (C2) — gentler ease in/out than smoothstep
   const labelSize=w=> w<=1024?32 : w<=1920?lerp(32,48,(w-1024)/896) : w<=2560?lerp(48,56,(w-1920)/640) : 56;
   const restTop =w=> w<=1024?160 : w<=1920?lerp(160,240,(w-1024)/896) : 240;
-  // the swap is AUTO-PLAYED (see startTween/animLoop below): crossing a scroll threshold tweens the
-  // active project over a fixed time, so the slide motion is constant & smooth regardless of scroll.
+  // the swap is INPUT-SNAPPED (see the step machine below): one scroll input plays one full cut.
   if(matchMedia('(prefers-reduced-motion:reduce)').matches){
     title.style.opacity='1';title.style.filter='none';
     if(visual)visual.style.opacity='1'; if(info)info.style.opacity='1';
@@ -593,48 +592,24 @@
   // NOTE: the logo (top-LEFT) is tracked separately from Let's Talk/menu (top-RIGHT). In projects the
   // image only fills the RIGHT half, so the logo sits over the light left column and must NOT follow
   // the right-side darkness; only a fully-dark section (CTA) flips it.
-  const SLIDE=62, CARD=0.72;                              // card slide distance (% of panel) + card scale
+  const T={dur:1000, slide:40, card:0.8, blur:9, riseW:0.82, growW:0.6, introDwell:600};   // project-swap feel; introDwell = ms the intro holds before input can advance to project 1
   // a visual layer's state by distance d = af - i : full when active, card+slide during a swap.
-  // all eased (smoothstep) over wide windows so the grow/shrink feels smooth, not snappy.
   function visState(d){
+    const SLIDE=T.slide, CARD=T.card;
     if(d<=-1) return [SLIDE,CARD,0];                      // upcoming, parked below
     if(d>= 1) return [-SLIDE,CARD,0];                     // gone, lifted out the top
     if(d<=0){                                             // incoming: rise from below, then grow to full
-      const u=d+1;                                        // 0..1
-      const ty=lerp(SLIDE,0, smooth(clamp(u/0.82)));      // rise (eased), settled by ~0.82
-      const s =lerp(CARD,1, smooth(clamp((u-0.4)/0.6)));  // grow over the second half (eased, gentle)
+      const u=d+1;
+      const ty=lerp(SLIDE,0, smooth(clamp(u/T.riseW)));   // rise (eased)
+      const s =lerp(CARD,1, smooth(clamp((u-0.4)/T.growW)));  // grow over the second half
       return [ty, s, clamp(u/0.2)];
     }
-    // outgoing: shrink to a centred card (eased, wide), then lift up & out
+    // outgoing: shrink to a centred card, then lift up & out
     const s =lerp(1,CARD, smooth(clamp(d/0.6)));
     const ty=lerp(0,-SLIDE, smooth(clamp((d-0.18)/0.82)));
     return [ty, s, 1-clamp((d-0.6)/0.4)];
   }
-  let ticking=false;
-  // ---- one-cut swap: scroll only picks WHICH project (threshold zones); each change AUTO-PLAYS the
-  //      full slide to the next over a fixed time (smootherstep). No scrubbing — clean cut per step. ----
-  const AF_DUR=800;                                        // ms per auto-played cut
-  const TR=[0.33, 0.66];                                   // pp thresholds: P1|P2 and P2|P3
-  const HYST=0.05;                                         // hysteresis so a boundary can't flip-flop
-  function targetFromPp(pp){
-    const t=afTo;                                          // bias by the current target (only switch past the edge)
-    if(t<=0) return pp > TR[0]        ? 1 : 0;
-    if(t===1) return pp > TR[1]       ? 2 : (pp < TR[0]-HYST ? 0 : 1);
-    return            pp < TR[1]-HYST ? 1 : 2;
-  }
-  let afAnim=0, afFrom=0, afTo=0, afT0=0, playing=false, lastRev=0;
-  function setTarget(t){
-    if(t===afTo) return;
-    afFrom=afAnim; afTo=t; afT0=performance.now();
-    if(!playing){ playing=true; requestAnimationFrame(animLoop); }
-  }
-  function animLoop(now){
-    const k=clamp((now-afT0)/AF_DUR);
-    afAnim=afFrom+(afTo-afFrom)*smooth(k);
-    renderAf();
-    if(k<1){ requestAnimationFrame(animLoop); }
-    else { afAnim=afTo; renderAf(); playing=false; }
-  }
+  let afAnim=0, lastRev=0, ticking=false;
   // apply the visual layers + text slides + adaptive header contrast for the current `afAnim`
   function renderAf(){
     const vh=innerHeight, af=afAnim;
@@ -650,7 +625,7 @@
       const sl=slides[i]; if(!sl)continue;
       const ad=Math.abs(d);
       sl.style.opacity=clamp(1-ad).toFixed(3);
-      sl.style.filter='blur('+(ad*9).toFixed(2)+'px)';
+      sl.style.filter='blur('+(ad*T.blur).toFixed(2)+'px)';
       const rise=d<0?-d:0;
       const name=sl.querySelector('.proj-name'), meta=sl.querySelector('.proj-meta');
       if(name)name.style.transform='translateY('+(rise*40).toFixed(1)+'px)';
@@ -685,36 +660,123 @@
     if(ui.sh)ui.sh.classList.toggle('on-dark',botOn);
     if(projInd)projInd.classList.toggle('on-dark',topOn);  // indicator: SAME state as Let's Talk/hamburger
   }
-  function update(){
-    ticking=false;
-    const vh=innerHeight;
-    const scrolled=-sec.getBoundingClientRect().top;
-    // INTRO (title shrink + showcase reveal) runs over a FIXED scroll length, independent of the
-    // section height — so making the section taller only slows the SWAP, not the intro.
-    const INTRO=1.4*vh;
-    const ip=clamp(scrolled/INTRO);
-    // title: blur in (0->0.22), then shrink big->small label (0.30->0.72)
-    const bi=clamp(ip/0.22);
-    const q=clamp((ip-0.30)/0.42);
+  // ====== INPUT-DRIVEN SNAP STEPS (itddaa-style) ======
+  // The section LOCKS when it fills the screen; then each scroll INPUT (one wheel tick / one swipe)
+  // plays ONE full transition to the next step and re-locks — no scrubbing, no resting mid-transition.
+  //   step 0 = intro ("Our Projects")   1/2/3 = project 1/2/3   (down@3 or up@0 -> release the lock)
+  const pin=document.querySelector('.projects-pin');
+  const MAXSTEP=3;
+  let step=0, posAnim=0, posFrom=0, posTo=0, posT0=0, animating=false, locked=false, cool=false, released=-1e9, prevTop=null, prevCovering=false;
+  const L=()=>window.__lenis;
+  const pageY=()=>window.scrollY||window.pageYOffset||0;
+  const secTopAbs=()=>Math.round(sec.getBoundingClientRect().top+pageY());
+
+  function renderIntro(ip){                                  // 0 = big centred title; 1 = small label + showcase in
+    const q=clamp(ip), vh=innerHeight;
     const bigPx=parseFloat(getComputedStyle(title).fontSize)||160;
     const s=1+(labelSize(innerWidth)/bigPx-1)*q;
     const bigH=title.offsetHeight;
     const ty=(-bigH/2)*(1-q)+(restTop(innerWidth)-vh/2)*q;
-    title.style.opacity=bi.toFixed(3);
-    title.style.filter='blur('+(16*(1-bi)).toFixed(2)+'px)';
     title.style.transform='translateY('+ty.toFixed(1)+'px) scale('+s.toFixed(3)+')';
-    // showcase reveals as the title finishes shrinking (0.62->0.92)
-    const rev=clamp((ip-0.62)/0.30);
-    if(visual){visual.style.opacity=rev.toFixed(3);
-      visual.style.pointerEvents=rev>0.5?'auto':'none';}
-    if(info){info.style.opacity=rev.toFixed(3);info.style.transform='translateY('+(30*(1-rev)).toFixed(1)+'px)';}
+    const rev=clamp((q-0.35)/0.5);                          // showcase fades in as the title shrinks
+    if(visual){visual.style.opacity=rev.toFixed(3); visual.style.pointerEvents=rev>0.5?'auto':'none';}
+    if(info){info.style.opacity=rev.toFixed(3); info.style.transform='translateY('+(24*(1-rev)).toFixed(1)+'px)';}
     lastRev=rev;
-    // scroll only picks the project; crossing a threshold auto-plays the full cut (see setTarget)
-    const pp=clamp((scrolled-INTRO)/((sec.offsetHeight-vh-INTRO)||1));
-    setTarget(targetFromPp(pp));
-    renderAf();
   }
-  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
-  addEventListener('resize',update);
-  update();
+  function renderPos(pos){ renderIntro(pos); afAnim=Math.max(0,Math.min(2,pos-1)); renderAf(); }
+  function stepLoop(now){
+    const k=clamp((now-posT0)/T.dur);
+    posAnim=posFrom+(posTo-posFrom)*smooth(k);
+    renderPos(posAnim);
+    if(k<1) requestAnimationFrame(stepLoop);
+    else { posAnim=posTo; renderPos(posAnim); animating=false; }
+  }
+  function goTo(t){ title.style.opacity='1'; title.style.filter='blur(0px)'; posFrom=posAnim; posTo=t; step=t; posT0=performance.now(); if(!animating){animating=true; requestAnimationFrame(stepLoop);} }
+  let introRAF=0, titleBusy=false;
+  function introReveal(){                                    // one-shot IN-PLACE blur-IN once the section locks at the intro
+    cancelAnimationFrame(introRAF); titleBusy=true;
+    const t0=performance.now(), DUR=650;
+    (function f(now){
+      if(!locked||step!==0){ titleBusy=false; return; }
+      const k=clamp((now-t0)/DUR);
+      title.style.opacity=k.toFixed(3); title.style.filter='blur('+(16*(1-k)).toFixed(2)+'px)';
+      if(k<1) introRAF=requestAnimationFrame(f); else titleBusy=false;
+    })(performance.now());
+  }
+  function introHide(){                                      // blur-OUT when leaving the intro upward
+    cancelAnimationFrame(introRAF); titleBusy=true;
+    let o0=parseFloat(title.style.opacity); if(!isFinite(o0)) o0=1;
+    const t0=performance.now(), DUR=520;
+    (function f(now){
+      if(locked){ titleBusy=false; return; }
+      const k=clamp((now-t0)/DUR);
+      title.style.opacity=(o0*(1-k)).toFixed(3); title.style.filter='blur('+(16*k).toFixed(2)+'px)';
+      if(k<1) introRAF=requestAnimationFrame(f); else titleBusy=false;
+    })(performance.now());
+  }
+  function arm(){ cool=true; setTimeout(()=>{cool=false;}, T.dur+80); }
+
+  function lockAt(s){
+    if(locked) return;
+    const top=secTopAbs();
+    locked=true; step=s; posTo=s; posAnim=s;
+    if(L()) L().stop();
+    window.scrollTo(0, top);                                 // align to pin start; sticky keeps the stage on screen while frozen
+    renderPos(s);
+    if(s===0){ introReveal(); cool=true; setTimeout(()=>{cool=false;}, T.introDwell); }   // hold on the intro a beat before the first input can advance to project 1
+    else { title.style.opacity='1'; title.style.filter='blur(0px)'; }
+  }
+  function release(dir){
+    if(!locked) return;
+    const top=secTopAbs(), vh=innerHeight;
+    // down: drop the underlying scroll to the pin's END. The sticky stage keeps project 3 on screen the
+    //       whole pin range, so this move is INVISIBLE — then a touch more scroll reveals the CTA, no jump.
+    // up:   drop to just above the section so the previous section takes over.
+    const dest=dir>0 ? Math.round(top+sec.offsetHeight-vh) : Math.max(0,top-2);
+    locked=false; released=performance.now(); prevTop=null; prevCovering=(dir>0);
+    window.scrollTo(0,dest);
+    if(L()){ L().scrollTo(dest,{immediate:true}); L().start(); }
+    if(dir<0) introHide();                                  // leaving the intro upward -> blur the big title OUT (not a snap)
+  }
+  function input(dir){
+    if(!locked||animating||cool) return;
+    if(dir>0){ if(step<MAXSTEP){goTo(step+1); arm();} else release(1); }
+    else     { if(step>0){     goTo(step-1); arm();} else release(-1); }
+  }
+
+  addEventListener('wheel', e=>{ if(!locked) return; e.preventDefault(); input(e.deltaY>0?1:-1); }, {passive:false});
+  let tY=0;
+  addEventListener('touchstart', e=>{ if(locked&&e.touches[0]) tY=e.touches[0].clientY; }, {passive:true});
+  addEventListener('touchmove', e=>{ if(!locked||!e.touches[0]) return; e.preventDefault(); const dy=tY-e.touches[0].clientY; if(Math.abs(dy)>20) input(dy>0?1:-1); }, {passive:false});
+  addEventListener('keydown', e=>{ if(!locked) return; const d=(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' ')?1:((e.key==='ArrowUp'||e.key==='PageUp')?-1:0); if(d){e.preventDefault(); input(d);} });
+
+  // LOCK detection (section crosses to fill the screen) + keep after-section UI alive while unlocked
+  function onScroll(){
+    if(locked) return;
+    const vh=innerHeight, r=sec.getBoundingClientRect(), recent=performance.now()-released<450;
+    const covering=r.top<=0 && r.bottom>=vh;                 // the sticky stage fills the viewport (true over a 100vh range)
+    // lock the instant the stage fills the screen
+    if(covering && !prevCovering && !recent){
+      lockAt(prevTop!=null && prevTop>0 ? 0 : MAXSTEP);      // from above -> intro;  from below -> last project
+      prevCovering=true; prevTop=r.top; return;
+    }
+    prevCovering=covering; prevTop=r.top;
+    // not locking this frame -> paint the approach/exit state so there's never a blank gap
+    if(r.top>0){                                             // intro side: approaching from below, or leaving upward
+      if(!titleBusy){ title.style.opacity='0'; title.style.filter='blur(16px)'; }   // big title hidden until the lock blurs it in
+      if(visual)visual.style.opacity='0'; if(info)info.style.opacity='0';
+      renderAf();                                            // keep cta/footer/contrast updated
+    } else {                                                 // section visible from above (up-approach) or scrolling out after project 3
+      if(!titleBusy){ title.style.opacity='1'; title.style.filter='blur(0px)'; }
+      renderPos(MAXSTEP);                                    // show the LAST project so it's already there before the lock
+    }
+  }
+  addEventListener('scroll', ()=>{ if(!ticking){ticking=true; requestAnimationFrame(()=>{ticking=false; onScroll();});} }, {passive:true});
+  addEventListener('resize', onScroll);
+  if(visual)visual.style.opacity='0'; if(info)info.style.opacity='0';   // showcase hidden until the intro step
+  afAnim=0;
+  // refresh handling: if the page (re)loads with the section already filling the screen (a restored
+  // mid-section scroll position), there was no scroll-in to set up the lock — so lock cleanly at the
+  // intro right here. Otherwise run the normal approach render.
+  { const r0=sec.getBoundingClientRect(); if(r0.top<=2 && r0.bottom>=innerHeight-2){ lockAt(0); } else { onScroll(); } }
 })();

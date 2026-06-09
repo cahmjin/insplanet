@@ -441,8 +441,8 @@ html.lenis,html.lenis body{height:auto}
 
 /* ===== chapter 06: Our Projects (Frame 39 -> 40) — title shrinks (Services pattern), then a split
    showcase pins: left project info, right blue visual panel. js/main.js drives shrink + reveal. ===== */
-.projects{position:relative;z-index:1;background:transparent;height:470vh}
-.projects-pin{position:sticky;top:0;height:100vh;overflow:hidden}
+.projects{position:relative;z-index:1;background:transparent;height:200vh}   /* tall track so the sticky stage covers a RANGE -> robust lock detection */
+.projects-pin{position:sticky;top:0;height:100vh;overflow:hidden}            /* sticky stage; JS freezes scroll & steps via input while locked */
 /* big "Our Projects" 96->160 -> shrinks to the small top-left label (32/48/56) */
 .projects-title{position:absolute;left:clamp(48px, calc(18.75vw - 144px), 216px);top:50%;margin:0;
   font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(96px, calc(7.143vw + 22.86px), 160px);line-height:1.211;color:#3E3F44;
