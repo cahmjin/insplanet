@@ -151,9 +151,10 @@ html.lenis,html.lenis body{height:auto}
 }
 
 #scroll-hint{position:fixed;z-index:60;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);bottom:64px;width:21px;
-  display:flex;flex-direction:column;align-items:center;gap:16px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;transition:opacity .4s ease;
   pointer-events:none;user-select:none;-webkit-user-select:none}  /* decorative: mouse passes through
     -> no text I-beam, and the custom cursor reads the panel behind it (keeps 'View Project') */
+#scroll-hint.is-hidden{opacity:0}   /* hidden once you reach the footer (page end) */
 /* faint track + dark line that draws top->bottom then exits downward, looping */
 #scroll-hint .bar{position:relative;width:1px;height:64px;background:rgba(62,63,68,.15);overflow:hidden}
 #scroll-hint .bar::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;
@@ -225,14 +226,24 @@ html.lenis,html.lenis body{height:auto}
    vertical: NOT centered — Figma sits the block lower (top gap > bottom). The top gap is ~26% of the
    viewport height across the 3 anchors (200/768, 280/1080, 360/1440), so anchor the TOP edge at 26%
    (ratio, not px) rather than centering. */
-.menu-inner{position:absolute;left:50%;top:26%;
+/* scroll container fills the overlay and scrolls when the menu is taller than the viewport (short
+   windows / browser toolbars). Sits BELOW #menu-logo/#menu-close in the DOM so those stay clickable. */
+.menu-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;align-items:center;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.22) transparent}
+.menu-scroll::-webkit-scrollbar{width:6px}
+.menu-scroll::-webkit-scrollbar-track{background:transparent}
+.menu-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:99px}
+.menu-scroll::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.32)}
+.menu-inner{flex:none;margin:26vh auto 8vh;   /* top anchored at 26vh (Figma), bottom room for scroll */
   width:clamp(928px, calc(28.571vw + 635.43px), 1184px);height:clamp(480px, calc(13.393vw + 342.86px), 600px);
   max-width:calc(100% - 96px);
-  transform:translate(-50%,4%);opacity:0;color:#fff;
+  transform:translateY(18px);opacity:0;color:#fff;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
   display:flex;justify-content:space-between;align-items:stretch;
   transition:opacity .45s ease,transform .55s cubic-bezier(.22,1,.36,1)}
-#menu-overlay.open .menu-inner{opacity:1;transform:translate(-50%,0);transition-delay:.3s}
+#menu-overlay.open .menu-inner{opacity:1;transform:translateY(0);transition-delay:.3s}
 .menu-col{width:clamp(424px, calc(-2.6786vw + 475.43px), 448px);min-width:0;display:flex;flex-direction:column;justify-content:space-between}
 
 /* left column — big nav + copyright */
@@ -550,6 +561,7 @@ html.lenis,html.lenis body{height:auto}
 .footer-left{display:flex;flex-direction:column;gap:clamp(65px, calc(2.0089vw + 44.43px), 83px)}
 .footer-links{display:flex;gap:80px}
 .footer-links a{text-decoration:none;color:inherit;font-weight:600;line-height:1;
+  padding:4px 0;border-bottom:1px solid #3E3F44;   /* underline-button style (Figma) */
   font-size:clamp(14px, calc(0.2232vw + 11.71px), 16px)}
 .footer-copy{margin:0;font-weight:600;text-transform:uppercase;line-height:1.5;
   font-size:clamp(12px, calc(0.4464vw + 7.43px), 16px)}

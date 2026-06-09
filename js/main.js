@@ -18,7 +18,7 @@
   // Decide the cursor MODE each frame from the topmost element under the pointer (single source of
   // truth via elementFromPoint) instead of per-element mouseenter/leave. The top buttons overlap the
   // project panel AND drift (magnetic hover), which made enter/leave race and flicker is-view<->grow.
-  const GROW_SEL='#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.brief-btn,.project-head';
+  const GROW_SEL='#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.brief-btn,.project-head,.footer-links a';
   let mode='';
   // smooth follow (no momentum): moves fast when far, decelerates to a soft stick as it nears.
   const FOLLOW=0.13;
@@ -53,7 +53,7 @@
   const STRENGTH=0.5, STIFF=0.12, DAMP=0.78, MAX=20; // spring: mild elastic overshoot; MAX caps pull (large elements clamp here; higher STRENGTH lets small ones pull more)
   const clamp=v=>Math.max(-MAX,Math.min(MAX,v));
   const items=[];
-  document.querySelectorAll('#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.cta-arrow').forEach(el=>{
+  document.querySelectorAll('#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.cta-arrow,.footer-links a').forEach(el=>{
     const sMax=el.classList.contains('cta-arrow')?1.4:1;   // the CTA arrow also grows on hover (scale folded into the spring)
     const it={el,tx:0,ty:0,x:0,y:0,vx:0,vy:0,sMax,s:1,sTo:1,zeroed:true};
     el.addEventListener('mousemove',e=>{
@@ -195,8 +195,11 @@
   // block the scroll inputs: Lenis.stop() kills wheel/touch, and we swallow scroll keys.
   let scrollLocked=false;
   const SCROLL_KEYS=new Set([' ','Spacebar','PageUp','PageDown','Home','End','ArrowUp','ArrowDown']);
-  addEventListener('wheel',e=>{if(scrollLocked)e.preventDefault();},{passive:false});
-  addEventListener('touchmove',e=>{if(scrollLocked)e.preventDefault();},{passive:false});
+  // allow wheel/touch INSIDE the menu's own scroll container (overscroll-behavior:contain stops
+  // it chaining to the page); only block inputs aimed at the locked page behind the overlay.
+  const inMenuScroll=e=>e.target&&e.target.closest&&e.target.closest('.menu-scroll');
+  addEventListener('wheel',e=>{if(scrollLocked&&!inMenuScroll(e))e.preventDefault();},{passive:false});
+  addEventListener('touchmove',e=>{if(scrollLocked&&!inMenuScroll(e))e.preventDefault();},{passive:false});
   addEventListener('keydown',e=>{if(scrollLocked&&SCROLL_KEYS.has(e.key))e.preventDefault();},{passive:false});
   const lockScroll=on=>{
     scrollLocked=on;
@@ -668,7 +671,11 @@
       if(cr.top<=vh-72 && cr.bottom>=vh-72) tBot=1;
       if(cr.top < vh*0.3) cta.classList.add('in');
     }
-    if(footer && footer.getBoundingClientRect().top < vh*0.35) footer.classList.add('in');  // reveal logo
+    if(footer){
+      const ft=footer.getBoundingClientRect().top;
+      if(ft < vh*0.35) footer.classList.add('in');              // reveal logo
+      if(ui.sh) ui.sh.classList.toggle('is-hidden', ft < vh*0.5); // hide SCROLL hint at the page end
+    }
     if(tTop>0.6)topOn=true; else if(tTop<0.35)topOn=false;
     if(tBot>0.6)botOn=true; else if(tBot<0.35)botOn=false;
     if(tLogo>0.6)logoOn=true; else if(tLogo<0.35)logoOn=false;
