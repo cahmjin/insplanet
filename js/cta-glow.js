@@ -15,9 +15,10 @@
 
   /* frozen settings (from glow-lab) */
   const S = {
-    horizon:0.3, curve:4.0, scale:0.4, rim:0.0002, bloom:0.36, sunWidth:1.5, edge:0.1,
-    shimmer:0.012, speed:0.4, intensity:0.8, colorMix:0.6, colorFlow:1.0, lift:0.4,
-    colA:'#7b3bd6', colA2:'#e23bbf', colA3:'#3f6bff', colB:'#b397dd'
+    horizon:0.3, curve:8.0, scale:0.4, rim:0.0024, rimBlur:1.2, rimY:0.02, rimSize:0.81,
+    planetGlow:1.0, planetReach:0.09, bloom:0.36, sunWidth:0.7, edge:0.32,
+    shimmer:0.0, speed:0.8, intensity:0.55, colorMix:0.8, colorFlow:1.2, lift:0.23,
+    colA:'#7a3dd6', colA2:'#40d8e2', colA3:'#ec32b1', colB:'#b397dd'
   };
   const hex = h => { const n=parseInt(h.slice(1),16); return [((n>>16)&255)/255, ((n>>8)&255)/255, (n&255)/255]; };
 
@@ -25,7 +26,7 @@
   const FRAG = `
   precision highp float;
   uniform vec2 uRes; uniform float uTime;
-  uniform float uHorizon, uCurve, uScale, uRim, uBloom, uSunWidth, uEdge, uShimmer, uSpeed, uIntensity, uColorMix, uColorFlow, uLift;
+  uniform float uHorizon, uCurve, uScale, uRim, uRimBlur, uRimY, uRimSize, uPlanetGlow, uPlanetReach, uBloom, uSunWidth, uEdge, uShimmer, uSpeed, uIntensity, uColorMix, uColorFlow, uLift;
   uniform vec3 uColA, uColA2, uColA3, uColB;
   float hash(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
   float noise(vec2 p){ vec2 i=floor(p),f=fract(p);
@@ -45,7 +46,9 @@
     float flow2 = fbm(vec2(p.x*5.0 - t, t*0.9 + 5.0));
     d += flow*uShimmer;
     float above = max(d, 0.0);
-    float rim   = exp(-d*d/uRim);
+    vec2 pRim   = vec2(p.x / uRimSize, p.y);                 // rim-only horizontal width (bigger = wider arc)
+    float dRim  = (length(pRim - c) - R) - uRimY;            // rim distance: width-scaled + vertical shift
+    float rim   = pow(exp(-dRim*dRim/uRim), 2.0 - uRimBlur); // thin bright line; uRimBlur softens it
     float bloom = exp(-above/uBloom);
     float centerW = exp(-p.x*p.x/(uSunWidth*2.0));
     float sun   = exp(-p.x*p.x/(uSunWidth*0.5)) * exp(-above/(uBloom*0.35));
@@ -57,13 +60,19 @@
     palette = mix(palette, uColA2, clamp((m1-0.25)*2.0, 0.0, 1.0)*uColorMix);
     palette = mix(palette, uColA3, clamp((m2-0.40)*2.0, 0.0, 1.0)*uColorMix);
     float taper = exp(-pow(abs(p.x), 4.0) * uEdge);          // sharper L/R points
-    vec3 col = vec3(0.0);
-    col += palette * bloom * centerW * 1.2 * flick * taper;
-    col += palette * sun   * 1.3 * flick;
-    col += uColB   * rim   * (0.7 + 0.6*centerW) * taper;
-    col += uColB   * sun   * 0.6;
+    // SKY: atmosphere glow + bright rim (drawn first; planet will cover it)
+    vec3 sky = vec3(0.0);
+    sky += palette * bloom * centerW * 1.2 * flick * taper;
+    sky += palette * sun   * 1.3 * flick;
+    sky += uColB   * rim   * (0.7 + 0.6*centerW);
+    sky += uColB   * sun   * 0.6;
+    // PLANET body: dark sphere whose limb catches a little light
+    float surf = exp(min(d, 0.0) / max(uPlanetReach, 0.001));
+    vec3 planet = palette * surf * uPlanetGlow * centerW * flick;
+    // composite: planet disc sits IN FRONT, occluding everything below its limb (d<0)
+    float planetCover = smoothstep(0.006, -0.006, d);
+    vec3 col = mix(sky, planet, planetCover);
     col *= uIntensity;
-    col *= smoothstep(-0.015, 0.01, d);
     col *= smoothstep(0.0, max(uLift,0.001), uv.y);
     gl_FragColor = vec4(vec3(0.0784) + col, 1.0);   // #141414 base + additive glow
   }`;
@@ -86,13 +95,16 @@
   gl.vertexAttribPointer(aLoc, 2, gl.FLOAT, false, 0, 0);
 
   const U = {};
-  ['uRes','uTime','uHorizon','uCurve','uScale','uRim','uBloom','uSunWidth','uEdge','uShimmer','uSpeed','uIntensity','uColorMix','uColorFlow','uLift','uColA','uColA2','uColA3','uColB']
+  ['uRes','uTime','uHorizon','uCurve','uScale','uRim','uRimBlur','uRimY','uRimSize','uPlanetGlow','uPlanetReach','uBloom','uSunWidth','uEdge','uShimmer','uSpeed','uIntensity','uColorMix','uColorFlow','uLift','uColA','uColA2','uColA3','uColB']
     .forEach(n=> U[n]=gl.getUniformLocation(prog,n));
 
   // static uniforms (set once)
   gl.useProgram(prog);
   gl.uniform1f(U.uHorizon, S.horizon);   gl.uniform1f(U.uCurve, S.curve);
   gl.uniform1f(U.uScale, S.scale);       gl.uniform1f(U.uRim, S.rim);
+  gl.uniform1f(U.uRimBlur, S.rimBlur);   gl.uniform1f(U.uRimY, S.rimY);
+  gl.uniform1f(U.uRimSize, S.rimSize);
+  gl.uniform1f(U.uPlanetGlow, S.planetGlow); gl.uniform1f(U.uPlanetReach, S.planetReach);
   gl.uniform1f(U.uBloom, S.bloom);       gl.uniform1f(U.uSunWidth, S.sunWidth);
   gl.uniform1f(U.uEdge, S.edge);
   gl.uniform1f(U.uShimmer, S.shimmer);   gl.uniform1f(U.uSpeed, S.speed);
