@@ -745,9 +745,12 @@
   }
 
   addEventListener('wheel', e=>{ if(!locked) return; e.preventDefault(); input(e.deltaY>0?1:-1); }, {passive:false});
-  let tY=0;
-  addEventListener('touchstart', e=>{ if(locked&&e.touches[0]) tY=e.touches[0].clientY; }, {passive:true});
-  addEventListener('touchmove', e=>{ if(!locked||!e.touches[0]) return; e.preventDefault(); const dy=tY-e.touches[0].clientY; if(Math.abs(dy)>20) input(dy>0?1:-1); }, {passive:false});
+  // touch: ONE swipe = ONE step (fire once when the threshold is crossed, then ignore until the finger
+  // lifts) so a long/slow drag can't run through several projects at once.
+  let tY=0, swipeFired=false; const TOUCH_THRESH=32;
+  addEventListener('touchstart', e=>{ if(locked&&e.touches[0]){ tY=e.touches[0].clientY; swipeFired=false; } }, {passive:true});
+  addEventListener('touchmove', e=>{ if(!locked||!e.touches[0]) return; e.preventDefault(); if(swipeFired) return; const dy=tY-e.touches[0].clientY; if(Math.abs(dy)>TOUCH_THRESH){ swipeFired=true; input(dy>0?1:-1); } }, {passive:false});
+  addEventListener('touchend', ()=>{ swipeFired=false; }, {passive:true});
   addEventListener('keydown', e=>{ if(!locked) return; const d=(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' ')?1:((e.key==='ArrowUp'||e.key==='PageUp')?-1:0); if(d){e.preventDefault(); input(d);} });
 
   // LOCK detection (section crosses to fill the screen) + keep after-section UI alive while unlocked
