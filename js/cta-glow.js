@@ -65,7 +65,7 @@
     col *= uIntensity;
     col *= smoothstep(-0.015, 0.01, d);
     col *= smoothstep(0.0, max(uLift,0.001), uv.y);
-    gl_FragColor = vec4(col, 1.0);
+    gl_FragColor = vec4(vec3(0.0784) + col, 1.0);   // #141414 base + additive glow
   }`;
 
   function compile(type,src){ const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
