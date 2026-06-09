@@ -244,7 +244,7 @@
    scroll speed (fast scroll = fast sequence, no lag). pinned & centered, so only the blur
    changes (text doesn't move). sequential: Beyond in -> hold -> out, then Frame 26 in. */
 (function(){
-  const chapter=document.querySelector('.sec-swap');
+  const chapter=document.querySelector('.beyond-swap');
   if(!chapter)return;
   const bLines=[...chapter.querySelectorAll('.beyond-title .line-1,.beyond-title .line-2')];
   const fLines=[...chapter.querySelectorAll('.beyond-statement span')];

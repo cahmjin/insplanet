@@ -18,8 +18,8 @@ html.lenis,html.lenis body{height:auto}
 
 /* pinned chapter: tall track + sticky stage, so the text HOLDS in the viewport (doesn't scroll
    up and off) while you scroll through; the blur reveal plays automatically once it's pinned. */
-.pin-chapter{position:relative;z-index:1;height:260vh;background:transparent} /* taller = sequence spread over more scroll = slower response */
-.pin-stage{position:sticky;top:0;height:100vh;overflow:hidden}
+.pin-beyond{position:relative;z-index:1;height:260vh;background:transparent} /* taller = sequence spread over more scroll = slower response */
+.pin-beyond-stage{position:sticky;top:0;height:100vh;overflow:hidden}
 
 /* both titles live in the SAME centered spot (overlapping) — JS scrub swaps between them */
 .beyond-title,.beyond-statement{position:absolute;left:clamp(48px, calc(18.75vw - 144px), 216px);top:50%;transform:translateY(-50%);margin:0;
@@ -414,7 +414,7 @@ html.lenis,html.lenis body{height:auto}
 /* ===== chapter 05: Our Partners (Frame 48) — static header + full-width 5-col logo grid ===== */
 /* tall track gives scroll room for the pinned reveal; the pin holds one screen while the logo rows
    rise in (js/main.js drives opacity/transform per scroll), then releases so the section scrolls on. */
-.partners{position:relative;z-index:1;background:transparent;height:400vh}
+.partners{position:relative;z-index:1;background:transparent;height:250vh}
 .partners-pin{position:sticky;top:0;height:100vh;overflow:hidden}
 /* centered content frame — 928 / 1486 / 1970, >=48px side gutter (same anchors as the other sections).
    sits at the top of the pin; js/main.js translateY's it (header-centered -> content-centered) as the
