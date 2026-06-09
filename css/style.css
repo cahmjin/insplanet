@@ -566,7 +566,7 @@ html.lenis,html.lenis body{height:auto}
     background:transparent;pointer-events:none;z-index:9999;
     -webkit-backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
     backdrop-filter:invert(1) saturate(2.2) contrast(1.5);
-    will-change:transform;transition:width .3s cubic-bezier(.22,1,.36,1),height .3s cubic-bezier(.22,1,.36,1)}
+    will-change:transform;transition:width .3s cubic-bezier(.22,1,.36,1),height .3s cubic-bezier(.22,1,.36,1),opacity .25s ease}
   /* "View Project" label inside the cursor — shown only over the project visual panel */
   #cursor .cursor-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     font-family:'Pretendard',-apple-system,sans-serif;font-weight:700;font-size:13px;line-height:1.15;text-align:center;color:#fff;

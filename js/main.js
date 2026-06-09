@@ -24,10 +24,16 @@
   const FOLLOW=0.13;
   (function loop(){
     const el=document.elementFromPoint(mx,my);
-    let m=''; if(el){ if(el.closest(GROW_SEL))m='grow'; else if(el.closest('.proj-visual'))m='view'; }
+    let m='';
+    if(el){
+      if(el.closest('.cta-arrow'))m='hide';              // the CTA arrow IS the cursor here -> hide the dot
+      else if(el.closest(GROW_SEL))m='grow';
+      else if(el.closest('.proj-visual'))m='view';
+    }
     if(m!==mode){
       mode=m;
       cur.classList.toggle('is-view', m==='view');
+      cur.style.opacity = m==='hide' ? '0' : '';         // reappears on leave
       cur.style.width = m==='grow' ? '80px' : '';        // grow=80 inline; view(96)/normal(32) from CSS
       cur.style.height = m==='grow' ? '80px' : '';
     }
