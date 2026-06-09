@@ -728,15 +728,18 @@
   }
   function release(dir){
     if(!locked) return;
-    const top=secTopAbs(), vh=innerHeight;
-    // down: drop the underlying scroll to the pin's END. The sticky stage keeps project 3 on screen the
-    //       whole pin range, so this move is INVISIBLE — then a touch more scroll reveals the CTA, no jump.
-    // up:   drop to just above the section so the previous section takes over.
-    const dest=dir>0 ? Math.round(top+sec.offsetHeight-vh) : Math.max(0,top-2);
     locked=false; released=performance.now(); prevTop=null; prevCovering=(dir>0);
-    window.scrollTo(0,dest);
-    if(L()){ L().scrollTo(dest,{immediate:true}); L().start(); }
-    if(dir<0) introHide();                                  // leaving the intro upward -> blur the big title OUT (not a snap)
+    if(L()) L().start();
+    if(dir>0){
+      // GLIDE smoothly out to the CTA (no instant reposition -> no iOS "snap" jump). Ends past the
+      // section, so a later scroll-up cleanly re-approaches the last project (no blank).
+      const dest=Math.round(secTopAbs()+sec.offsetHeight);
+      if(L()) L().scrollTo(dest,{duration:0.7}); else window.scrollTo(0,dest);
+    } else {
+      const dest=Math.max(0, secTopAbs()-2);
+      if(L()) L().scrollTo(dest,{immediate:true}); else window.scrollTo(0,dest);
+      introHide();                                          // leaving the intro upward -> blur the big title OUT
+    }
   }
   function input(dir){
     if(!locked||animating||cool) return;
