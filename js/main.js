@@ -1,14 +1,3 @@
-/* iOS Safari (WebKit) can't render the Insight WebGL shader — it shows black. Flag the card on iOS
-   ONLY so CSS swaps in a captured still; non-iOS keeps the live shader (no fallback-image flash). */
-(function(){
-  if(/[?&]shader\b/.test(location.search)) return;   // ?shader -> force the live shader (debug iOS render + console errors)
-  const ua=navigator.userAgent||'';
-  const isIOS=/iP(hone|ad|od)/.test(navigator.platform)
-    || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1)   // iPadOS 13+ reports as Mac
-    || /\b(iPad|iPhone|iPod)\b/.test(ua);
-  if(isIOS){ const card=document.querySelector('.insight-card'); if(card) card.classList.add('shader-fallback'); }
-})();
-
 /* ===== smooth momentum scroll (Lenis): adds elastic inertia to scrolling (up and down).
    real-scroll mode -> sticky pins, fixed header, and scrollY-based handlers all keep working.
    skipped for reduced-motion. */
