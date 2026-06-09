@@ -553,6 +553,7 @@
   // for Let's Talk/menu, bottom-right for SCROLL) -> flip them to white over dark images.
   const ui={lt:document.getElementById('lets-talk'),fm:document.getElementById('full-menu'),sh:document.getElementById('scroll-hint'),ci:document.getElementById('ci-logo')};
   const cta=document.querySelector('.contact-cta');   // solid-dark CTA after projects -> also flips UI white
+  const footer=document.querySelector('.footer');     // logo reveal when scrolled into view (one-shot)
   const imgEls=[...sec.querySelectorAll('.proj-img')];
   const lum=imgEls.map(()=>({top:false,bot:false}));
   const projInd=document.querySelector('.proj-indicator');   // right-centre step dots, recoloured per image
@@ -661,6 +662,7 @@
       if(cr.top<=vh-72 && cr.bottom>=vh-72) tBot=1;
       if(cr.top < vh*0.3) cta.classList.add('in');
     }
+    if(footer && footer.getBoundingClientRect().top < vh*0.35) footer.classList.add('in');  // reveal logo
     if(tTop>0.6)topOn=true; else if(tTop<0.35)topOn=false;
     if(tBot>0.6)botOn=true; else if(tBot<0.35)botOn=false;
     if(tLogo>0.6)logoOn=true; else if(tLogo<0.35)logoOn=false;

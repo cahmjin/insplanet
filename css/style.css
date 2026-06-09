@@ -129,6 +129,9 @@ html.lenis,html.lenis body{height:auto}
   /* (.partner-grid desc gap is a single 6.25vw clamp 64->160 in the base rule — covers 1920->2560 too) */
   /* Say Hello CTA — subtitle left indent 12 -> 14.5 */
   .contact-cta .cta-sub{margin-left:clamp(12px, calc(0.3906vw + 4.5px), 14.5px)}
+  /* Footer — segment 1920->2560 (.footer prefix bumps specificity to win over the later base rules) */
+  .footer .footer-logo{left:clamp(216px, calc(0.3125vw + 210px), 218px);width:clamp(576px, calc(49.375vw - 372px), 892px)}
+  .footer .footer-bottom{left:clamp(216px, calc(0.3125vw + 210px), 218px);right:clamp(216px, calc(0.3125vw + 210px), 218px);bottom:clamp(64px, calc(2.5vw + 16px), 80px)}
   /* Our Projects — left margin 216 -> 218 */
   .projects-title,.projects .proj-info{left:clamp(216px, calc(0.3125vw + 210px), 218px)}
   /* full menu — segment 1920->2560 (specificity bumped via #menu-overlay to win over the base rules) */
@@ -518,6 +521,43 @@ html.lenis,html.lenis body{height:auto}
   46% {transform:translateX(-150%);opacity:0}
   100%{transform:translateX(0);opacity:1}}
 .cta-arrow:hover svg{animation:cta-arrow-cycle .55s cubic-bezier(.22,1,.36,1)}
+
+/* chapter 08: footer (Figma Frame 47). White full-screen — big logo upper-left + a bottom bar:
+   links + copyright (left) / address + contact (right). All #3E3F44. z-index:1 covers the bg-line. */
+.footer{position:relative;z-index:1;height:100vh;background:transparent;overflow:hidden;color:#3E3F44;
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
+/* logo = container holding two overlaid SVGs (wordmark + planet) so each animates independently and
+   the wordmark's blur is a CSS filter on the SVG ELEMENT (spreads freely, no SVG filter-region clip). */
+.footer-logo{position:absolute;left:clamp(48px, calc(18.75vw - 144px), 216px);
+  top:38%;   /* Figma top is ~37-41% of the frame across breakpoints; 38% is the balanced single value */
+  width:clamp(448px, calc(14.286vw + 301.71px), 576px);line-height:0}
+.footer-wordmark{display:block;width:100%;height:auto}     /* in flow -> sizes the container */
+.footer-planet{position:absolute;inset:0;width:100%;height:100%}   /* overlay, same coords */
+/* reveal on scroll-in (.footer.in): wordmark blur-fades up first, then the planet "arrives" (scales
+   in from small with a soft overshoot, a beat later). */
+.footer-wordmark,.footer-planet{opacity:0;will-change:opacity,filter,transform}
+.footer-wordmark{filter:blur(14px);transform:translateY(12px);
+  transition:opacity .9s ease,filter .9s ease,transform .9s cubic-bezier(.22,1,.36,1)}
+.footer-planet{transform-origin:90% 33%;transform:scale(.35);   /* origin ~ planet centre in the viewBox */
+  transition:opacity .4s ease .24s,transform .55s cubic-bezier(.34,1.56,.64,1) .24s}
+.footer.in .footer-wordmark{opacity:1;filter:blur(0);transform:translateY(0)}
+.footer.in .footer-planet{opacity:1;transform:scale(1)}
+@media (prefers-reduced-motion:reduce){
+  .footer-wordmark,.footer-planet{opacity:1;filter:none;transform:none;transition:none}}
+.footer-bottom{position:absolute;bottom:clamp(48px, calc(1.7857vw + 29.71px), 64px);
+  left:clamp(48px, calc(18.75vw - 144px), 216px);right:clamp(48px, calc(18.75vw - 144px), 216px);
+  display:flex;justify-content:space-between;align-items:flex-end;gap:48px}
+.footer-left{display:flex;flex-direction:column;gap:clamp(65px, calc(2.0089vw + 44.43px), 83px)}
+.footer-links{display:flex;gap:80px}
+.footer-links a{text-decoration:none;color:inherit;font-weight:600;line-height:1;
+  font-size:clamp(14px, calc(0.2232vw + 11.71px), 16px)}
+.footer-copy{margin:0;font-weight:600;text-transform:uppercase;line-height:1.5;
+  font-size:clamp(12px, calc(0.4464vw + 7.43px), 16px)}
+.footer-contact{display:flex;flex-direction:column;gap:16px;font-weight:600;line-height:1.5;
+  font-size:clamp(12px, calc(0.4464vw + 7.43px), 16px)}
+.footer-contact p{margin:0}
+.footer-tf{display:flex}
+.footer-tf span:first-child{flex:0 0 159px}
 
 /* custom cursor: inverting (difference) circle. desktop/fine-pointer only */
 #cursor{display:none}
