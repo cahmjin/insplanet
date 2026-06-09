@@ -668,7 +668,9 @@
         'tTop='+tTop.toFixed(2)+' tBot='+tBot.toFixed(2)+'\n'+
         'topOn='+topOn+' botOn='+botOn+'\n'+
         'lt.on-dark='+(ui.lt?ui.lt.classList.contains('on-dark'):'?')+'\n'+
-        'lt.color='+(ui.lt?getComputedStyle(ui.lt).color:'?');
+        'lt.color='+(ui.lt?getComputedStyle(ui.lt).color:'?')+'\n'+
+        'visOp='+(visual?visual.style.opacity:'?')+' infoOp='+(info?info.style.opacity:'?')+'\n'+
+        'lastStep='+lastLockedStep+' locked='+locked+' anim='+animating;
     }
   }
   // ====== INPUT-DRIVEN SNAP STEPS (itddaa-style) ======
