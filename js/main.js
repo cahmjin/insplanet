@@ -720,8 +720,8 @@
     if(locked) return;
     const top=secTopAbs();
     locked=true; step=s; posTo=s; posAnim=s; lastLockedStep=s;
-    if(L()) L().stop();
-    window.scrollTo(0, top);                                 // align to pin start; sticky keeps the stage on screen while frozen
+    if(L()){ L().scrollTo(top,{immediate:true}); L().stop(); }   // sync Lenis's internal position THEN freeze, so start() on release doesn't snap-correct (iOS "jump")
+    else window.scrollTo(0, top);
     renderPos(s);
     if(s===0){ introReveal(); cool=true; setTimeout(()=>{cool=false;}, T.introDwell); }   // hold on the intro a beat before the first input can advance to project 1
     else { title.style.opacity='1'; title.style.filter='blur(0px)'; }
