@@ -666,7 +666,7 @@
   //   step 0 = intro ("Our Projects")   1/2/3 = project 1/2/3   (down@3 or up@0 -> release the lock)
   const pin=document.querySelector('.projects-pin');
   const MAXSTEP=3;
-  let step=0, posAnim=0, posFrom=0, posTo=0, posT0=0, animating=false, locked=false, cool=false, released=-1e9, prevTop=null, prevCovering=false;
+  let step=0, posAnim=0, posFrom=0, posTo=0, posT0=0, animating=false, locked=false, cool=false, released=-1e9, prevTop=null, prevCovering=false, lastLockedStep=0;
   const L=()=>window.__lenis;
   const pageY=()=>window.scrollY||window.pageYOffset||0;
   const secTopAbs=()=>Math.round(sec.getBoundingClientRect().top+pageY());
@@ -691,7 +691,7 @@
     if(k<1) requestAnimationFrame(stepLoop);
     else { posAnim=posTo; renderPos(posAnim); animating=false; }
   }
-  function goTo(t){ title.style.opacity='1'; title.style.filter='blur(0px)'; posFrom=posAnim; posTo=t; step=t; posT0=performance.now(); if(!animating){animating=true; requestAnimationFrame(stepLoop);} }
+  function goTo(t){ title.style.opacity='1'; title.style.filter='blur(0px)'; posFrom=posAnim; posTo=t; step=t; lastLockedStep=t; posT0=performance.now(); if(!animating){animating=true; requestAnimationFrame(stepLoop);} }
   let introRAF=0, titleBusy=false;
   function introReveal(){                                    // one-shot IN-PLACE blur-IN once the section locks at the intro
     cancelAnimationFrame(introRAF); titleBusy=true;
@@ -719,7 +719,7 @@
   function lockAt(s){
     if(locked) return;
     const top=secTopAbs();
-    locked=true; step=s; posTo=s; posAnim=s;
+    locked=true; step=s; posTo=s; posAnim=s; lastLockedStep=s;
     if(L()) L().stop();
     window.scrollTo(0, top);                                 // align to pin start; sticky keeps the stage on screen while frozen
     renderPos(s);
@@ -764,14 +764,15 @@
       prevCovering=true; prevTop=r.top; return;
     }
     prevCovering=covering; prevTop=r.top;
+    if(r.top>vh) lastLockedStep=0;                           // section fully below the viewport -> next entry from the top is the intro again
     // not locking this frame -> paint the approach/exit state so there's never a blank gap
-    if(r.top>0){                                             // intro side: approaching from below, or leaving upward
+    if(r.top<=0 || lastLockedStep>0){                        // section in view as a PROJECT (up-approach, or last project scrolling out up/down)
+      if(!titleBusy){ title.style.opacity='1'; title.style.filter='blur(0px)'; }
+      renderPos(MAXSTEP);                                    // keep the last project shown so it never blanks
+    } else {                                                 // intro side: approaching the intro from below, or leaving it upward
       if(!titleBusy){ title.style.opacity='0'; title.style.filter='blur(16px)'; }   // big title hidden until the lock blurs it in
       if(visual)visual.style.opacity='0'; if(info)info.style.opacity='0';
       renderAf();                                            // keep cta/footer/contrast updated
-    } else {                                                 // section visible from above (up-approach) or scrolling out after project 3
-      if(!titleBusy){ title.style.opacity='1'; title.style.filter='blur(0px)'; }
-      renderPos(MAXSTEP);                                    // show the LAST project so it's already there before the lock
     }
   }
   addEventListener('scroll', ()=>{ if(!ticking){ticking=true; requestAnimationFrame(()=>{ticking=false; onScroll();});} }, {passive:true});
