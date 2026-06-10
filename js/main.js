@@ -658,20 +658,6 @@
     if(ui.ci)ui.ci.classList.toggle('on-dark',logoOn);     // top-left: only a fully-dark section
     if(ui.sh)ui.sh.classList.toggle('on-dark',botOn);
     if(projInd)projInd.classList.toggle('on-dark',topOn);  // indicator: SAME state as Let's Talk/hamburger
-    if(window.__dbgEl){
-      const hi=Math.max(0,Math.min(2,Math.round(af)));
-      window.__dbgEl.textContent=
-        'af='+af.toFixed(2)+'  rev='+lastRev.toFixed(2)+'\n'+
-        'rTop='+Math.round(r.top)+' rBot='+Math.round(r.bottom)+' vh='+vh+'\n'+
-        'cond='+(r.top<=2&&r.bottom>=vh-4&&lastRev>0.5)+'\n'+
-        'lum['+hi+']='+JSON.stringify(lum[hi])+'\n'+
-        'tTop='+tTop.toFixed(2)+' tBot='+tBot.toFixed(2)+'\n'+
-        'topOn='+topOn+' botOn='+botOn+'\n'+
-        'lt.on-dark='+(ui.lt?ui.lt.classList.contains('on-dark'):'?')+'\n'+
-        'lt.color='+(ui.lt?getComputedStyle(ui.lt).color:'?')+'\n'+
-        'visOp='+(visual?visual.style.opacity:'?')+' infoOp='+(info?info.style.opacity:'?')+'\n'+
-        'lastStep='+lastLockedStep+' locked='+locked+' anim='+animating;
-    }
   }
   // ====== INPUT-DRIVEN SNAP STEPS (itddaa-style) ======
   // The section LOCKS when it fills the screen; then each scroll INPUT (one wheel tick / one swipe)
@@ -826,5 +812,4 @@
   // mid-section scroll position), there was no scroll-in to set up the lock — so lock cleanly at the
   // intro right here. Otherwise run the normal approach render.
   { const r0=sec.getBoundingClientRect(); if(r0.top<=2 && r0.bottom>=innerHeight-2){ lockAt(0); } else { onScroll(); } }
-  if(location.hash==='#debug'){ const d=document.createElement('div'); d.style.cssText='position:fixed;left:6px;bottom:6px;z-index:2147483647;background:rgba(0,0,0,.85);color:#0f0;font:12px/1.45 ui-monospace,Menlo,monospace;padding:8px 10px;white-space:pre;border-radius:6px;pointer-events:none'; document.body.appendChild(d); window.__dbgEl=d; d.textContent='#debug ready — scroll into Projects'; }
 })();
