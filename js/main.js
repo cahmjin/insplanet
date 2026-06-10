@@ -679,7 +679,7 @@
   //   step 0 = intro ("Our Projects")   1/2/3 = project 1/2/3   (down@3 or up@0 -> release the lock)
   const pin=document.querySelector('.projects-pin');
   const MAXSTEP=3;
-  let step=0, posAnim=0, posFrom=0, posTo=0, posT0=0, animating=false, locked=false, cool=false, released=-1e9, prevTop=null, prevCovering=false, lastLockedStep=0;
+  let step=0, posAnim=0, posFrom=0, posTo=0, posT0=0, animating=false, locked=false, cool=false, released=-1e9, prevTop=null, prevCovering=false, lastLockedStep=0, exitArmed=false;
   const L=()=>window.__lenis;
   const pageY=()=>window.scrollY||window.pageYOffset||0;
   const secTopAbs=()=>Math.round(sec.getBoundingClientRect().top+pageY());
@@ -732,7 +732,7 @@
   function lockAt(s){
     if(locked) return;
     const top=secTopAbs();
-    locked=true; step=s; posTo=s; posAnim=s; lastLockedStep=s;
+    locked=true; step=s; posTo=s; posAnim=s; lastLockedStep=s; exitArmed=false;
     if(L()){ L().scrollTo(top,{immediate:true}); L().stop(); }   // sync Lenis's internal position THEN freeze, so start() on release doesn't snap-correct (iOS "jump")
     else window.scrollTo(0, top);
     renderPos(s);
@@ -748,7 +748,7 @@
       // Don't auto-glide to the section end — that catapulted the whole CTA into view on a single tick
       // ("jump to Say Hello"). Lenis position was synced in lockAt before .stop(), so .start() above
       // doesn't snap; the user now scrolls out of the section at their own pace.
-      prevCovering=true; prevTop=0;                           // covering & at the top -> no immediate re-lock
+      prevCovering=true; prevTop=0; exitArmed=true;           // covering & at top -> no auto re-lock; arm touch capture so an UP pull re-locks before native scroll/inertia starts
     } else {
       const dest=Math.max(0, secTopAbs()-2);
       if(L()) L().scrollTo(dest,{immediate:true}); else window.scrollTo(0,dest);
@@ -765,8 +765,15 @@
   // touch: ONE swipe = ONE step (fire once when the threshold is crossed, then ignore until the finger
   // lifts) so a long/slow drag can't run through several projects at once.
   let tY=0, swipeFired=false; const TOUCH_THRESH=32;
-  addEventListener('touchstart', e=>{ if(locked&&e.touches[0]){ tY=e.touches[0].clientY; swipeFired=false; } }, {passive:true});
-  addEventListener('touchmove', e=>{ if(!locked||!e.touches[0]) return; e.preventDefault(); if(swipeFired) return; const dy=tY-e.touches[0].clientY; if(Math.abs(dy)>TOUCH_THRESH){ swipeFired=true; input(dy>0?1:-1); } }, {passive:false});
+  addEventListener('touchstart', e=>{ if(e.touches[0] && (locked||exitArmed)){ tY=e.touches[0].clientY; swipeFired=false; } }, {passive:true});
+  addEventListener('touchmove', e=>{
+    if(!e.touches[0]) return;
+    if(locked){ e.preventDefault(); if(swipeFired) return; const dy=tY-e.touches[0].clientY; if(Math.abs(dy)>TOUCH_THRESH){ swipeFired=true; input(dy>0?1:-1); } return; }
+    // just released DOWNWARD at the last project: if the user pulls UP (back toward the projects) instead of
+    // continuing down, re-lock at the touch level BEFORE native scroll engages -> no inertia, no snap-back.
+    // A DOWN pull is left to native scroll so the section still exits to Say Hello.
+    if(exitArmed && !swipeFired){ const dy=tY-e.touches[0].clientY; if(dy<-6){ e.preventDefault(); swipeFired=true; exitArmed=false; lockAt(lastLockedStep); } }
+  }, {passive:false});
   addEventListener('touchend', ()=>{ swipeFired=false; }, {passive:true});
   addEventListener('keydown', e=>{ if(!locked) return; const d=(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' ')?1:((e.key==='ArrowUp'||e.key==='PageUp')?-1:0); if(d){e.preventDefault(); input(d);} });
 
@@ -782,6 +789,7 @@
       return;
     }
     const vh=innerHeight, r=sec.getBoundingClientRect(), recent=performance.now()-released<450;
+    if(exitArmed && (r.top<-vh*0.4 || r.top>vh)) exitArmed=false;   // committed to the downward exit (or section gone) -> stop watching for an UP pull
     const covering=r.top<=0 && r.bottom>=vh;                 // the sticky stage fills the viewport (true over a 100vh range)
     // lock the instant the stage fills the screen
     if(covering && !prevCovering && !recent){
