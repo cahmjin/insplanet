@@ -772,7 +772,15 @@
 
   // LOCK detection (section crosses to fill the screen) + keep after-section UI alive while unlocked
   function onScroll(){
-    if(locked) return;
+    if(locked){
+      // While locked the page must stay pinned at the section top. touchmove preventDefault stops finger
+      // scrolls, but iOS MOMENTUM/inertia (after a flick, finger already lifted) is NOT a touchmove and
+      // slips through -> the page drifts off the anchor while we still think we're locked, leaving the
+      // section scrolled away with the section above (partners) showing. Snap any drift back to the anchor.
+      const top=secTopAbs();
+      if(Math.abs(pageY()-top)>2){ if(L()) L().scrollTo(top,{immediate:true,force:true}); else window.scrollTo(0,top); }
+      return;
+    }
     const vh=innerHeight, r=sec.getBoundingClientRect(), recent=performance.now()-released<450;
     const covering=r.top<=0 && r.bottom>=vh;                 // the sticky stage fills the viewport (true over a 100vh range)
     // lock the instant the stage fills the screen
