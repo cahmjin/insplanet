@@ -148,7 +148,7 @@ if('IntersectionObserver'in window){
 }
 function draw(now){
   requestAnimationFrame(draw);
-  if(!_onScreen||(_menu&&_menu.classList.contains('covered'))){last=now;return;}
+  if(!_onScreen||(_menu&&_menu.classList.contains('covered'))||document.documentElement.classList.contains('pg-anim')){last=now;return;}  // freeze the blob during a page transition (keeps the scaled layer cheap)
   const dt=Math.min((now-last)/1000,.05);last=now;
   st+=dt*(0.5+sSpd*3.0);
   phase+=dt*(lSpd*lSpd*8.0);

@@ -1,0 +1,131 @@
+/* ===== About ("Who We Are") page — Figma official_03_about =====
+   Header / footer / menu / cursor / bg-arcs come from style.css + main.js (shared). This file styles
+   only the About sections. Everything is expressed in a single DESIGN UNIT so the page matches Figma
+   1:1 at the 1920 design width and scales proportionally below it.
+      --u = 1 Figma pixel.  0.0520833vw == 1px @1920.  capped at 1px (>=1920) and floored so text stays
+      readable on smaller laptops; <1040px switches to the stacked layout at the bottom of this file. */
+
+.about-page{background:#fff}
+.about{--u:clamp(0.7px, 0.0520833vw, 1px);position:relative;z-index:1;overflow:clip}
+
+/* shared content column (Figma: 1488 wide, 216 gutters @1920) */
+.about-inner{width:calc(1488 * var(--u));margin:0 auto;position:relative}
+
+/* type roles reused across sections */
+.about-headline{margin:0;color:#1A1A1A;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(56 * var(--u));line-height:1.5;letter-spacing:-0.01em}
+.about-lead{margin:0;color:#1A1A1A;font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(24 * var(--u));line-height:1.5}
+.about-paragraph{margin:0;color:#1A1A1A;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(20 * var(--u));line-height:1.5}
+
+/* ---------- 01 hero (frame 0–822; title @216,240 · intro @976,457) ---------- */
+.about-hero{position:relative;height:calc(822 * var(--u))}
+.about-hero-inner{height:100%}
+.about-hero-title{position:absolute;left:0;top:calc(240 * var(--u));margin:0;color:#3E3F44;
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:calc(200 * var(--u));line-height:0.7;
+  letter-spacing:-0.01em;display:flex;flex-direction:column}
+.about-hero-intro{position:absolute;left:calc(760 * var(--u));top:calc(457 * var(--u));width:calc(569 * var(--u))}
+.about-hero-lead{margin:0 0 calc(12 * var(--u));color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(24 * var(--u));line-height:1.5}
+.about-hero-body{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(20 * var(--u));line-height:1.5}
+
+/* ---------- 02 full-bleed banner (frame 822–1722, 900 tall) — black bg + live shader, shown from the start ---------- */
+.about-banner{position:relative;width:100%;height:calc(900 * var(--u));overflow:hidden;background:#000}
+.about-banner #about-blackhole{position:absolute;inset:0;width:100%;height:100%;display:block}   /* no fade-in */
+
+/* ---------- 03 mission & vision + the three I's (group @216,1962) ---------- */
+.about-mission{padding-top:calc(240 * var(--u))}
+.about-eyebrow-serif{margin:0 0 calc(80 * var(--u));color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(48 * var(--u));line-height:1.2}
+.about-mission-head .about-headline{margin-bottom:calc(48 * var(--u))}
+
+.value-cards{list-style:none;margin:calc(160 * var(--u)) 0 0;padding:0;display:flex;justify-content:space-between}
+.value-card{flex:0 0 calc(421 * var(--u));display:flex;flex-direction:column;align-items:center;text-align:center}
+.value-pill{display:flex;align-items:center;justify-content:center;width:calc(400 * var(--u));height:calc(400 * var(--u));
+  border-radius:999px;background:#3E3F44;color:#fff;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(24 * var(--u));letter-spacing:0.01em}
+.value-card-title{margin:calc(80 * var(--u)) 0 calc(32 * var(--u));color:#1A1A1A;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(24 * var(--u));line-height:1.4}
+.value-card-body{margin:0;color:#1A1A1A;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(20 * var(--u));line-height:1.5}
+
+/* ---------- 04 finance × mobility + core values (group @216,3602; gap 400 from mission) ---------- */
+.about-fusion{padding-top:calc(400 * var(--u))}
+.about-fusion-head{position:relative}
+.about-fusion-head .about-headline{margin:0 0 calc(48 * var(--u));max-width:calc(684 * var(--u))}
+.about-fusion-head .about-paragraph{max-width:calc(723 * var(--u))}
+.about-fusion-graphic{position:absolute;top:calc(118 * var(--u));left:calc(1176 * var(--u));width:calc(312 * var(--u));height:auto}
+
+.core-values{list-style:none;margin:calc(160 * var(--u)) 0 0;padding:0}
+.core-value{display:grid;grid-template-columns:calc(576 * var(--u)) 1fr;align-items:center;gap:calc(32 * var(--u));padding:calc(80 * var(--u)) 0}
+.core-value:first-child{padding-top:0}
+.core-value + .core-value{border-top:1px solid #F5F5F5}
+.core-value-head{display:flex;align-items:center;gap:calc(24 * var(--u))}
+.core-value-icon{flex:none;width:calc(80 * var(--u));height:calc(80 * var(--u));display:flex;align-items:center;justify-content:center}
+.core-value-icon img{width:100%;height:100%;object-fit:contain;display:block}
+.core-value-title{margin:0;color:#1A1A1A;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(24 * var(--u));line-height:1.3}
+.core-value-desc{margin:0;color:#1A1A1A;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(18 * var(--u));line-height:1.5}
+
+/* ---------- 05 gallery (frame @5051; 3 portraits, gap 96 from fusion) ---------- */
+.about-gallery{padding-top:calc(96 * var(--u))}
+.about-gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(32 * var(--u))}
+.about-gallery-item{margin:0;aspect-ratio:576 / 720;border-radius:calc(32 * var(--u));overflow:hidden}
+.about-gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ---------- 06 Beyond UX / The AX Creator + stats (group @216,6171; gap 400 from gallery) ---------- */
+.about-axcreator{padding-top:calc(400 * var(--u))}
+.about-axcreator-grid{display:grid;grid-template-columns:calc(760 * var(--u)) 1fr;align-items:start;row-gap:calc(170 * var(--u))}
+.about-display{grid-column:1;grid-row:1 / span 2;margin:0;color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(80 * var(--u));line-height:0.8;display:flex;flex-direction:column}
+.about-axcreator-copy{grid-column:2;grid-row:1;padding-top:calc(10 * var(--u));display:flex;flex-direction:column;gap:calc(32 * var(--u))}
+.about-stats{grid-column:2;grid-row:2;margin:0;display:grid;grid-template-columns:calc(456 * var(--u)) 1fr;row-gap:calc(110 * var(--u));column-gap:calc(110 * var(--u))}
+.about-stat{display:flex;flex-direction:column;gap:calc(80 * var(--u))}
+.about-stat:first-child{grid-column:1 / -1}
+.about-stat-label{margin:0;color:#1A1A1A;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(16 * var(--u));line-height:1.2}
+.about-stat-num{margin:0;line-height:0}
+.about-stat-num img{display:block;width:auto}
+.about-stat:nth-child(1) .about-stat-num img{height:calc(166 * var(--u))}
+.about-stat:nth-child(2) .about-stat-num img{height:calc(118 * var(--u))}
+.about-stat:nth-child(3) .about-stat-num img{height:calc(136 * var(--u))}
+
+/* ---------- 07 full-bleed closing image (frame @7451, 1080 tall; gap 200 from ax) ---------- */
+.about-fullbleed{width:100%;height:calc(1080 * var(--u));margin-top:calc(200 * var(--u));overflow:hidden}
+.about-fullbleed img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ---------- responsive: stack the two-column blocks on narrow viewports ---------- */
+@media (max-width:1040px){
+  .about-inner{width:auto;max-width:calc(100% - 96px)}
+  .about-headline{font-size:clamp(28px,4.6vw,40px)}
+  .about-lead{font-size:clamp(18px,2.4vw,22px)}
+  .about-paragraph{font-size:clamp(15px,2vw,18px)}
+
+  .about-hero{height:auto;padding:clamp(120px,18vw,200px) 0 clamp(64px,10vw,120px)}
+  .about-hero-title{position:static;font-size:clamp(64px,13vw,150px);line-height:0.82}
+  .about-hero-intro{position:static;width:100%;margin-top:clamp(32px,7vw,64px)}
+  .about-hero-lead{font-size:clamp(18px,2.4vw,22px)}
+  .about-hero-body{font-size:clamp(15px,2vw,18px)}
+  .about-banner{height:clamp(280px,46vw,640px)}
+
+  .about-mission,.about-fusion,.about-axcreator{padding-top:clamp(96px,14vw,200px)}
+  .about-gallery{padding-top:clamp(48px,7vw,96px)}
+  .about-eyebrow-serif{font-size:clamp(30px,4.4vw,44px);margin-bottom:clamp(28px,4vw,56px)}
+  .value-cards{flex-direction:column;align-items:center;gap:clamp(56px,9vw,80px);margin-top:clamp(64px,9vw,110px)}
+  .value-card{flex:none;width:100%;max-width:480px}
+  .value-pill{width:min(360px,72vw);height:min(360px,72vw);font-size:clamp(20px,2.6vw,24px)}
+  .value-card-title{font-size:clamp(20px,2.6vw,24px);margin:clamp(36px,5vw,56px) 0 clamp(16px,2.4vw,28px)}
+  .value-card-body{font-size:clamp(15px,2vw,18px)}
+
+  .about-fusion-graphic{position:static;width:240px;margin-top:24px}
+  .core-values{margin-top:clamp(56px,9vw,110px)}
+  .core-value{grid-template-columns:1fr;gap:16px;padding:clamp(32px,5vw,56px) 0}
+  .core-value-icon{width:64px;height:64px}
+  .core-value-title{font-size:clamp(19px,2.6vw,24px)}
+  .core-value-desc{font-size:clamp(14px,1.9vw,18px)}
+
+  .about-gallery-grid{grid-template-columns:1fr;gap:24px}
+  .about-gallery-item{aspect-ratio:16 / 11}
+
+  .about-axcreator-grid{grid-template-columns:1fr;row-gap:clamp(40px,7vw,72px)}
+  .about-display,.about-axcreator-copy,.about-stats{grid-column:1}
+  .about-display{grid-row:auto;font-size:clamp(44px,8vw,72px);line-height:0.9}
+  .about-axcreator-copy{grid-row:auto;padding-top:0;gap:clamp(20px,3vw,32px)}
+  .about-stats{grid-row:auto;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,72px)}
+  .about-stat{gap:clamp(20px,3vw,32px)}
+  .about-stat:nth-child(1) .about-stat-num img{height:clamp(80px,12vw,140px)}
+  .about-stat:nth-child(2) .about-stat-num img{height:clamp(56px,9vw,100px)}
+  .about-stat:nth-child(3) .about-stat-num img{height:clamp(64px,10vw,116px)}
+
+  .about-fullbleed{height:clamp(360px,60vw,720px);margin-top:clamp(96px,14vw,180px)}
+}

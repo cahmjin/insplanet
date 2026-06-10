@@ -131,7 +131,7 @@
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
   draw();   // one paint up front so it's ready before it scrolls in
-  (function loop(){ if(onScreen()) draw(); requestAnimationFrame(loop); })();
+  (function loop(){ if(onScreen()&&!document.documentElement.classList.contains('pg-anim')) draw(); requestAnimationFrame(loop); })();  // skip during a page transition
   }  // end start()
 
   // Defer creating the WebGL context until the CTA is near. iOS Safari keeps only a few live WebGL

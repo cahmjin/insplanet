@@ -9,6 +9,68 @@
   (function raf(t){lenis.raf(t);requestAnimationFrame(raf);})();
 })();
 
+/* ===== page transition: FADE ONLY (no zoom — kept light). The fresh page's #page-root fades in via the
+   CSS pg-enter animation; on an internal-page link we fade it out, then navigate. No transform/scale, so
+   it never becomes a containing block and fixed children + the invert cursor stay correct. Skipped for
+   reduced-motion. ===== */
+(function(){
+  const root=document.getElementById('page-root');
+  const html=document.documentElement;
+  // Heavy WebGL scripts are marked <script type="text/pg-defer"> so the browser neither runs nor fetches
+  // them up front; we inject them for real only AFTER the enter fade, so their one-time WebGL-context
+  // creation + shader compilation can't hitch the first frame of the transition.
+  let deferredLoaded=false;
+  function loadDeferred(){
+    if(deferredLoaded)return;deferredLoaded=true;
+    document.querySelectorAll('script[type="text/pg-defer"]').forEach(s=>{
+      const n=document.createElement('script');
+      if(s.hasAttribute('data-module'))n.type='module';
+      if(s.hasAttribute('data-fade'))n.onload=()=>{requestAnimationFrame(()=>requestAnimationFrame(()=>html.classList.add('pg-blob-in')));setTimeout(()=>html.classList.add('pg-blob-in'),500);};  // rAF = fade in right after first draw; setTimeout = failsafe so #blob is never stuck hidden
+      n.src=s.getAttribute('src');
+      document.body.appendChild(n);
+    });
+  }
+  if(!root||matchMedia('(prefers-reduced-motion:reduce)').matches){loadDeferred();return;}  // no fade -> load them now
+  // ENTER fade auto-plays via CSS. Just load the deferred heavy scripts once it finishes.
+  let entered=false;
+  const afterEnter=()=>{if(entered)return;entered=true;loadDeferred();};
+  root.addEventListener('animationend',afterEnter,{once:true});
+  setTimeout(afterEnter,1200);   // failsafe: fade is ~.5s; load the deferred scripts by 1.2s regardless
+
+  let leaving=false;
+  function exitVisual(){
+    html.classList.add('pg-anim');                                               // pause heavy canvas loops while it fades
+    root.style.animation='none';root.style.transition='none';root.style.opacity='1';root.style.transform='none';
+    void root.offsetWidth;                                                       // commit base
+    root.style.transition='opacity .3s ease';
+    root.style.opacity='0';                                                      // fade only — no scale (no zoom)
+  }
+  function exit(href){
+    if(leaving)return;leaving=true;
+    exitVisual();
+    let done=false;const go=()=>{if(!done){done=true;location.href=href;}};
+    root.addEventListener('transitionend',go,{once:true});
+    setTimeout(go,360);                                                          // failsafe
+  }
+  document.addEventListener('click',e=>{
+    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    const a=e.target.closest&&e.target.closest('a[href]');
+    if(!a||a.target==='_blank'||a.hasAttribute('download'))return;
+    if(a.closest('#menu-overlay'))return;   // links in the full menu run their own close-then-navigate
+    const href=a.getAttribute('href');
+    if(!href||href[0]==='#'||/^(mailto:|tel:|javascript:)/i.test(href))return;
+    let url;try{url=new URL(a.href,location.href);}catch(_){return;}
+    if(url.origin!==location.origin)return;                                      // external -> normal
+    const np=p=>p.replace(/(^|\/)index\.html?$/i,'$1');                          // treat "/" and "/index.html" as the same page
+    if(np(url.pathname)===np(location.pathname)&&url.search===location.search){e.preventDefault();return;}  // already here -> block reload, do nothing
+    e.preventDefault();exit(a.href);
+  });
+  // bfcache restore (back/forward) can bring a page back mid-exit -> clear all the exit inline styles
+  window.addEventListener('pageshow',e=>{
+    if(e.persisted){leaving=false;html.classList.remove('pg-anim');root.style.cssText='opacity:1;transform:none';}  // base is opacity:0 -> force visible on restore
+  });
+})();
+
 /* ===== custom inverting (difference) cursor, smooth follow ===== */
 (function(){
   const cur=document.getElementById('cursor');
@@ -112,6 +174,28 @@
     c1.style.transform='translate('+(mx*14)+'px,'+(my*14)+'px)';
     c2.style.transform='translate('+(mx*-22)+'px,'+(my*20)+'px)';
   });
+})();
+
+/* ===== footer logo reveal on scroll-in (shared; works on any page, incl. about). On the home page
+   the projects IIFE also flips this, which is idempotent — first one to fire wins. ===== */
+(function(){
+  const footer=document.querySelector('.footer');
+  if(!footer||!('IntersectionObserver'in window))return;
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){footer.classList.add('in');io.disconnect();}});},{threshold:0.18});
+  io.observe(footer);
+})();
+
+/* ===== hide the SCROLL hint once the footer comes into view (shared; works on any page). On the home
+   page the projects IIFE also flips this with the same footer-based test, so they stay consistent. ===== */
+(function(){
+  const sh=document.getElementById('scroll-hint');
+  const footer=document.querySelector('.footer');
+  if(!sh||!footer)return;
+  let ticking=false;
+  const update=()=>{ ticking=false; sh.classList.toggle('is-hidden', footer.getBoundingClientRect().top < innerHeight*0.5); };
+  addEventListener('scroll',()=>{ if(!ticking){ticking=true; requestAnimationFrame(update);} },{passive:true});
+  addEventListener('resize',update);
+  update();
 })();
 
 /* ===== full-screen menu: circular reveal + radial (polar) halftone edge =====
@@ -226,6 +310,28 @@
   openBtn.addEventListener('click',open);
   closeBtn.addEventListener('click',close);
   addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('open'))close();});
+
+  // menu nav links: REVERSE-PLAY the menu (close) first, THEN navigate so the next page zooms in —
+  // instead of the whole page (menu included) shrinking. We own this click so the page-transition
+  // scale-exit doesn't also fire.
+  overlay.querySelectorAll('a.menu-item[href]').forEach(a=>{
+    a.addEventListener('click',e=>{
+      const href=a.getAttribute('href');
+      if(!href||href[0]==='#'||/^(mailto:|tel:|javascript:)/i.test(href)||a.target==='_blank'||a.hasAttribute('download'))return;
+      if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button!==0)return;
+      let url;try{url=new URL(a.href,location.href);}catch(_){return;}
+      if(url.origin!==location.origin)return;
+      e.preventDefault();e.stopPropagation();
+      const np=p=>p.replace(/(^|\/)index\.html?$/i,'$1');
+      close();                                                   // run the open animation in reverse
+      if(np(url.pathname)===np(location.pathname))return;        // already on this page -> just close
+      const dest=a.href;
+      if(reduce){location.href=dest;return;}
+      const pr=document.getElementById('page-root');
+      if(pr)pr.classList.add('pg-blank');                        // blank the main behind the (still-covering) menu
+      setTimeout(()=>{location.href=dest;}, DUR+40);             // menu closes to reveal the empty page, then the next page zooms in
+    });
+  });
 })();
 
 /* ===== intro reveal: headline then subtitle settle in from a soft blur ===== */

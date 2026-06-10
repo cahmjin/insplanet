@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In's Planet - Whirling Blackhole Visualization</title>
+    <meta name="description"
+        content="A stunning visualization of a whirling blackhole accretion disk using advanced GLSL shaders.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=4">
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <main class="ui-container">
+        <header>
+            <h1 class="title">In's Planet</h1>
+            <p class="subtitle">Blackhole Interaction Test</p>
+        </header>
+
+        <section class="info-panel">
+            <div class="glass-card">
+                <h2>Shader Analysis</h2>
+                <p>이 시각화는 공간의 왜곡과 빛의 굴절을 수학적으로 구현한 셰이더입니다. 중력 렌즈 효과와 강착 원반의 역동적인 움직임을 실시간으로 감상해보세요.</p>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="label">Status</span>
+                        <span class="value cyan">Stable Orbit</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Mass</span>
+                        <span class="value magenta">4.3M M☉</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 In's Planet by Xor.</p>
+        </footer>
+    </main>
+
+    <script src="engine.js"></script>
+</body>
+
+</html>

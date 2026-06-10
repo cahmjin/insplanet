@@ -1,5 +1,8 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;background:#fff}
+/* reserve the scrollbar's space so toggling overflow (page-transition lock) doesn't reflow/jolt the
+   layout. No effect with overlay scrollbars (mac/iOS default); fixes the jolt on classic scrollbars. */
+html{scrollbar-gutter:stable}
 /* Lenis smooth scroll (recommended) */
 html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
@@ -50,7 +53,7 @@ html.lenis,html.lenis body{height:auto}
   transition:transform .6s cubic-bezier(.2,.8,.2,1)}
 /* size & position are set in JS so they scale with the same factor as the blob */
 
-/* layer 2: blob canvas fills the stage */
+/* layer 2: blob canvas fills the stage (deferred-loaded). Shows as soon as its script draws — no fade-in. */
 #blob{position:absolute;left:0;top:0;width:100%;height:100%;z-index:2;pointer-events:none}
 
 /* layer 3: content */
@@ -59,8 +62,9 @@ html.lenis,html.lenis body{height:auto}
 
 /* header controls stay fixed so they (and the menu) are reachable while scrolling */
 /* header fixed UI — fluid 1024->1920 (flat 1920->2560, so clamp max = 1920 value) */
-#ci-logo{position:fixed;z-index:60;left:clamp(48px, calc(1.7857vw + 29.71px), 64px);top:48px;
+#ci-logo{position:fixed;z-index:60;display:block;left:clamp(48px, calc(1.7857vw + 29.71px), 64px);top:48px;
   width:clamp(105px, calc(3.9063vw + 65px), 140.12px);height:clamp(18px, calc(0.6696vw + 11.14px), 24.04px)}
+#ci-logo img{display:block;width:100%;height:100%}   /* logo is now an <a> linking home; fill it with the symbol */
 
 #full-menu{position:fixed;z-index:60;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);top:clamp(32px, calc(-0.4464vw + 40.57px), 36px);
   width:clamp(48px, calc(0.8929vw + 38.86px), 56px);height:clamp(48px, calc(0.8929vw + 38.86px), 56px);
@@ -69,7 +73,7 @@ html.lenis,html.lenis body{height:auto}
 
 #lets-talk{position:fixed;z-index:60;right:clamp(130px, calc(2.6786vw + 102.57px), 154px);top:45px;
   display:flex;align-items:center;gap:10px;padding:4px 0;
-  border-bottom:1px solid #3E3F44;cursor:pointer}
+  border-bottom:1px solid #3E3F44;cursor:pointer;text-decoration:none;color:inherit}   /* now an <a> to about.html */
 #lets-talk span{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(13px, calc(0.1116vw + 11.86px), 14px);font-weight:700;line-height:150%;color:#3E3F44}
 
 /* left content block: symbol + headline + subtitle, anchored bottom-left as a group */
@@ -588,3 +592,22 @@ html.lenis,html.lenis body{height:auto}
     -webkit-backdrop-filter:none;backdrop-filter:none}
   #cursor.is-view .cursor-label{opacity:1;transition-delay:.08s}
 }
+
+/* ===== page transition (v-w / Framer style): ZOOM + FADE, no colour slab. A fresh page zooms in from
+   1.6x while fading in; on internal navigation the leaving page shrinks to .8 + fades out, then loads
+   the next page. transform-origin tracks the viewport centre (50vh here; JS updates it to scrollY+50vh
+   on exit) so it zooms around what you're looking at. At rest #page-root has NO transform, so the page's
+   sticky/fixed layout is unaffected. Eases/durations copied from v-w's Framer config. ===== */
+/* Page transition: a light FADE + a very subtle scale (.97 -> 1). opacity/transform animate on the
+   compositor (~free), so even big pages don't hitch — no full-page rasterize, no overflow toggle/reflow.
+   Auto-plays on load via CSS (no JS trigger). Fill is BACKWARDS-only (not forwards/both): backwards hides
+   it at the start so there's no flash, and crucially it leaves NO transform after the animation — a
+   forwards-filled transform animation keeps #page-root a containing block + stacking context forever,
+   which breaks position:fixed children and the difference-blend cursor. Base stays visible (opacity 1),
+   so a page can never get stuck blank either. */
+#page-root{animation:pg-enter .5s cubic-bezier(.2,.6,.2,1) backwards}
+@keyframes pg-enter{from{opacity:0}to{opacity:1}}   /* fade only — no scale (keeps it light, no zoom) */
+@media (prefers-reduced-motion:reduce){#page-root{animation:none}}
+/* menu -> page nav: blank the MAIN content (everything except the menu + cursor) so the full menu
+   closes to reveal an empty page, then the next page zooms in. Set while the menu still covers it. */
+#page-root.pg-blank > :not(#menu-overlay):not(#cursor){opacity:0}

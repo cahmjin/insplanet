@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- stop iOS Safari from auto-linking phone numbers / emails / addresses (turns them blue) -->
+<meta name="format-detection" content="telephone=no, email=no, address=no, date=no">
+<title>Insplanet — Who We Are</title>
+<!-- self-hosted webfonts (Pretendard, Cormorant Garamond, Roboto Serif) — no external CDN -->
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/about.css">
+</head>
+<body class="about-page">
+<!-- everything lives in #page-root so a page transition can fade it as one (js/main.js) -->
+<div id="page-root">
+
+
+
+<main class="about">
+
+  <!-- 01 hero: stacked "Who / We Are" (left) + intro paragraph (right), faint circle arcs behind -->
+  <section class="about-hero">
+    <div class="about-inner about-hero-inner">
+      <h1 class="about-hero-title">
+        <span class="line-1">Who</span>
+        <span class="line-2">We Are</span>
+      </h1>
+      <div class="about-hero-intro" data-parallax data-parallax-rate="-40">
+        <p class="about-hero-lead">새롭고 독창적인 탐색, 인스플래닛은 경험을 만들어 갑니다.</p>
+        <p class="about-hero-body">인스플래닛은 고객이 생각하는 그 이상을 연구하고 고민합니다.<br>고객의 가치실현을 위한 신뢰할 수 있는 파트너로 함께 성장하고 있습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 full-width banner — black background with the live WebGL black-hole shader (js/about-blackhole.js),
+       shown from the start (no fade-in), like the home-page blob. -->
+  <section class="about-banner">
+    <canvas id="about-blackhole" aria-hidden="true"></canvas>
+  </section>
+
+  <!-- 03 mission & vision + the three I's (Insight / Interest / Innovation) -->
+  <section class="about-mission">
+    <div class="about-inner">
+      <header class="about-mission-head">
+        <p class="about-eyebrow-serif">Mission &amp; Vision</p>
+        <h2 class="about-headline">기술에 가치를 더해,<br>내일의 설렘을 완성합니다.</h2>
+        <p class="about-paragraph">우리는 차가운 기술 그 자체가 아닌, 그 기술이 비즈니스와 일상에서 만들어낼<br>본질적인 가치에 집중합니다. 정교한 분석과 끊임없는 고민으로 기술에 생명력을 불어넣고,<br>고객이 꿈꿔온 미래를 가장 기분 좋은 설렘으로 마주할 수 있도록 완벽한 디지털 경험을 설계합니다.</p>
+      </header>
+
+      <ul class="value-cards">
+        <li class="value-card">
+          <span class="value-pill">Insight</span>
+          <h3 class="value-card-title">데이터 너머의 본질을 봅니다.</h3>
+          <p class="value-card-body">단순히 현상을 관찰하는 것에 그치지 않고,<br>깊이 있는 분석을 통해 비즈니스가 나아가야 할<br>숨겨진 가치와 정답을 찾아냅니다.</p>
+        </li>
+        <li class="value-card">
+          <span class="value-pill">Interest</span>
+          <h3 class="value-card-title">사람을 향한 호기심에서 시작합니다.</h3>
+          <p class="value-card-body">기술이 일상에 자연스럽게 스며들 수 있도록<br>사용자의 작은 목소리에도 귀를 기울이며,<br>모두가 즐겁게 누릴 수 있는 최적의 경험을 탐구합니다.</p>
+        </li>
+        <li class="value-card">
+          <span class="value-pill">Innovation</span>
+          <h3 class="value-card-title">당연함을 의심하며 내일을 앞당깁니다.</h3>
+          <p class="value-card-body">익숙한 방식에 안주하지 않고<br>가장 진보된 기술을 유연하게 도입하여,<br>상상이 현실이 되는 새로운 디지털 기준을 세워갑니다.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 finance × mobility fusion + core values list -->
+  <section class="about-fusion">
+    <div class="about-inner">
+      <header class="about-fusion-head">
+        <h2 class="about-headline">정교한 금융의 깊이에<br>모빌리티의 확장성을 더해,<br>세상에 없던 가치를 연결합니다.</h2>
+        <img class="about-fusion-graphic" src="assets/about/finance-graphic.svg" alt="" aria-hidden="true">
+        <p class="about-paragraph">우리는 숫자 속에 담긴 금융의 본질을 꿰뚫고, 대규모 모빌리티 플랫폼이 지닌<br>무한한 연결성을 탐구합니다. 단순히 두 산업을 결합하는 기술력을 넘어, 그 접점에서 피어나는<br>새로운 비즈니스 가능성을 발견하고 이를 고객의 실질적인 가치로 증명해 나갑니다.</p>
+      </header>
+
+      <ul class="core-values">
+        <li class="core-value">
+          <div class="core-value-head">
+            <span class="core-value-icon"><img src="assets/about/corevalue-icon-66bec6.png" alt="" aria-hidden="true"></span>
+            <h3 class="core-value-title">Mega Finance DNA</h3>
+          </div>
+          <p class="core-value-desc">신한 ‘슈퍼SOL’ 6년 전담 운영 및 차세대 통합 기획 등<br>제1금융권 핵심 플랫폼의 혁신을 주도해왔습니다.</p>
+        </li>
+        <li class="core-value">
+          <div class="core-value-head">
+            <span class="core-value-icon"><img src="assets/about/corevalue-icon-66bec6.png" alt="" aria-hidden="true"></span>
+            <h3 class="core-value-title">SI Synergy &amp; Partnership</h3>
+          </div>
+          <p class="core-value-desc">LG CNS, 신한DS의 공식 협력사로서 대형 SI 주사업자와의<br>완벽한 시너지로 프로젝트의 성공을 이끕니다.</p>
+        </li>
+        <li class="core-value">
+          <div class="core-value-head">
+            <span class="core-value-icon"><img src="assets/about/corevalue-icon-66bec6.png" alt="" aria-hidden="true"></span>
+            <h3 class="core-value-title">Mobility &amp; Enterprise Insight</h3>
+          </div>
+          <p class="core-value-desc">대규모 모빌리티 플랫폼 구축 및 기술 시각화 노하우로<br>차세대 비즈니스를 지원합니다.</p>
+        </li>
+        <li class="core-value">
+          <div class="core-value-head">
+            <span class="core-value-icon"><img src="assets/about/corevalue-icon-66bec6.png" alt="" aria-hidden="true"></span>
+            <h3 class="core-value-title">AX Tech &amp; Design System</h3>
+          </div>
+          <p class="core-value-desc">고유 디자인 시스템과 자체 AX 솔루션 R&amp;D를 통해<br>프로젝트 생산성과 기술 경쟁력을 극대화합니다.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 05 image gallery: three rounded portrait images -->
+  <section class="about-gallery">
+    <div class="about-inner about-gallery-grid">
+      <figure class="about-gallery-item"><img src="assets/about/gallery-1.jpg" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="about-gallery-item"><img src="assets/about/gallery-2.jpg" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="about-gallery-item"><img src="assets/about/gallery-3.jpg" alt="" loading="lazy" decoding="async"></figure>
+    </div>
+  </section>
+
+  <!-- 06 Beyond UX / The AX Creator + key stats -->
+  <section class="about-axcreator">
+    <div class="about-inner about-axcreator-grid">
+      <h2 class="about-display">
+        <span class="line-1">Beyond UX</span>
+        <span class="line-2">The AX Creator</span>
+      </h2>
+
+      <div class="about-axcreator-copy">
+        <p class="about-lead">단순한 경험의 개선을 넘어, 기술이 스스로 가치를 창출하는 시대를 엽니다.</p>
+        <p class="about-paragraph">우리는 기존의 사용자 경험(UX)이라는 틀에 안주하지 않습니다.<br>인스플래닛의 사고방식은 고도화된 AI 기술을 비즈니스 본질에 이식하여, 스스로 진화하고<br>최적의 해답을 제시하는 AX(AI Experience)를 설계하는 데 있습니다.</p>
+        <p class="about-paragraph">우리는 고객의 요청을 구현하는 것에 그치지 않고,<br>데이터 너머의 맥락을 읽어내어 비즈니스의 다음 차원을 창조합니다.</p>
+      </div>
+
+      <dl class="about-stats">
+        <div class="about-stat">
+          <dt class="about-stat-label">Projects done</dt>
+          <dd class="about-stat-num"><img src="assets/about/stat-projects.svg" alt="100+"></dd>
+        </div>
+        <div class="about-stat">
+          <dt class="about-stat-label">Years of experience</dt>
+          <dd class="about-stat-num"><img src="assets/about/stat-years.svg" alt="8+"></dd>
+        </div>
+        <div class="about-stat">
+          <dt class="about-stat-label">Team members</dt>
+          <dd class="about-stat-num"><img src="assets/about/stat-team.svg" alt="30+"></dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 07 full-bleed closing image -->
+  <section class="about-fullbleed">
+    <img src="assets/about/fullbleed.jpg" alt="" loading="lazy" decoding="async">
+  </section>
+
+</main>
+
+
+
+</div><!-- /#page-root -->
+
+
+<!-- shared chrome (header/footer/menu/cursor/arcs) injected here, then loads Lenis + main.js -->
+<script src="js/shared-ui.js"></script>
+<!-- banner black-hole shader: NOT deferred — runs from the start (after shared-ui so the menu exists). -->
+<script src="js/about-blackhole.js"></script>
+</body>
+</html>
