@@ -635,7 +635,7 @@
     // hysteresis). Uses the last scroll-derived rev so it stays correct during a time-only tween.
     const r=sec.getBoundingClientRect();
     let tTop=0, tBot=0, tLogo=0;   // tLogo only from a fully-dark section (logo isn't over the image)
-    if(r.top<=0 && r.bottom>=vh-4 && lastRev>0.5){
+    if(r.top<=2 && r.bottom>=vh-4 && lastRev>0.5){          // <=2 (not <=0): when locked, r.top can be a sub-pixel positive on iOS-Chrome, which used to fail this and never apply the contrast
       const hi=Math.max(0,Math.min(2,Math.round(af)));     // nearest project's luminance — no settle factor, so
       tTop=(lum[hi].top?1:0); tBot=(lum[hi].bot?1:0);       // it doesn't drop (and flip the controls) when af isn't exactly settled (iOS-Chrome rAF) or mid-swap
     }
@@ -663,7 +663,7 @@
       window.__dbgEl.textContent=
         'af='+af.toFixed(2)+'  rev='+lastRev.toFixed(2)+'\n'+
         'rTop='+Math.round(r.top)+' rBot='+Math.round(r.bottom)+' vh='+vh+'\n'+
-        'cond='+(r.top<=0&&r.bottom>=vh-4&&lastRev>0.5)+'\n'+
+        'cond='+(r.top<=2&&r.bottom>=vh-4&&lastRev>0.5)+'\n'+
         'lum['+hi+']='+JSON.stringify(lum[hi])+'\n'+
         'tTop='+tTop.toFixed(2)+' tBot='+tBot.toFixed(2)+'\n'+
         'topOn='+topOn+' botOn='+botOn+'\n'+
@@ -744,10 +744,11 @@
     locked=false; released=performance.now(); prevTop=null; prevCovering=(dir>0);
     if(L()) L().start();
     if(dir>0){
-      // GLIDE smoothly out to the CTA (no instant reposition -> no iOS "snap" jump). Ends past the
-      // section, so a later scroll-up cleanly re-approaches the last project (no blank).
-      const dest=Math.round(secTopAbs()+sec.offsetHeight);
-      if(L()) L().scrollTo(dest,{duration:0.7}); else window.scrollTo(0,dest);
+      // release the lock back to NORMAL scroll, IN PLACE (parked at the pin start, last project full).
+      // Don't auto-glide to the section end — that catapulted the whole CTA into view on a single tick
+      // ("jump to Say Hello"). Lenis position was synced in lockAt before .stop(), so .start() above
+      // doesn't snap; the user now scrolls out of the section at their own pace.
+      prevCovering=true; prevTop=0;                           // covering & at the top -> no immediate re-lock
     } else {
       const dest=Math.max(0, secTopAbs()-2);
       if(L()) L().scrollTo(dest,{immediate:true}); else window.scrollTo(0,dest);
@@ -778,6 +779,16 @@
     if(covering && !prevCovering && !recent){
       lockAt(prevTop!=null && prevTop>0 ? 0 : MAXSTEP);      // from above -> intro;  from below -> last project
       prevCovering=true; prevTop=r.top; return;
+    }
+    // RE-LOCK on scroll-UP back toward the section top while still on a PROJECT. After the lock releases
+    // downward at the last project it's parked at the top edge (r.top0); scrolling up from there used to
+    // slip PAST the top into the section above (partners) instead of reversing, because the covering check
+    // above only fires when ENTERING the cover range from outside. Catch the upward move at the lock anchor
+    // and re-lock so further up-input reverses 3->2->1 (down still releases, so you're never trapped).
+    if(!recent && lastLockedStep>0 && prevTop!=null && r.top>prevTop+0.5 && r.top>=-2 && r.top<vh*0.5){
+      prevCovering=true; prevTop=r.top;
+      lockAt(lastLockedStep);
+      return;
     }
     prevCovering=covering; prevTop=r.top;
     if(r.top>vh) lastLockedStep=0;                           // section fully below the viewport -> next entry from the top is the intro again
