@@ -52,6 +52,39 @@
     root.addEventListener('transitionend',go,{once:true});
     setTimeout(go,360);                                                          // failsafe
   }
+  // "fresh return" to the top of the CURRENT page: NOT a smooth scroll (that rewinds every pinned
+  // section like reverse playback). Fade out, jump while hidden, then replay the load entrance
+  // (pg-enter fade + hero blur reveal) so it reads like arriving on the page anew.
+  // Used by the header logo on the main page and the full-menu logo (window.__pgFreshTop).
+  let freshing=false;
+  function freshTop(){
+    if(leaving||freshing||(window.scrollY||0)<=2)return;                         // at the top already -> no-op
+    freshing=true;
+    html.classList.add('pg-anim');                                               // pause heavy canvases during the fade
+    root.style.animation='none';root.style.transition='opacity .25s ease';root.style.opacity='0';
+    setTimeout(()=>{
+      if(window.__lenis)window.__lenis.scrollTo(0,{immediate:true}); else window.scrollTo(0,0);
+      // reset the hero intro while hidden: SNAP the lines to their hidden state (transitions off —
+      // just removing .in would tween them OUT over 1.1s, and re-adding .in a frame later would
+      // catch them still visible, so the reveal never actually replayed)
+      const intro=['head-title','sub-title'].map(id=>document.getElementById(id)).filter(Boolean);
+      intro.forEach(el=>{el.classList.remove('in');el.querySelectorAll('span').forEach(s=>s.style.transition='none');});
+      void root.offsetWidth;                                                     // commit the hidden state instantly
+      let shown=false;
+      const show=()=>{if(shown)return;shown=true;freshing=false;
+        html.classList.remove('pg-anim');
+        root.style.transition='';root.style.opacity='';
+        root.style.animation='';                                                 // re-arm pg-enter…
+        void root.offsetWidth;                                                   // …and restart it from frame 0: the same fade-in as a fresh load
+        intro.forEach(el=>el.querySelectorAll('span').forEach(s=>s.style.transition=''));   // transitions back on…
+        void root.offsetWidth;
+        intro.forEach(el=>el.classList.add('in'));                               // …then the blur-reveal replays from hidden
+      };
+      requestAnimationFrame(show);                                               // let the sections repaint at the top while hidden
+      setTimeout(show,250);                                                      // failsafe: rAF can stall in a background tab
+    },280);
+  }
+  window.__pgFreshTop=freshTop;
   document.addEventListener('click',e=>{
     if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
     const a=e.target.closest&&e.target.closest('a[href]');
@@ -61,8 +94,14 @@
     if(!href||href[0]==='#'||/^(mailto:|tel:|javascript:)/i.test(href))return;
     let url;try{url=new URL(a.href,location.href);}catch(_){return;}
     if(url.origin!==location.origin)return;                                      // external -> normal
-    const np=p=>p.replace(/(^|\/)index\.html?$/i,'$1');                          // treat "/" and "/index.html" as the same page
-    if(np(url.pathname)===np(location.pathname)&&url.search===location.search){e.preventDefault();return;}  // already here -> block reload, do nothing
+    const np=p=>p.replace(/\.html?$/i,'').replace(/(^|\/)index$/i,'$1');   // "/about" == "/about.html", "/" == "/index(.html)"
+    if(np(url.pathname)===np(location.pathname)&&url.search===location.search){
+      e.preventDefault();
+      // already on this page: the LOGO doubles as "back to the top" once you've scrolled away
+      // (at the very top it stays a no-op). Other same-page links just do nothing.
+      if(a.id==='ci-logo')freshTop();
+      return;
+    }
     e.preventDefault();exit(a.href);
   });
   // bfcache restore (back/forward) can bring a page back mid-exit -> clear all the exit inline styles
@@ -314,24 +353,44 @@
   // menu nav links: REVERSE-PLAY the menu (close) first, THEN navigate so the next page zooms in —
   // instead of the whole page (menu included) shrinking. We own this click so the page-transition
   // scale-exit doesn't also fire.
+  // close the menu, then leave for `dest` behind it (the page-transition zoom plays on the next page)
+  function closeThenGo(dest){
+    close();
+    if(reduce){location.href=dest;return;}
+    const pr=document.getElementById('page-root');
+    if(pr)pr.classList.add('pg-blank');                          // blank the main behind the (still-covering) menu
+    setTimeout(()=>{location.href=dest;}, DUR+40);
+  }
   overlay.querySelectorAll('a.menu-item[href]').forEach(a=>{
     a.addEventListener('click',e=>{
+      // the CURRENT page's item (greyed, .is-current) keeps its hover/cursor feel but ignores clicks
+      if(a.classList.contains('is-current')){e.preventDefault();e.stopPropagation();return;}
       const href=a.getAttribute('href');
       if(!href||href[0]==='#'||/^(mailto:|tel:|javascript:)/i.test(href)||a.target==='_blank'||a.hasAttribute('download'))return;
       if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button!==0)return;
       let url;try{url=new URL(a.href,location.href);}catch(_){return;}
       if(url.origin!==location.origin)return;
       e.preventDefault();e.stopPropagation();
-      const np=p=>p.replace(/(^|\/)index\.html?$/i,'$1');
-      close();                                                   // run the open animation in reverse
-      if(np(url.pathname)===np(location.pathname))return;        // already on this page -> just close
-      const dest=a.href;
-      if(reduce){location.href=dest;return;}
-      const pr=document.getElementById('page-root');
-      if(pr)pr.classList.add('pg-blank');                        // blank the main behind the (still-covering) menu
-      setTimeout(()=>{location.href=dest;}, DUR+40);             // menu closes to reveal the empty page, then the next page zooms in
+      const np=p=>p.replace(/\.html?$/i,'').replace(/(^|\/)index$/i,'$1');   // "/about" == "/about.html", "/" == "/index(.html)"
+      if(np(url.pathname)===np(location.pathname)){close();return;}          // same page (unmarked, e.g. Projects on main) -> just close
+      closeThenGo(a.href);
     });
   });
+  // the menu's CI logo also goes home. On the main page it behaves like the header logo:
+  // close the menu, and if you've scrolled away, glide back to the top.
+  const menuLogo=document.getElementById('menu-logo');
+  if(menuLogo){
+    menuLogo.style.cursor='pointer';
+    menuLogo.addEventListener('click',()=>{
+      const np=p=>p.replace(/\.html?$/i,'').replace(/(^|\/)index$/i,'$1');
+      const onMain=np(location.pathname)===''||np(location.pathname)==='/';
+      if(onMain){
+        close();
+        if(window.__pgFreshTop)window.__pgFreshTop();                  // same "fresh return" as the header logo (no-op at the top)
+        else window.scrollTo(0,0);
+      } else closeThenGo('index.html');
+    });
+  }
 })();
 
 /* ===== intro reveal: headline then subtitle settle in from a soft blur ===== */

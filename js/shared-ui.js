@@ -107,6 +107,17 @@
     if(!document.querySelector('.footer'))  root.insertAdjacentHTML('beforeend', FOOTER);
     if(!document.getElementById('menu-overlay')) root.insertAdjacentHTML('beforeend', MENU);
     if(!document.getElementById('cursor')) document.body.insertAdjacentHTML('beforeend', CURSOR);
+    // mark the menu item for the SUB-page we're ON (styled #A1A1A1 in style.css). On the main page
+    // nothing is marked — you haven't gone anywhere, so the menu stays all white.
+    // normalize: "/about" == "/about.html" (servers resolve extensionless), "/" == "/index(.html)".
+    const np=p=>p.replace(/\.html?$/i,'').replace(/(^|\/)index$/i,'$1');
+    if(np(location.pathname)!=='/'&&np(location.pathname)!==''){
+      document.querySelectorAll('#menu-overlay .menu-nav .menu-item[href]').forEach(a=>{
+        const href=a.getAttribute('href');
+        if(!href||href[0]==='#')return;                                // placeholder links (e.g. Contact) resolve to the current URL — skip
+        try{ if(np(new URL(a.href,location.href).pathname)===np(location.pathname)) a.classList.add('is-current'); }catch(_){}
+      });
+    }
     // load the shared scripts IN ORDER, now that the shared DOM exists (async=false -> ordered execution)
     ['js/vendor/lenis.min.js','js/main.js'].forEach(src=>{
       const s=document.createElement('script'); s.src=src; s.async=false; document.body.appendChild(s);
