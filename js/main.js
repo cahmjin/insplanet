@@ -686,7 +686,7 @@
   const lerp=(a,b,t)=>a+(b-a)*t;
   const smooth=x=>x*x*x*(x*(x*6.0-15.0)+10.0);           // smootherstep (C2) — gentler ease in/out than smoothstep
   const labelSize=w=> w<=1024?32 : w<=1920?lerp(32,48,(w-1024)/896) : w<=2560?lerp(48,56,(w-1920)/640) : 56;
-  const restTop =w=> w<=1024?160 : w<=1920?lerp(160,240,(w-1024)/896) : 240;
+  const restTop =w=> w<=1024?160 : w<=1920?lerp(160,240,(w-1024)/896) : w<=2560?lerp(240,230,(w-1920)/640) : 230;   // Figma 2560 rests the label at 230 (services stays 240)
   // the swap is INPUT-SNAPPED (see the step machine below): one scroll input plays one full cut.
   if(matchMedia('(prefers-reduced-motion:reduce)').matches){
     title.style.opacity='1';title.style.filter='none';

@@ -130,9 +130,18 @@ html.lenis,html.lenis body{height:auto}
   /* Our Partners — segment 1920->2560 (grid stays 5-col; gaps/cell-height flat above 1920) */
   .partners .partners-inner{width:clamp(1486px, calc(75.47vw + 37px), 1970px)}
   .partners .partners-desc{margin-top:clamp(24px, calc(2.5vw - 24px), 40px)}
+  /* Figma 2560 LEFT-ANCHORS the services/partners frames at the 218 gutter (asymmetric) instead of centering */
+  .services .services-inner,.partners .partners-inner{margin-left:clamp(216px, calc(0.3125vw + 210px), 218px);margin-right:auto}
   /* (.partner-grid desc gap is a single 6.25vw clamp 64->160 in the base rule — covers 1920->2560 too) */
-  /* Say Hello CTA — subtitle left indent 12 -> 14.5 */
+  /* Say Hello CTA — subtitle left indent 12 -> 14.5; title->row gap tightens 49 -> 20 */
   .contact-cta .cta-sub{margin-left:clamp(12px, calc(0.3906vw + 4.5px), 14.5px)}
+  .contact-cta .cta-inner{gap:clamp(20px, calc(-4.5313vw + 136px), 49px)}
+  /* Insight faint tagline 100 -> 120 */
+  .insight-board .insight-tagline{font-size:clamp(100px, calc(3.125vw + 40px), 120px)}
+  /* Projects — name 48 -> 56, slide top 458 -> 538, See More bottom 80 -> 120 */
+  .projects .proj-name{font-size:clamp(48px, calc(1.25vw + 24px), 56px)}
+  .projects .proj-slide{top:clamp(458px, calc(12.5vw + 218px), 538px)}
+  .projects .proj-more{bottom:clamp(80px, calc(6.25vw - 40px), 120px)}
   /* Footer — segment 1920->2560 (.footer prefix bumps specificity to win over the later base rules) */
   .footer .footer-logo{left:clamp(216px, calc(0.3125vw + 210px), 218px);width:clamp(576px, calc(49.375vw - 372px), 892px)}
   .footer .footer-bottom{left:clamp(216px, calc(0.3125vw + 210px), 218px);right:clamp(216px, calc(0.3125vw + 210px), 218px);bottom:clamp(64px, calc(2.5vw + 16px), 80px)}
@@ -146,12 +155,8 @@ html.lenis,html.lenis body{height:auto}
   #menu-overlay .contact-tf{gap:clamp(32px, calc(-2.5vw + 96px), 48px)}
   /* Insight (these base rules live LATER in the file, so bump specificity to win over them) */
   .insight-board .insight-frame{width:clamp(1486px, calc(3.4375vw + 1420px), 1508px)}
-  /* num (01/02/03) — 1920 position (1900-2540); base 86.5% above is the 1024 value */
-  .insight-steps .insight-num{top:87%}
-}
-/* 2560 segment (2540 so a 2560 window with a scrollbar still triggers it) — tune the 2560 num here */
-@media (min-width:2540px){
-  .insight-steps .insight-num{top:84%}
+  /* num (01/02/03) — Figma: number top at 82% of the card at BOTH 1920/2560; base 86.5% is the 1024 value */
+  .insight-steps .insight-num{top:82%}
 }
 
 #scroll-hint{position:fixed;z-index:60;right:clamp(48px, calc(1.7857vw + 29.71px), 64px);bottom:64px;width:21px;
@@ -316,7 +321,7 @@ html.lenis,html.lenis body{height:auto}
 
 /* oversized faint tagline that drifts BEHIND the card (z:1, below the frame z:2). font fluid 64/100/120 */
 .insight-tagline{position:absolute;white-space:nowrap;z-index:1;
-  font-size:clamp(64px, calc(3.6458vw + 26.67px), 120px);font-weight:700;line-height:120%}
+  font-size:clamp(64px, calc(4.0179vw + 22.86px), 100px);font-weight:700;line-height:120%}   /* 64@1024 -> 100@1920; 100 -> 120 in the >=1900 block */
 /* left offset in em so the repeated strip scales with the (fluid) font -> seamless loop at any size.
    the two lines sit one line-height apart (adjacent), straddling the card center (matches Figma). */
 .insight-tagline-1{left:-21em;top:calc(50% - 1.2em);color:#3E3F44;animation:tagline-left 30s linear infinite}
@@ -332,7 +337,7 @@ html.lenis,html.lenis body{height:auto}
 
 /* rounded glass card = MASK filling the frame. grows from a small square to fill (reveals shader). */
 .insight-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:min(480px,80%);height:min(480px,80%);border-radius:clamp(32px, calc(2.4vw + 7.4px), 64px);overflow:hidden;z-index:2;
+  width:min(480px,80%);height:min(480px,80%);border-radius:clamp(32px, calc(3.5714vw - 4.57px), 64px);overflow:hidden;z-index:2;   /* 64 from 1920 (Figma 64 at both) */
   background:#0F0E0E;
   transition:width .9s cubic-bezier(.22,1,.36,1),height .9s cubic-bezier(.22,1,.36,1)}
 .insight-board.is-grown .insight-card{width:100%;height:100%}
@@ -357,14 +362,14 @@ html.lenis,html.lenis body{height:auto}
   font-size:clamp(16px, calc(0.26vw + 13.33px), 20px);font-weight:600;line-height:120%;text-transform:uppercase;
   letter-spacing:.04em;color:#fff}
 .insight-title{position:absolute;left:8%;top:26%;white-space:nowrap;
-  font-size:clamp(48px, calc(1.5625vw + 32px), 72px);font-weight:700;line-height:120%;color:#fff}
+  font-size:clamp(48px, calc(2.6786vw + 20.57px), 72px);font-weight:700;line-height:120%;color:#fff}   /* 48@1024 -> 72@1920, flat after (Figma 72 at both) */
 /* num (01/02/03) top-left anchored; position differs per breakpoint (base = 1024; @media >=1920 below) */
-.insight-num{position:absolute;left:74.5%;top:86.5%;width:clamp(126px, calc(6.94vw + 55px), 259px);height:auto}
-.insight-num--02{width:clamp(142px, calc(7.8vw + 62px), 291px)}
-.insight-num--03{width:clamp(138px, calc(7.57vw + 61px), 283px)}
+.insight-num{position:absolute;left:74.5%;top:86.5%;width:clamp(126px, calc(14.844vw - 26px), 259px);height:auto}   /* full 259 from 1920 (Figma 259 at both) */
+.insight-num--02{width:clamp(142px, calc(16.629vw - 28.3px), 291px)}
+.insight-num--03{width:clamp(138px, calc(16.183vw - 27.7px), 283px)}
 
 /* step progress dots: at the card's right edge, vertically centered. 12px circles. */
-.insight-indicator{position:absolute;right:5%;top:50%;transform:translateY(-50%);z-index:3;
+.insight-indicator{position:absolute;right:64px;top:50%;transform:translateY(-50%);z-index:3;   /* Figma: 64 from the card edge at both breakpoints */
   display:flex;flex-direction:column;gap:12px;opacity:0;transition:opacity .5s ease .55s}
 .insight-board.is-grown .insight-indicator{opacity:1}
 .insight-dot{width:12px;height:12px;border-radius:50%;box-sizing:border-box;
@@ -476,15 +481,15 @@ html.lenis,html.lenis body{height:auto}
 /* left info — positioning context. slides stack at the name area; See More pinned to the bottom */
 .proj-info{position:absolute;left:clamp(48px, calc(18.75vw - 144px), 216px);top:0;height:100%;
   z-index:2;opacity:0;will-change:opacity,transform}
-.proj-slide{position:absolute;left:0;top:clamp(300px, 40vh, 580px);width:max-content;opacity:0;will-change:opacity,filter}
+.proj-slide{position:absolute;left:0;top:clamp(300px, calc(17.634vw + 119.4px), 458px);width:max-content;opacity:0;will-change:opacity,filter}   /* name top 458@1920 (Figma); -> 538 in the >=1900 block */
 .proj-name{margin:0;font-family:'Pretendard',sans-serif;font-weight:700;
-  font-size:clamp(32px, calc(2.6786vw + 4.57px), 56px);line-height:1.4;color:#3E3F44}
-.proj-meta{margin:clamp(48px, calc(2.083vw + 26.67px), 80px) 0 0;display:grid;grid-template-columns:auto auto;
-  column-gap:clamp(56px, calc(4.36vw + 11.3px), 95px);row-gap:clamp(8px, calc(0.89vw - 1.1px), 16px);width:max-content;
+  font-size:clamp(32px, calc(1.7857vw + 13.71px), 48px);line-height:1.4;color:#3E3F44}   /* 32@1024 -> 48@1920 (Figma revised); 48 -> 56 in the >=1900 block */
+.proj-meta{margin:clamp(48px, calc(3.5714vw + 11.43px), 80px) 0 0;display:grid;grid-template-columns:auto auto;   /* name->meta 80 from 1920 (Figma 80 at both) */
+  column-gap:clamp(56px, calc(2.7902vw + 27.43px), 81px);row-gap:clamp(20px, calc(1.3393vw + 6.29px), 32px);width:max-content;   /* label->value 81, rows 32 (Figma) */
   font-family:'Pretendard',sans-serif;font-size:clamp(14px, calc(0.6696vw + 7.14px), 20px);line-height:1.5;color:#3E3F44}
 .proj-meta dt{font-weight:700}
 .proj-meta dd{margin:0;font-weight:400}
-.proj-more{position:absolute;left:0;bottom:clamp(80px, 9vh, 170px);display:inline-flex;align-items:center;gap:12px;white-space:nowrap;
+.proj-more{position:absolute;left:0;bottom:clamp(56px, calc(2.6786vw + 28.57px), 80px);display:inline-flex;align-items:center;gap:12px;white-space:nowrap;   /* 80@1920 (Figma); -> 120 in the >=1900 block */
   padding:clamp(10px, calc(0.2232vw + 7.71px), 12px) clamp(8px, calc(0.4464vw + 3.43px), 12px) clamp(10px, calc(0.2232vw + 7.71px), 12px) clamp(12px, calc(0.4464vw + 7.43px), 16px);
   background:#fff;border:1px solid #3E3F44;border-radius:8px;text-decoration:none;
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:clamp(14px, calc(0.2232vw + 11.71px), 16px);line-height:1.5;color:#3E3F44;
@@ -562,7 +567,7 @@ html.lenis,html.lenis body{height:auto}
 .footer-bottom{position:absolute;bottom:clamp(48px, calc(1.7857vw + 29.71px), 64px);
   left:clamp(48px, calc(18.75vw - 144px), 216px);right:clamp(48px, calc(18.75vw - 144px), 216px);
   display:flex;justify-content:space-between;align-items:flex-end;gap:48px}
-.footer-left{display:flex;flex-direction:column;gap:clamp(65px, calc(2.0089vw + 44.43px), 83px)}
+.footer-left{display:flex;flex-direction:column;gap:clamp(50px, calc(1.0045vw + 39.71px), 59px)}   /* Figma links->copyright 52 + line-box compensation */
 .footer-links{display:flex;gap:80px}
 .footer-links a{text-decoration:none;color:inherit;font-weight:600;line-height:1;
   padding:4px 0;border-bottom:1px solid #3E3F44;   /* underline-button style (Figma) */
@@ -570,7 +575,8 @@ html.lenis,html.lenis body{height:auto}
 .footer-copy{margin:0;font-weight:600;text-transform:uppercase;line-height:1.5;
   font-size:clamp(12px, calc(0.4464vw + 7.43px), 16px)}
 .footer-contact{display:flex;flex-direction:column;gap:16px;font-weight:600;line-height:1.5;
-  font-size:clamp(12px, calc(0.4464vw + 7.43px), 16px)}
+  font-size:clamp(12px, calc(0.4464vw + 7.43px), 16px);
+  margin-right:min(0.9375vw, 24px)}   /* Figma: contact sits 18px (@1920) -> 24px (@2560) inside the right gutter (layout grid) */
 .footer-contact p{margin:0}
 .footer-tf{display:flex}
 .footer-tf span:first-child{flex:0 0 159px}
