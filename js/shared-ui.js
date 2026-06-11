@@ -109,9 +109,12 @@
     if(!document.getElementById('cursor')) document.body.insertAdjacentHTML('beforeend', CURSOR);
     // mark the menu item for the SUB-page we're ON (styled #A1A1A1 in style.css). On the main page
     // nothing is marked — you haven't gone anywhere, so the menu stays all white.
-    // normalize: "/about" == "/about.html" (servers resolve extensionless), "/" == "/index(.html)".
+    // normalize: "/about" == "/about.html" (servers resolve extensionless), "/x/" == "/x/index(.html)".
+    // "main" is index.html RESOLVED against the current dir — the site lives under a subpath on
+    // GitHub Pages (/insplanet/), so a bare "/" root check only worked on localhost.
     const np=p=>p.replace(/\.html?$/i,'').replace(/(^|\/)index$/i,'$1');
-    if(np(location.pathname)!=='/'&&np(location.pathname)!==''){
+    const home=np(new URL('index.html',location.href).pathname);
+    if(np(location.pathname)!==home){
       document.querySelectorAll('#menu-overlay .menu-nav .menu-item[href]').forEach(a=>{
         const href=a.getAttribute('href');
         if(!href||href[0]==='#')return;                                // placeholder links (e.g. Contact) resolve to the current URL — skip

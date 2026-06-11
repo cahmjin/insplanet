@@ -383,7 +383,8 @@
     menuLogo.style.cursor='pointer';
     menuLogo.addEventListener('click',()=>{
       const np=p=>p.replace(/\.html?$/i,'').replace(/(^|\/)index$/i,'$1');
-      const onMain=np(location.pathname)===''||np(location.pathname)==='/';
+      // "main" = index.html resolved against the current dir (the site lives under /insplanet/ on GitHub Pages)
+      const onMain=np(location.pathname)===np(new URL('index.html',location.href).pathname);
       if(onMain){
         close();
         if(window.__pgFreshTop)window.__pgFreshTop();                  // same "fresh return" as the header logo (no-op at the top)
