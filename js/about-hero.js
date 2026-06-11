@@ -10,8 +10,7 @@
   if(!sec||!card)return;
   if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;   // static strip; no scrub
 
-  // resolved per render: the header chrome is injected by shared-ui.js on DOMContentLoaded, AFTER this script runs
-  const uiEls=()=>['ci-logo','lets-talk','full-menu','scroll-hint'].map(id=>document.getElementById(id)).filter(Boolean);
+  // NOTE: header elements are looked up per render — shared-ui.js injects them on DOMContentLoaded, AFTER this script runs
   const clamp=v=>Math.min(1,Math.max(0,v));
   const lerp=(a,b,t)=>a+(b-a)*t;
   const ss=x=>x*x*(3-2*x);                                            // smoothstep — soft ends, scrub-safe
@@ -38,12 +37,26 @@
     card.style.width=(cw-lerp(aL+aR,0,q)).toFixed(1)+'px';
     card.style.height=lerp(aH,vh,q).toFixed(1)+'px';
     card.style.borderRadius=lerp(aRad,0,q).toFixed(1)+'px';
-    // flip the text/header once the card's top edge has climbed past the title area
+    // flip the text once the card's top edge has climbed past the title area (the text scrolls away
+    // WITH the stage, so p alone is right for it)...
     const covered=p>0.45;
     sec.classList.toggle('is-covered',covered);
-    uiEls().forEach(el=>el.classList.toggle('on-dark',covered));
+    // ...but the header controls are FIXED: once the covered stage scrolls on past the hero they sit
+    // over the white sections again, so only keep them light while the dark cover is still behind
+    // their band (top controls ~<=120px; SCROLL hint near the viewport bottom).
+    const topOn=covered && r.bottom>120;
+    const botOn=covered && r.bottom>vh-120;
+    [['ci-logo',topOn],['lets-talk',topOn],['full-menu',topOn],['scroll-hint',botOn]]
+      .forEach(([id,on])=>{const el=document.getElementById(id);if(el)el.classList.toggle('on-dark',on);});
   }
   addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(render);}},{passive:true});
   addEventListener('resize',render);
   render();
+
+  // load reveal (same as the home hero): wait for the serif webfont so the blur-in plays with final
+  // glyphs, not the fallback; the setTimeout is a failsafe so the title is never stuck hidden.
+  let revealed=false;
+  const reveal=()=>{if(revealed)return;revealed=true;requestAnimationFrame(()=>sec.classList.add('in'));};
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(reveal);setTimeout(reveal,800);}
+  else reveal();
 })();

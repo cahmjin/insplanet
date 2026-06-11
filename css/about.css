@@ -25,18 +25,18 @@
 /* ---------- 01 hero — PINNED EXPANSION. Text column @216,320->400; the black-hole card rests as a
    wide bottom strip (top 933->1170, full width minus gutters, R64) and scrolling scrubs it up/out to
    cover the viewport (js/about-hero.js drives top/left/width/height/radius; reverse on scroll-up).
-   Title: 172->200px; Figma line tops sit (auto-box - 102) apart in both frames -> line-height
-   106->140px, and the glyphs spill (102/2)=51px above/below our boxes at every size — hence the
-   constant 71 (20+51) below the symbol and 51 above the intro, matching Figma's visual gaps. ---------- */
+   Title: 172->200px; Figma line gap -92 @1920 / -102 @2560 -> line tops (auto-box + gap) apart =
+   line-height 116->140px, glyph spill (-gap/2) = 46->51px above/below our boxes — hence 66->71
+   (20+spill) below the symbol and 46->51 above the intro, matching Figma's visual gaps. ---------- */
 .about-hero{position:relative;height:200vh}                          /* 100vh stage + 100vh scrub */
 .about-hero-pin{position:sticky;top:0;height:100vh;overflow:hidden}
 .about-hero-inner{position:relative;z-index:2;height:100%;padding-top:calc(320 * var(--u) + 80 * var(--g))}
-.about-hero-symbol{display:block;width:calc(156 * var(--u));height:calc(8 * var(--u));margin:0 0 calc(71 * var(--u));
+.about-hero-symbol{display:block;width:calc(156 * var(--u));height:calc(8 * var(--u));margin:0 0 calc(66 * var(--u) + 5 * var(--g));
   transition:filter .35s ease}
 .about-hero-title{margin:0;color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:600;
-  font-size:calc(172 * var(--u) + 28 * var(--g));line-height:calc(106 * var(--u) + 34 * var(--g));
+  font-size:calc(172 * var(--u) + 28 * var(--g));line-height:calc(116 * var(--u) + 24 * var(--g));
   letter-spacing:-0.01em;display:flex;flex-direction:column;transition:color .35s ease}
-.about-hero-intro{width:calc(596 * var(--u));margin-top:calc(51 * var(--u))}
+.about-hero-intro{width:calc(596 * var(--u));margin-top:calc(46 * var(--u) + 5 * var(--g))}
 .about-hero-lead{margin:0 0 calc(24 * var(--u));color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:600;
   font-size:calc(22 * var(--u) + 2 * var(--g));line-height:1.5;transition:color .35s ease}
 .about-hero-body{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;
@@ -46,6 +46,20 @@
 .about-hero.is-covered .about-hero-lead,
 .about-hero.is-covered .about-hero-body{color:#fff}
 .about-hero.is-covered .about-hero-symbol{filter:brightness(0) invert(1)}
+
+/* load reveal — same feel as the home hero: title lines settle in from a soft blur (.in added by
+   js/about-hero.js once the serif webfont is ready), the intro follows with a lighter blur. */
+.about-hero-title .line-1,.about-hero-title .line-2{
+  opacity:0;filter:blur(18px);transform:translateY(.05em) scale(1.04);transform-origin:left center;
+  transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.22,1,.36,1)}
+.about-hero-title .line-2{transition-delay:.14s}
+.about-hero-lead,.about-hero-body{opacity:0;filter:blur(8px);transform:translateY(10px)}
+.about-hero-lead{transition:opacity .9s ease .5s,filter .9s ease .5s,transform .9s cubic-bezier(.22,1,.36,1) .5s,color .35s ease}
+.about-hero-body{transition:opacity .9s ease .62s,filter .9s ease .62s,transform .9s cubic-bezier(.22,1,.36,1) .62s,color .35s ease}
+.about-hero.in .about-hero-title .line-1,.about-hero.in .about-hero-title .line-2{opacity:1;filter:blur(0);transform:none}
+.about-hero.in .about-hero-lead,.about-hero.in .about-hero-body{opacity:1;filter:blur(0);transform:none}
+@media (prefers-reduced-motion:reduce){
+  .about-hero-title .line-1,.about-hero-title .line-2,.about-hero-lead,.about-hero-body{opacity:1;filter:none;transform:none;transition:none}}
 
 /* the black-hole card — state-A geometry in CSS (matches the JS at scrub 0, so no jump on load):
    wide strip @216/933 1488x640 @1920 -> @218/1170 2129x900 @2560, R64. JS overrides inline while scrubbing. */
