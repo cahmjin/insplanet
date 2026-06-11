@@ -67,10 +67,13 @@
 
 /* ---------- 06 Beyond UX / The AX Creator + stats (group @216,6171; gap 400 from gallery) ---------- */
 .about-axcreator{padding-top:calc(400 * var(--u))}
-.about-axcreator-grid{display:grid;grid-template-columns:calc(760 * var(--u)) 1fr;align-items:start;row-gap:calc(170 * var(--u))}
-.about-display{grid-column:1;grid-row:1 / span 2;margin:0;color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(80 * var(--u));line-height:0.8;display:flex;flex-direction:column}
+.about-axcreator-grid{display:grid;grid-template-columns:calc(760 * var(--u)) 1fr;align-items:start;row-gap:calc(160 * var(--u))}   /* copy bottom(260) -> stats(420) = 160 */
+/* padding-top 16: the title renders in 64px line boxes (lh .8) vs Figma's auto-lh 97px boxes, so the
+   glyphs sit (97-64)/2 = 16.5px higher than Figma measures — push the block down to compensate. */
+.about-display{grid-column:1;grid-row:1 / span 2;margin:0;padding-top:calc(16 * var(--u));color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(80 * var(--u));line-height:0.8;display:flex;flex-direction:column}
 .about-axcreator-copy{grid-column:2;grid-row:1;padding-top:calc(10 * var(--u));display:flex;flex-direction:column;gap:calc(32 * var(--u))}
-.about-stats{grid-column:2;grid-row:2;margin:0;display:grid;grid-template-columns:calc(456 * var(--u)) 1fr;row-gap:calc(110 * var(--u));column-gap:calc(110 * var(--u))}
+/* stats: Years column is 456 wide and Team starts right at it (Figma x offsets 0 / 456) — no column gap */
+.about-stats{grid-column:2;grid-row:2;margin:0;display:grid;grid-template-columns:calc(456 * var(--u)) auto;justify-content:start;row-gap:calc(160 * var(--u));column-gap:0}
 .about-stat{display:flex;flex-direction:column;gap:calc(80 * var(--u))}
 .about-stat:first-child{grid-column:1 / -1}
 .about-stat-label{margin:0;color:#1A1A1A;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(16 * var(--u));line-height:1.2}
@@ -83,6 +86,63 @@
 /* ---------- 07 full-bleed closing image (frame @7451, 1080 tall; gap 200 from ax) ---------- */
 .about-fullbleed{width:100%;height:calc(1080 * var(--u));margin-top:calc(200 * var(--u));overflow:hidden}
 .about-fullbleed img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* elements that exist ONLY in the 2560 layout (Figma official_03_about_2560) — hidden by default */
+.about-hero-symbol{display:none}
+.value-arrow{display:none}
+.about-gallery-item--extra{display:none}
+.about-fusion-graphic--2560{display:none}
+
+/* ---------- 2560 layout (≥2240): type stays at the 1920 size, gutters stay 216, and the extra width
+   becomes breathing room + layout shifts: hero intro moves UNDER the title (with the symbol on top),
+   the banner becomes a right-anchored 1048x900 block, plus-arrows appear between the three value pills,
+   the gallery grows to four 584x720 cards bleeding off the right edge, the AX-Creator copy column
+   right-anchors, and the closing image gets 218px side margins. Values are the Figma 2560 px. ---------- */
+@media (min-width:2240px){
+  .about-inner{width:auto;margin:0 216px}
+
+  /* 01 hero — symbol + title + intro stacked in one left column @216,400 */
+  .about-hero{height:1170px}                                   /* banner block starts at y1170 */
+  .about-hero-inner{padding-top:400px}
+  /* spacing note: the title uses line-height .7 (140px boxes) while Figma measures with auto
+     line-height (242px boxes) — glyphs sit (242-140)/2 = 51px higher in our boxes. The margins
+     below compensate so the VISUAL gaps match Figma (symbol->cap ~76px, "We Are"->lead ~15px). */
+  .about-hero-symbol{display:block;margin:0 0 71px;width:156px;height:8px}
+  .about-hero-title{position:static}
+  .about-hero-intro{position:static;width:596px;margin-top:51px}
+  .about-hero-lead{margin-bottom:24px}
+
+  /* 02 banner — right-anchored 1048x900 rounded card (was full-bleed) */
+  .about-banner{width:1048px;height:900px;margin:0 216px 0 auto;border-radius:64px}
+
+  /* 03 mission — value pills spread over the full 2126 width with plus-arrows between them */
+  .value-arrow{display:flex;align-self:flex-start;height:400px;align-items:center}
+  .value-arrow img{width:80px;height:80px;display:block}
+
+  /* 04 fusion — left-aligned 1662 column; 2-line headline (br-1920 off); graphic (312x252) at its
+     right edge; core values lose the dividers and sit on a flat 120 gap */
+  .about-fusion .about-inner{width:1662px;margin:0 auto 0 218px}
+  .br-1920{display:none}                                       /* headline joins to 2 lines here */
+  .about-fusion-head .about-headline{max-width:none}
+  .about-fusion-graphic{display:none}                          /* swap the small 1920 strip... */
+  .about-fusion-graphic--2560{display:block;position:absolute;top:0;left:auto;right:0;width:312px;height:252px}  /* ...for the full 2560 graphic */
+  .core-values{display:flex;flex-direction:column;gap:120px}
+  .core-value,.core-value + .core-value{padding:0;border-top:none}
+
+  /* 05 gallery — four fixed 584x720 cards from the left gutter, bleeding past the right edge.
+     padding 324: Figma fusion bottom (5096) -> gallery (5420) */
+  .about-gallery{padding-top:324px}
+  .about-gallery .about-inner{margin:0 0 0 218px}
+  .about-gallery-grid{grid-template-columns:repeat(4,584px);gap:32px}
+  .about-gallery-item{aspect-ratio:auto;height:720px}
+  .about-gallery-item--extra{display:block}
+
+  /* 06 ax creator — copy/stats column anchors right (Figma copy width 696, right edge ~flush) */
+  .about-axcreator-grid{grid-template-columns:1fr 696px}
+
+  /* 07 closing image — 218px side margins + rounded card instead of full-bleed */
+  .about-fullbleed{width:auto;height:1080px;margin:240px 218px 0;border-radius:64px}
+}
 
 /* ---------- responsive: stack the two-column blocks on narrow viewports ---------- */
 @media (max-width:1040px){
@@ -119,7 +179,7 @@
 
   .about-axcreator-grid{grid-template-columns:1fr;row-gap:clamp(40px,7vw,72px)}
   .about-display,.about-axcreator-copy,.about-stats{grid-column:1}
-  .about-display{grid-row:auto;font-size:clamp(44px,8vw,72px);line-height:0.9}
+  .about-display{grid-row:auto;padding-top:0;font-size:clamp(44px,8vw,72px);line-height:0.9}
   .about-axcreator-copy{grid-row:auto;padding-top:0;gap:clamp(20px,3vw,32px)}
   .about-stats{grid-row:auto;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,72px)}
   .about-stat{gap:clamp(20px,3vw,32px)}
