@@ -454,7 +454,7 @@ html.lenis,html.lenis body{height:auto}
 .projects{position:relative;z-index:1;background:transparent;height:120vh}   /* track: 100vh pin + 20vh covering band (robust lock) + short exit tail to Say Hello */
 .projects-pin{position:sticky;top:0;height:100vh;overflow:hidden}            /* sticky stage; JS freezes scroll & steps via input while locked */
 /* big "Our Projects" 96->160 -> shrinks to the small top-left label (32/48/56) */
-.projects-title{position:absolute;left:clamp(48px, calc(18.75vw - 144px), 216px);top:50%;margin:0;
+.projects-title{position:absolute;left:clamp(48px, min(calc(18.75vw - 144px), calc(0.3125vw + 210px)), 218px);top:50%;margin:0;   /* grows 48->216 (to 1920), then 216->218 (to 2560) tracking proj-info/the shrunk label */
   font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(96px, calc(7.143vw + 22.86px), 160px);line-height:1.211;color:#3E3F44;
   transform-origin:left top;will-change:transform,opacity,filter;opacity:0;filter:blur(16px);z-index:3}
 /* right visual panel — right half, full height. The image FILLS it (full-bleed cover), so dropping in
