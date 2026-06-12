@@ -66,6 +66,15 @@
 .ct-fields{width:738px;display:flex;flex-direction:column;gap:120px}
 .ct-field{margin:0;border:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:32px}
 .ct-field-label{margin:0;padding:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:700;font-size:24px;line-height:1.5}
+/* scroll reveal: form areas are born hidden (html.ct-rv set before paint -> no flash), then rise + fade in
+   as they scroll into view (same elastic rise as Our Services svc-card) via the inline IO script.
+   headings keep their colour-fill. no-JS / reduced-motion -> everything visible. */
+.ct-rv .ct-field,.ct-rv .ct-consent,.ct-rv .ct-submit{opacity:0;transform:translateY(48px);pointer-events:none;
+  transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}
+.ct-rv .ct-field.in,.ct-rv .ct-consent.in,.ct-rv .ct-submit.in{opacity:1;transform:none;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){
+  .ct-rv .ct-field,.ct-rv .ct-consent,.ct-rv .ct-submit{opacity:1;transform:none;transition:none;pointer-events:auto}
+}
 
 /* chips: 4-column wrap grid, gap 16, pill 56 tall */
 .ct-chips{display:flex;flex-wrap:wrap;gap:16px}

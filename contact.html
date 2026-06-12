@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/contact.css">
+<!-- set before paint so the form's scroll-reveal areas start hidden without a flash (removed if JS is off) -->
+<script>document.documentElement.classList.add('ct-rv')</script>
 </head>
 <body class="contact-page">
 <div id="page-root">
@@ -207,6 +209,17 @@
         paint(h,p); } };
     addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
     addEventListener('resize',update); update();
+  })();
+  // form areas rise + fade in as they scroll into view (same elastic rise as Our Services svc-card);
+  // headings keep their own colour-fill. graceful: no JS / reduced-motion -> everything stays visible.
+  (function(){
+    const html=document.documentElement, form=document.querySelector('.ct-form-inner');
+    if(!form){ html.classList.remove('ct-rv'); return; }
+    const areas=[...form.querySelectorAll('.ct-field, .ct-consent, .ct-submit')];
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;   // CSS media query keeps areas visible
+    if(!areas.length||!('IntersectionObserver'in window)){ html.classList.remove('ct-rv'); return; }   // unhide if we can't observe
+    const io=new IntersectionObserver((es,o)=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); o.unobserve(e.target); } }),{threshold:0.18});
+    areas.forEach(a=>io.observe(a));
   })();
   // chip groups: [data-multi] = multi-select (업무 범위); others = single-select (성격/예산/기간, one per group, re-click clears)
   document.querySelectorAll('.ct-chips').forEach(group=>{
