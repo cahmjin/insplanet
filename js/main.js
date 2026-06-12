@@ -253,7 +253,7 @@
   const ctx=(!reduce&&canvas&&canvas.getContext)?canvas.getContext('2d'):null;
   const ORIGIN='at calc(100% - 76px) 60px';
   const TAU=6.2831853;
-  const RINGGAP=34, ARC=34, DOTMIN=2, DOTMAX=18, FRINGE=240, DUR=600; // ring/arc spacing, dot min/max radius, fringe band, ms
+  const RINGGAP=70, ARC=70, DOTMIN=0, DOTMAX=41, FRINGE=500, DUR=600; // ring/arc spacing, dot min/max radius, fringe band, ms (DUR = open speed, unchanged)
 
   let cx=0,cy=0,W=0,H=0,maxR=1;
   function resize(){
