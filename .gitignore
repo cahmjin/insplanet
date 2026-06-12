@@ -8,3 +8,6 @@ assets/figma-ref/
 # saved third-party reference page (shaders.com), not part of the build
 gra/
 images/_ref/
+
+# local black-hole shader tuner (dev tool, not part of the build)
+blackhole-tuner/

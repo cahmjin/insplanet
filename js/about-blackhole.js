@@ -26,7 +26,7 @@
       vec4 rot=cos(t+vec4(0.0,33.0,11.0,0.0));
       mat2 m_rot=mat2(rot.x,rot.y,rot.z,rot.w);
       vec2 v=(c*m_rot)/i; vec2 w=vec2(0.0); float li=i;
-      for(int k=0;k<9;k++){ v+=0.7*sin(v.yx*(li+1.0)+u_time)/(li+1.0)+0.5; w+=1.0+sin(v); li+=1.0; }
+      for(int k=0;k<12;k++){ v+=0.7*sin(v.yx*(li+1.0)+u_time)/(li+1.0)+0.5; w+=1.0+sin(v); li+=1.0; }
       float disk=length(sin(v/0.3)*0.4+c*(3.0+d));
       vec4 cg=c.x*vec4(0.6,-0.4,-1.0,0.0);
       vec4 ev=exp(cg)/w.xyyx/(2.0+disk*disk/4.0-disk)/(0.5+1.0/a)/(0.03+abs(length(p)-0.7));
@@ -44,7 +44,7 @@
       vec4 rot=cos(t+vec4(0.0,33.0,11.0,0.0));
       vec2 v=vec2(c.x*rot.x+c.y*rot.z, c.x*rot.y+c.y*rot.w)/i;
       vec2 w=vec2(0.0); float li=1.2;
-      for(int k=0;k<9;k++){ v+=0.7*sin(vec2(v.y,v.x)*li+u_time)/li+0.5; w+=1.0+sin(v); li+=1.0; }
+      for(int k=0;k<12;k++){ v+=0.7*sin(vec2(v.y,v.x)*li+u_time)/li+0.5; w+=1.0+sin(v); li+=1.0; }
       float disk=length(sin(v/0.3)*0.4+c*(3.0+d));
       vec3 cg=c.x*vec3(0.6,-0.4,-1.0);
       vec3 ev=exp(cg)/w.xyy/(2.0+disk*disk/4.0-disk)/(0.5+1.0/a)/(0.03+abs(length(p)-0.7));
