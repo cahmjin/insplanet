@@ -64,7 +64,7 @@
     <nav class="menu-nav">
       <a class="menu-item" href="index.html"><span>Projects</span><span class="menu-badge">42</span></a>
       <a class="menu-item" href="about.html">About</a>
-      <a class="menu-item" href="#">Contact</a>
+      <a class="menu-item" href="contact.html">Contact</a>
     </nav>
     <p class="menu-copy">Ⓒ 2026. Insplanet all right reserved.</p>
    </div>

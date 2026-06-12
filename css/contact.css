@@ -1,0 +1,90 @@
+/* ===== Contact (official_04_contact_2560) =====
+   2560 layout only for now (1920/1024 responsive to follow). Header/footer/menu/cursor/bg-arcs come
+   from style.css + js/shared-ui.js (shared chrome). Tokens: text #3E3F44, section-head #E1E1E1,
+   field border #E5E5E5, placeholder #B5B5B5, accent dot #F03A3A. */
+.contact{position:relative;z-index:1;overflow:clip;   /* transparent (body is #fff) so the shared fixed #bg-line circles show through, like main/about */
+  --ct-text:#3E3F44; --ct-head:#E1E1E1; --ct-line:#E5E5E5; --ct-ph:#B5B5B5}
+.ct-inner{margin:0 218px}                                   /* gutter 218 -> content 2124 @2560 */
+
+/* ---------- 01 hero ---------- */
+.ct-hero{padding-top:400px}
+.ct-symbol{display:block;width:156px;height:auto}
+.ct-hero-body{margin-top:20px;display:flex;flex-direction:column;align-items:flex-start;gap:80px}
+.ct-hero-head{display:flex;flex-direction:column;align-items:flex-start;gap:40px}
+.ct-hero-title-row{display:flex;align-items:flex-end;gap:24px}
+.ct-hero-title{margin:0;display:flex;flex-direction:column;
+  color:var(--ct-text);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:200px;line-height:242px;letter-spacing:-0.01em}
+.ct-hero-title .line-2{margin-top:-92px}   /* Figma: two 242px line boxes overlapping -92 -> column 392 tall, baselines 150 apart */
+/* red planet-dot after "Build your value" (Ellipse 1258, 32px #F03A3A = .16em, 24px gap), bottom on the
+   baseline — same treatment as the about hero. */
+.ct-dot{display:inline-block;width:.16em;height:.16em;margin-left:.12em;vertical-align:-.025em;
+  border-radius:50%;background:#F03A3A}
+.ct-hero-sub{width:554px;display:flex;flex-direction:column;gap:24px}
+.ct-hero-lead{margin:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5}
+.ct-hero-desc{margin:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5}
+.ct-brief{display:inline-flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;
+  border:1px solid var(--ct-text);border-radius:8px;color:var(--ct-text);text-decoration:none;
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:16px;line-height:1.5;transition:opacity .2s ease}
+.ct-brief:hover{opacity:.6}
+.ct-brief-ico{display:grid;place-items:center;width:20px;height:20px}
+
+/* ---------- 02 form ---------- */
+.ct-form{padding-top:240px}
+.ct-form-inner{display:flex;flex-direction:column;gap:400px;margin:0;border:0;padding:0}
+.ct-block{display:flex;justify-content:space-between;align-items:flex-start;gap:40px}
+.ct-block-head{margin:0;color:var(--ct-head);font-family:'Pretendard',sans-serif;font-weight:700;font-size:56px;line-height:1.5}
+.ct-fields{width:738px;display:flex;flex-direction:column;gap:120px}
+.ct-field{margin:0;border:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:32px}
+.ct-field-label{margin:0;padding:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:700;font-size:24px;line-height:1.5}
+
+/* chips: 4-column wrap grid, gap 16, pill 56 tall */
+.ct-chips{display:flex;flex-wrap:wrap;gap:16px}
+.ct-chip{flex:0 0 calc((100% - 48px) / 4);height:56px;padding:0 16px;
+  display:inline-flex;align-items:center;justify-content:center;text-align:center;
+  background:#fff;border:1px solid var(--ct-line);border-radius:999px;cursor:pointer;
+  color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;
+  transition:border-color .15s ease,background .15s ease,color .15s ease}
+.ct-chip:hover{border-color:var(--ct-text)}
+.ct-chip.is-selected{background:var(--ct-text);border-color:var(--ct-text);color:#fff}
+
+/* inputs */
+.ct-inputs{display:flex;flex-direction:column;gap:32px}
+.ct-input-row{display:flex;gap:32px}
+.ct-input{flex:1;min-width:0;height:64px;padding:0 32px;background:#fff;
+  border:1px solid var(--ct-line);border-radius:12px;color:var(--ct-text);
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;outline:none}
+.ct-input::placeholder{color:var(--ct-ph)}
+.ct-input:focus{border-color:var(--ct-text)}
+
+/* project content */
+.ct-content{display:flex;flex-direction:column;gap:32px}
+.ct-textarea{height:400px;padding:32px;background:#fff;border:1px solid var(--ct-line);border-radius:12px;
+  resize:none;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;outline:none}
+.ct-textarea::placeholder{color:var(--ct-ph)}
+.ct-textarea:focus{border-color:var(--ct-text)}
+.ct-file-row{display:flex;gap:16px}
+.ct-file-name{flex:1;cursor:default}
+.ct-file-btn{flex:none;height:64px;padding:0 24px;display:inline-flex;align-items:center;gap:12px;white-space:nowrap;
+  background:#fff;border:1px solid var(--ct-text);border-radius:8px;cursor:pointer;color:var(--ct-text);
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;transition:opacity .2s ease}
+.ct-file-btn:hover{opacity:.6}
+
+/* submit */
+.ct-submit{width:272px;height:80px;padding:0 32px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
+  background:var(--ct-text);border:none;border-radius:999px;cursor:pointer;color:#fff;
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5;transition:opacity .2s ease}
+.ct-submit:hover{opacity:.85}
+.ct-arrow{display:grid;place-items:center;width:24px;height:24px;flex:none}
+.ct-arrow img{width:16px;height:16px;display:block}   /* Figma Group 16: 16x16 arrow in a 24 box */
+
+/* ---------- 03 Join Us (full-bleed) ---------- */
+.ct-join{position:relative;height:1440px;margin-top:240px;overflow:clip}
+.ct-join-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.ct-join-inner{position:absolute;left:218px;top:443px;width:610px;z-index:1;display:flex;flex-direction:column;align-items:flex-start}
+.ct-join-title{margin:0;color:var(--ct-text);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:200px;line-height:1.21;letter-spacing:-0.01em}
+.ct-join-sub{margin:32px 0 0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:700;font-size:24px;line-height:1.5}
+.ct-join-desc{margin:24px 0 0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5}
+.ct-join-btn{margin:80px 0 0;width:272px;height:80px;padding:0 32px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
+  background:var(--ct-text);border-radius:999px;text-decoration:none;color:#fff;
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5;transition:opacity .2s ease}
+.ct-join-btn:hover{opacity:.85}
