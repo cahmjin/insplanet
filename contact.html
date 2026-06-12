@@ -51,7 +51,7 @@
           <div class="ct-fields">
             <div class="ct-field">
               <p class="ct-field-label">프로젝트 업무 범위</p>
-              <div class="ct-chips">
+              <div class="ct-chips" data-multi><!-- 업무 범위: 다중선택 -->
                 <button type="button" class="ct-chip">웹사이트</button>
                 <button type="button" class="ct-chip">앱</button>
                 <button type="button" class="ct-chip">AI</button>
@@ -112,11 +112,11 @@
                   <input class="ct-input" type="text" placeholder="성함">
                 </div>
                 <div class="ct-input-row">
-                  <input class="ct-input" type="text" placeholder="연락처">
-                  <input class="ct-input" type="email" placeholder="이메일">
+                  <input class="ct-input" type="tel" inputmode="numeric" data-filter="num" placeholder="연락처">
+                  <input class="ct-input" type="email" inputmode="email" data-filter="ascii" placeholder="이메일">
                 </div>
                 <div class="ct-input-row">
-                  <input class="ct-input" type="url" placeholder="기존 사이트 URL">
+                  <input class="ct-input" type="url" inputmode="url" data-filter="ascii" placeholder="기존 사이트 URL">
                 </div>
               </div>
             </div>
@@ -127,6 +127,7 @@
                 <div class="ct-file-row">
                   <input class="ct-input ct-file-name" type="text" placeholder="최대 50MB 까지 첨부가 가능해요." readonly>
                   <button type="button" class="ct-file-btn">파일첨부</button>
+                  <input type="file" class="ct-file-input" hidden>
                 </div>
               </div>
             </div>
@@ -190,7 +191,35 @@
     addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
     addEventListener('resize',update); update();
   })();
-  document.querySelectorAll('.ct-chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('is-selected')));
+  // chip groups: [data-multi] = multi-select (업무 범위); others = single-select (성격/예산/기간, one per group, re-click clears)
+  document.querySelectorAll('.ct-chips').forEach(group=>{
+    const multi=group.hasAttribute('data-multi');
+    group.querySelectorAll('.ct-chip').forEach(chip=>chip.addEventListener('click',()=>{
+      if(multi){ chip.classList.toggle('is-selected'); return; }
+      const on=chip.classList.contains('is-selected');
+      group.querySelectorAll('.ct-chip').forEach(c=>c.classList.remove('is-selected'));
+      if(!on) chip.classList.add('is-selected');
+    }));
+  });
+  // client-info input restrictions: 연락처 = digits only, 이메일/URL = ASCII only (blocks Korean) — filter live, keep caret
+  (function(){
+    const f={ num:v=>v.replace(/[^0-9]/g,''), ascii:v=>v.replace(/[^\x00-\x7F]/g,'') };
+    document.querySelectorAll('.ct-input[data-filter]').forEach(inp=>{
+      const fn=f[inp.dataset.filter]; if(!fn)return;
+      inp.addEventListener('input',()=>{ const start=inp.selectionStart, before=inp.value, after=fn(before);
+        if(after!==before){ inp.value=after; const pos=Math.max(0,start-(before.length-after.length)); try{inp.setSelectionRange(pos,pos);}catch(e){} } });
+    });
+  })();
+  // file attach: button (or the name field) opens the native file dialog (Finder/Explorer); show the name, cap 50MB
+  (function(){
+    const btn=document.querySelector('.ct-file-btn'), input=document.querySelector('.ct-file-input'), name=document.querySelector('.ct-file-name');
+    if(!btn||!input||!name)return;
+    const MAX=50*1024*1024, open=()=>input.click();
+    btn.addEventListener('click',open); name.addEventListener('click',open);
+    input.addEventListener('change',()=>{ const file=input.files[0]; if(!file)return;
+      if(file.size>MAX){ alert('최대 50MB까지 첨부할 수 있어요.'); input.value=''; name.value=''; return; }
+      name.value=file.name; });
+  })();
 </script>
 </body>
 </html>

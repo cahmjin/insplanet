@@ -89,11 +89,17 @@
 /* project content */
 .ct-content{display:flex;flex-direction:column;gap:32px}
 .ct-textarea{height:400px;padding:32px;background:#fff;border:1px solid var(--ct-line);border-radius:12px;
-  resize:none;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;outline:none}
+  resize:none;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;outline:none;
+  scrollbar-width:thin;scrollbar-color:#C5C8DC transparent}   /* Firefox: slim scrollbar */
 .ct-textarea::placeholder{color:var(--ct-ph)}
 .ct-textarea:focus{border-color:var(--ct-text)}
+/* WebKit: slim rounded scrollbar instead of the chunky default */
+.ct-textarea::-webkit-scrollbar{width:6px}
+.ct-textarea::-webkit-scrollbar-track{background:transparent;margin:12px 0}
+.ct-textarea::-webkit-scrollbar-thumb{background:#C5C8DC;border-radius:999px}
+.ct-textarea::-webkit-scrollbar-thumb:hover{background:#B5B5B5}
 .ct-file-row{display:flex;gap:16px}
-.ct-file-name{flex:1;cursor:default}
+.ct-file-name{flex:1;cursor:pointer}
 .ct-file-btn{flex:none;height:64px;padding:0 24px;display:inline-flex;align-items:center;gap:12px;white-space:nowrap;
   background:#fff;border:1px solid var(--ct-text);border-radius:8px;cursor:pointer;color:var(--ct-text);
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;transition:opacity .2s ease}
