@@ -185,7 +185,7 @@
     let ticking=false;
     const update=()=>{ ticking=false; const vh=innerHeight;
       for(const h of heads){ const top=h.getBoundingClientRect().top;
-        const p=Math.min(1,Math.max(0,(vh*0.8 - top)/(vh*0.45)));   // 0 at top=80%vh -> 1 at top=35%vh
+        const p=Math.min(1,Math.max(0,(vh - top)/(vh*0.67)));   // gray when it enters (top=100%vh) -> full at the upper third (top=33%vh); gradual over 0.67vh of scroll
         paint(h,p); } };
     addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
     addEventListener('resize',update); update();
