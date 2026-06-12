@@ -83,7 +83,7 @@
 .ct-input{flex:1;min-width:0;height:64px;padding:0 32px;background:#fff;
   border:1px solid var(--ct-line);border-radius:12px;color:var(--ct-text);
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;outline:none}
-.ct-input::placeholder{color:var(--ct-ph)}
+.ct-input::placeholder{color:var(--ct-ph);font-weight:400}
 .ct-input:focus{border-color:var(--ct-text)}
 
 /* project content */
@@ -91,7 +91,7 @@
 .ct-textarea{height:400px;padding:32px;background:#fff;border:1px solid var(--ct-line);border-radius:12px;
   resize:none;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;outline:none;
   scrollbar-width:thin;scrollbar-color:#C5C8DC transparent}   /* Firefox: slim scrollbar */
-.ct-textarea::placeholder{color:var(--ct-ph)}
+.ct-textarea::placeholder{color:var(--ct-ph);font-weight:400}
 .ct-textarea:focus{border-color:var(--ct-text)}
 /* WebKit: slim rounded scrollbar instead of the chunky default */
 .ct-textarea::-webkit-scrollbar{width:6px}
@@ -104,6 +104,19 @@
   background:#fff;border:1px solid var(--ct-text);border-radius:8px;cursor:pointer;color:var(--ct-text);
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;transition:opacity .2s ease}
 .ct-file-btn:hover{opacity:.6}
+
+/* content-group: project-content section + consent row, 48px apart (Figma Frame 1216117589) */
+.ct-content-group{display:flex;flex-direction:column;gap:48px}
+/* consent: 40px circle checkbox (gray check #E1E1E1 default -> dark fill + white check when agreed) + agreement text */
+.ct-consent{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.ct-consent-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.ct-consent-box{flex:none;width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid var(--ct-line);
+  display:grid;place-items:center;color:var(--ct-head);transition:background .15s ease,border-color .15s ease,color .15s ease}
+.ct-consent-box svg{display:block;width:40px;height:40px;transform:translate(-1px,-1px)}   /* optical nudge: the V check reads slightly low & right-heavy, so shift up-left 1px to centre it */
+.ct-consent-input:checked ~ .ct-consent-box{background:var(--ct-text);border-color:var(--ct-text);color:#fff}
+.ct-consent-input:focus-visible ~ .ct-consent-box{outline:2px solid var(--ct-text);outline-offset:2px}
+.ct-consent-text{margin:0;color:var(--ct-ph);font-family:'Pretendard',sans-serif;font-weight:400;font-size:18px;line-height:1.5;transition:color .15s ease}
+.ct-consent-input:checked ~ .ct-consent-text{color:var(--ct-text);font-weight:600}
 
 /* submit */
 .ct-submit{width:272px;height:80px;padding:0 32px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;

@@ -120,16 +120,24 @@
                 </div>
               </div>
             </div>
-            <div class="ct-field">
-              <p class="ct-field-label">프로젝트 내용</p>
-              <div class="ct-content">
-                <textarea class="ct-textarea" placeholder="구체적일수록 자세한 상담이 가능해요."></textarea>
-                <div class="ct-file-row">
-                  <input class="ct-input ct-file-name" type="text" placeholder="최대 50MB 까지 첨부가 가능해요." readonly>
-                  <button type="button" class="ct-file-btn">파일첨부</button>
-                  <input type="file" class="ct-file-input" hidden>
+            <div class="ct-content-group">
+              <div class="ct-field">
+                <p class="ct-field-label">프로젝트 내용</p>
+                <div class="ct-content">
+                  <textarea class="ct-textarea" placeholder="구체적일수록 자세한 상담이 가능해요."></textarea>
+                  <div class="ct-file-row">
+                    <input class="ct-input ct-file-name" type="text" placeholder="최대 50MB 까지 첨부가 가능해요." readonly>
+                    <button type="button" class="ct-file-btn">파일첨부</button>
+                    <input type="file" class="ct-file-input" hidden>
+                  </div>
                 </div>
               </div>
+              <!-- consent (Figma 2560: 40px circle checkbox + agreement text, 48px below the project content) -->
+              <label class="ct-consent">
+                <input type="checkbox" class="ct-consent-input">
+                <span class="ct-consent-box" aria-hidden="true"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M11 20 17 26 29 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="ct-consent-text">이용약관 및 개인정보처리방침에 동의합니다.</span>
+              </label>
             </div>
             <button type="submit" class="ct-submit">
               <span>문의하기</span>
