@@ -59,8 +59,17 @@
 .about-hero-body{transition:opacity .9s ease .62s,filter .9s ease .62s,transform .9s cubic-bezier(.22,1,.36,1) .62s,color .35s ease}
 .about-hero.in .about-hero-title .line-1,.about-hero.in .about-hero-title .line-2{opacity:1;filter:blur(0);transform:none}
 .about-hero.in .about-hero-lead,.about-hero.in .about-hero-body{opacity:1;filter:blur(0);transform:none}
+/* red planet-dot after "We Are" (Figma official_03_about_2560: Ellipse 1258, 32px #F03A3A = .16em,
+   gap 24px = .12em; vertical nudged to -.025em so it sits just below the baseline in-browser — Figma's
+   box-metric offset reads too low here). STAMPS in once the title has settled (~1.2s) with a back-ease
+   scale overshoot. Uses background (not color) so it stays red when the cover flips the text white. */
+.about-hero-dot{display:inline-block;width:.16em;height:.16em;margin-left:.12em;vertical-align:-.025em;
+  border-radius:50%;background:#F03A3A;opacity:0;transform:scale(0);transform-origin:center center}
+.about-hero.in .about-hero-dot{opacity:1;transform:scale(1);
+  transition:transform .42s cubic-bezier(.34,1.56,.64,1) 1.2s, opacity .18s ease 1.18s}
 @media (prefers-reduced-motion:reduce){
-  .about-hero-title .line-1,.about-hero-title .line-2,.about-hero-lead,.about-hero-body{opacity:1;filter:none;transform:none;transition:none}}
+  .about-hero-title .line-1,.about-hero-title .line-2,.about-hero-lead,.about-hero-body{opacity:1;filter:none;transform:none;transition:none}
+  .about-hero-dot{opacity:1;transform:none;transition:none}}
 
 /* the black-hole card — state-A geometry in CSS (matches the JS at scrub 0, so no jump on load):
    wide strip 926x480 R32 @1024 -> 1488x640 R64 @1920 -> 2129x900 R64 @2560. JS overrides inline. */

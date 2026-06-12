@@ -262,7 +262,7 @@ html.lenis,html.lenis body{height:auto}
   transition:opacity .25s ease}
 .menu-nav .menu-item:hover{opacity:.6}
 .menu-nav .menu-item.is-current{color:#A1A1A1}   /* the page you're already on (set by js/shared-ui.js) */
-.menu-badge{display:inline-flex;align-items:center;justify-content:center;
+.menu-badge{align-self:flex-start;margin-top:-.3em;display:inline-flex;align-items:center;justify-content:center;
   height:clamp(40px, calc(2.2321vw + 17.14px), 60px);padding:0 clamp(16px, calc(0.8929vw + 6.86px), 24px);
   border-radius:999px;background:#fff;color:#3E3F44;
   font-family:'Roboto Serif',serif;font-weight:400;font-size:clamp(24px, calc(0.8929vw + 14.86px), 32px);line-height:1}
