@@ -85,6 +85,21 @@
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;outline:none}
 .ct-input::placeholder{color:var(--ct-ph);font-weight:400}
 .ct-input:focus{border-color:var(--ct-text)}
+/* input cell: relative wrapper so the Korean-detected tooltip can anchor to the field */
+.ct-cell{flex:1;min-width:0;position:relative;display:flex}
+/* validation-style tooltip (mimics the browser's native bubble): orange ! icon + message, arrow up to the field */
+.ct-hint{position:absolute;left:20px;top:calc(100% + 12px);z-index:6;
+  display:inline-flex;align-items:center;gap:10px;padding:9px 14px;
+  background:#fff;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.16),0 0 0 1px rgba(0,0,0,.05);
+  white-space:nowrap;pointer-events:none;
+  opacity:0;transform:translateY(-4px) scale(.98);transform-origin:24px -8px;
+  transition:opacity .16s ease,transform .16s ease}
+.ct-cell.show-hint .ct-hint{opacity:1;transform:none}
+.ct-hint::before{content:"";position:absolute;left:22px;top:-5px;width:11px;height:11px;background:#fff;
+  border-radius:2px;transform:rotate(45deg);box-shadow:-2px -2px 3px rgba(0,0,0,.04)}
+.ct-hint-ico{flex:none;width:22px;height:22px;border-radius:6px;background:#F5A623;color:#fff;
+  display:grid;place-items:center;font-family:'Pretendard',sans-serif;font-weight:800;font-size:15px;line-height:1}
+.ct-hint-msg{color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:500;font-size:15px;line-height:1.3}
 
 /* project content */
 .ct-content{display:flex;flex-direction:column;gap:32px}
@@ -99,7 +114,9 @@
 .ct-textarea::-webkit-scrollbar-thumb{background:#C5C8DC;border-radius:999px}
 .ct-textarea::-webkit-scrollbar-thumb:hover{background:#B5B5B5}
 .ct-file-row{display:flex;gap:16px}
-.ct-file-name{flex:1;cursor:pointer}
+.ct-file-name{flex:1;cursor:default;caret-color:transparent}   /* empty: no caret; the button opens the dialog */
+.ct-file-name:not(:placeholder-shown){cursor:text;caret-color:var(--ct-text)}   /* file attached: show the text caret so Backspace-to-remove reads as keyboard-editable */
+.ct-file-name:placeholder-shown:focus{border-color:var(--ct-line)}   /* but no focus styling until a file is attached */
 .ct-file-btn{flex:none;height:64px;padding:0 24px;display:inline-flex;align-items:center;gap:12px;white-space:nowrap;
   background:#fff;border:1px solid var(--ct-text);border-radius:8px;cursor:pointer;color:var(--ct-text);
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;transition:opacity .2s ease}
@@ -120,11 +137,17 @@
 
 /* submit */
 .ct-submit{width:272px;height:80px;padding:0 32px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
-  background:var(--ct-text);border:none;border-radius:999px;cursor:pointer;color:#fff;
-  font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5;transition:opacity .2s ease}
-.ct-submit:hover{opacity:.85}
+  background:var(--ct-ph);border:none;border-radius:999px;cursor:pointer;color:#fff;
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5;
+  transition:background-color .25s ease,opacity .2s ease}   /* inactive (gray) until every required field is filled */
+.ct-submit.is-ready{background:var(--ct-text)}              /* all filled -> dark / active */
+.ct-submit.is-ready:hover .ct-arrow img{animation:project-arrow-cycle .55s cubic-bezier(.22,1,.36,1)}   /* active: only the arrow cycle (same as 전체메뉴 project list), no opacity fade */
+.ct-submit:not(.is-ready):hover{background:#A6A7AD}         /* still clickable while inactive -> jumps to the first missing field */
 .ct-arrow{display:grid;place-items:center;width:24px;height:24px;flex:none}
 .ct-arrow img{width:16px;height:16px;display:block}   /* Figma Group 16: 16x16 arrow in a 24 box */
+/* jump-to-missing: a brief red ring pulses on the first unfilled field when 문의하기 is pressed early */
+@keyframes ct-flash{0%{box-shadow:0 0 0 0 rgba(240,58,58,0)}12%{box-shadow:0 0 0 3px rgba(240,58,58,.30)}100%{box-shadow:0 0 0 0 rgba(240,58,58,0)}}
+.ct-flash{animation:ct-flash 1s ease}
 
 /* ---------- 03 Join Us (full-bleed) ---------- */
 .ct-join{position:relative;height:1440px;margin-top:240px;overflow:clip}
