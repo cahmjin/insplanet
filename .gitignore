@@ -1,13 +1,11 @@
 .DS_Store
 .claude/settings.local.json
 
-# scratch reference images (not part of the build)
+# scratch reference images — kept next to their assets, not part of the build
 assets/_ref/
 assets/figma-ref/
-
-# saved third-party reference page (shaders.com), not part of the build
-gra/
 images/_ref/
 
-# local black-hole shader tuner (dev tool, not part of the build)
-blackhole-tuner/
+# _lab/ = all experiments, labs, dev tools, demos & third-party references — local only, never deployed
+# (axion-hero, fractal_*, glow-lab, halftone-lab, blackhole-singularity, blackhole-tuner, gra, …)
+_lab/
