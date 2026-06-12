@@ -18,21 +18,51 @@
 /* red planet-dot after "Build your value" (Ellipse 1258, 32px #F03A3A = .16em, 24px gap), bottom on the
    baseline — same treatment as the about hero. */
 .ct-dot{display:inline-block;width:.16em;height:.16em;margin-left:.12em;vertical-align:-.025em;
-  border-radius:50%;background:#F03A3A}
+  border-radius:50%;background:#F03A3A;opacity:0;transform:scale(0);transform-origin:center center}
 .ct-hero-sub{width:554px;display:flex;flex-direction:column;gap:24px}
 .ct-hero-lead{margin:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5}
 .ct-hero-desc{margin:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5}
 .ct-brief{display:inline-flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;
   border:1px solid var(--ct-text);border-radius:8px;color:var(--ct-text);text-decoration:none;
-  font-family:'Pretendard',sans-serif;font-weight:600;font-size:16px;line-height:1.5;transition:opacity .2s ease}
-.ct-brief:hover{opacity:.6}
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:16px;line-height:1.5;
+  transition:background .25s ease,color .25s ease}
+/* same interaction as the full-menu .brief-btn: fills dark on hover, icon (currentColor) flips to white
+   and runs the download-cycle (drop down & out, re-enter from top). download-cycle keyframe is in style.css. */
+.ct-brief:hover{background:var(--ct-text);color:#fff}
 .ct-brief-ico{display:grid;place-items:center;width:20px;height:20px}
+.ct-brief:hover .ct-brief-ico svg{animation:download-cycle .55s cubic-bezier(.22,1,.36,1)}
+
+/* load reveal — same as the home/about hero: title lines settle in from a soft blur (.in added by the
+   inline script once the serif webfont is ready), the intro follows, then the red dot stamps in. */
+.ct-hero-title .line-1,.ct-hero-title .line-2{
+  opacity:0;filter:blur(18px);transform:translateY(.05em) scale(1.04);transform-origin:left center;
+  transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.22,1,.36,1)}
+.ct-hero-title .line-2{transition-delay:.14s}
+.ct-hero-lead,.ct-hero-desc{opacity:0;filter:blur(8px);transform:translateY(10px);
+  transition:opacity .9s ease,filter .9s ease,transform .9s cubic-bezier(.22,1,.36,1)}
+.ct-hero-lead{transition-delay:.5s}
+.ct-hero-desc{transition-delay:.62s}
+/* the Company Brief button joins the reveal last — keeps its own hover bg/color transition too */
+.ct-brief{opacity:0;filter:blur(8px);transform:translateY(10px);
+  transition:opacity .9s ease .74s,filter .9s ease .74s,transform .9s cubic-bezier(.22,1,.36,1) .74s,background .25s ease,color .25s ease}
+.ct-hero.in .ct-hero-title .line-1,.ct-hero.in .ct-hero-title .line-2,
+.ct-hero.in .ct-hero-lead,.ct-hero.in .ct-hero-desc,.ct-hero.in .ct-brief{opacity:1;filter:blur(0);transform:none}
+.ct-hero.in .ct-dot{opacity:1;transform:scale(1);
+  transition:transform .42s cubic-bezier(.34,1.56,.64,1) 1.2s, opacity .18s ease 1.18s}
+@media (prefers-reduced-motion:reduce){
+  .ct-hero-title .line-1,.ct-hero-title .line-2,.ct-hero-lead,.ct-hero-desc,.ct-brief{opacity:1;filter:none;transform:none}
+  .ct-dot{opacity:1;transform:none}}
 
 /* ---------- 02 form ---------- */
 .ct-form{padding-top:240px}
 .ct-form-inner{display:flex;flex-direction:column;gap:400px;margin:0;border:0;padding:0}
 .ct-block{display:flex;justify-content:space-between;align-items:flex-start;gap:40px}
-.ct-block-head{margin:0;color:var(--ct-head);font-family:'Pretendard',sans-serif;font-weight:700;font-size:56px;line-height:1.5}
+/* section heading: dark color fills in from the LEFT on scroll, line 1 then line 2 (per-line --fill set
+   by the inline script). gradient clipped to each line's text; default 0% = all #E1E1E1 (Figma), filled = #3E3F44. */
+.ct-block-head{margin:0;font-family:'Pretendard',sans-serif;font-weight:700;font-size:56px;line-height:1.5}
+.ct-block-head .ct-line{--fill:0%;display:block;width:fit-content;max-width:100%;
+  background-image:linear-gradient(90deg, var(--ct-text) var(--fill), var(--ct-head) var(--fill));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .ct-fields{width:738px;display:flex;flex-direction:column;gap:120px}
 .ct-field{margin:0;border:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:32px}
 .ct-field-label{margin:0;padding:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:700;font-size:24px;line-height:1.5}

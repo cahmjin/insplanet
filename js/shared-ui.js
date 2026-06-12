@@ -11,7 +11,7 @@
   <span class="circ circ-2"></span>
 </div>
 <a id="ci-logo" href="index.html" aria-label="Insplanet 홈"><img src="assets/ci_logo.svg" alt="Insplanet"></a>
-<a id="lets-talk" href="about.html"><span>Let&rsquo;s Talk</span></a>
+<a id="lets-talk" href="contact.html"><span>Let&rsquo;s Talk</span></a>
 <div id="full-menu" tabindex="-1"><img src="assets/menu_icon.svg" alt="menu"></div>
 <div id="scroll-hint">
   <span class="bar"></span>
