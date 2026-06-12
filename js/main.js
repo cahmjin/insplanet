@@ -63,7 +63,8 @@
     html.classList.add('pg-anim');                                               // pause heavy canvases during the fade
     root.style.animation='none';root.style.transition='opacity .25s ease';root.style.opacity='0';
     setTimeout(()=>{
-      if(window.__lenis)window.__lenis.scrollTo(0,{immediate:true}); else window.scrollTo(0,0);
+      if(window.__projUnlock)window.__projUnlock();                              // release the projects scroll-lock first (else its onScroll snaps us back; a stopped Lenis also ignores scrollTo)
+      if(window.__lenis)window.__lenis.scrollTo(0,{immediate:true,force:true}); else window.scrollTo(0,0);
       // reset the hero intro while hidden: SNAP the lines to their hidden state (transitions off —
       // just removing .in would tween them OUT over 1.1s, and re-adding .in a frame later would
       // catch them still visible, so the reveal never actually replayed)
@@ -912,6 +913,16 @@
     if(dir>0){ if(step<MAXSTEP){goTo(step+1); arm();} else release(1); }
     else     { if(step>0){     goTo(step-1); arm();} else release(-1); }
   }
+
+  // HARD release for "fresh return to top" (logo): the lock's onScroll force-snaps the page back to the
+  // section top, and lockAt has Lenis stopped (so scrollTo is ignored). __pgFreshTop calls this first so
+  // its jump to 0 actually sticks. Idempotent / safe when not locked.
+  window.__projUnlock=function(){
+    if(!locked) return;
+    locked=false; exitArmed=false; cool=false; animating=false;
+    prevCovering=false; prevTop=null; lastLockedStep=0;
+    if(L()) L().start();
+  };
 
   addEventListener('wheel', e=>{ if(!locked) return; e.preventDefault(); input(e.deltaY>0?1:-1); }, {passive:false});
   // touch: ONE swipe = ONE step (fire once when the threshold is crossed, then ignore until the finger
