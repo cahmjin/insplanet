@@ -96,7 +96,7 @@ html.lenis,html.lenis body{height:auto}
 @media (prefers-reduced-motion:reduce){
   #head-title .line-1,#head-title .line-2{opacity:1;filter:none;transform:none;transition:none}}
 
-#sub-title{width:661px;margin-top:40px;
+#sub-title{width:661px;margin-top:clamp(32px, calc(0.8929vw + 22.86px), 40px);   /* title->subtitle gap: 32@1024 -> 40@1920 */
   display:flex;flex-direction:column;gap:clamp(16px, calc(0.8929vw + 6.86px), 24px);color:#3E3F44}
 #sub-title .subtitle-head{font-size:clamp(18px, calc(0.4464vw + 13.43px), 22px);font-weight:600;line-height:150%}
 #sub-title .subtitle-body{font-size:clamp(14px, calc(0.4464vw + 9.43px), 18px);font-weight:400;line-height:150%}

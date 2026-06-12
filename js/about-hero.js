@@ -19,18 +19,14 @@
   function render(){
     ticking=false;
     const cw=document.documentElement.clientWidth, vh=innerHeight;
-    if(cw<=1040){                                                     // mobile layout (1024 Figma TBD): no pin/scrub
-      card.style.cssText='';
-      sec.classList.remove('is-covered');
-      return;
-    }
-    const u=Math.max(0.7,Math.min(cw/1920,1));                        // == css --u
-    const g=clamp((cw-1920)/640);                                     // == css --g
+    const v=clamp((cw-1024)/896);                                     // == css --v (1024 -> 1920)
+    const g=clamp((cw-1920)/640);                                     // == css --g (1920 -> 2560)
     const r=sec.getBoundingClientRect();
     const scrub=sec.offsetHeight-vh;                                  // the track's extra height
     const p=scrub>0?clamp(-r.top/scrub):0;
     const q=ss(p);
-    const aTop=933*u+237*g, aL=216*u+2*g, aR=216*u-3*g, aH=640*u+260*g, aRad=64*u;
+    // state-A card geometry (Figma): 926x480 R32 @48/744 -> 1488x640 R64 @216/933 -> 2129x900 R64 @218/1170
+    const aTop=744+189*v+237*g, aL=48+168*v+2*g, aR=50+166*v-3*g, aH=480+160*v+260*g, aRad=32+32*v;
     card.style.top=lerp(aTop,0,q).toFixed(1)+'px';
     card.style.left=lerp(aL,0,q).toFixed(1)+'px';
     card.style.right='auto';

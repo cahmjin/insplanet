@@ -1,46 +1,47 @@
-/* ===== About ("Who We Are") page — Figma official_03_about_1920 / _2560 =====
-   Header / footer / menu / cursor / bg-arcs come from style.css + main.js (shared). Both Figma frames
-   share ONE topology, so this file uses two units instead of breakpoint forks:
-     --u : 1 Figma-1920 px. 0.0520833vw == 1px@1920, capped at 1px above 1920, floored at 0.7 below
-           1344 so small laptops stay readable. Values identical in both frames use calc(A * --u).
-     --g : 0px -> 1px as the viewport goes 1920 -> 2560 (flat outside). Values that differ between the
-           frames interpolate with calc(A * --u + (B - A) * --g)  [A = 1920 value, B = 2560 value].
-   The only un-interpolatable difference is the fusion headline's line count (3 @1920 / 2 @2560),
-   flipped via .br-1920 at 2240px. <=1040px switches to the stacked layout at the bottom. */
+/* ===== About ("Who We Are") page — Figma official_03_about_1024 / _1920 / _2560 =====
+   Header / footer / menu / cursor / bg-arcs come from style.css + main.js (shared). All three Figma
+   frames share ONE topology, so every value interpolates between the three anchors:
+     --v : 0px -> 1px as the viewport goes 1024 -> 1920 (flat outside)
+     --g : 0px -> 1px as the viewport goes 1920 -> 2560 (flat outside)
+     value(A@1024, B@1920, C@2560) = calc(Apx + (B-A)*var(--v) + (C-B)*var(--g))
+   Below 1024 everything is flat at the 1024 design (same convention as the main page). The only
+   un-interpolatable difference is the fusion headline's line count (3 lines up to 1920 / 2 @2560,
+   flipped via .br-1920 at 2240px) and the fusion graphic artwork (different crop at 1024, swapped
+   at 1472px). */
 
 .about-page{background:#fff}
 .about{
-  --u:clamp(0.7px, 0.0520833vw, 1px);
+  --v:clamp(0px, calc((100vw - 1024px) / 896), 1px);
   --g:clamp(0px, calc((100vw - 1920px) / 640), 1px);
   position:relative;z-index:1;overflow:clip}
 
-/* shared content column — left gutter 216; right gutter 216 -> 218 (1488 wide @1920, 2126 @2560) */
-.about-inner{width:auto;margin:0 calc(216 * var(--u) + 2 * var(--g)) 0 calc(216 * var(--u));position:relative}
+/* shared content column — gutters 48 -> 216 / 216 -> 218 (928 / 1488 / 2126 wide) */
+.about-inner{width:auto;margin:0 calc(48px + 168 * var(--v) + 2 * var(--g)) 0 calc(48px + 168 * var(--v));position:relative}
 
-/* type roles reused across sections (identical in both frames) */
-.about-headline{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(56 * var(--u));line-height:1.5;letter-spacing:-0.01em}
-.about-lead{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(24 * var(--u));line-height:1.5}
-.about-paragraph{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(20 * var(--u));line-height:1.5}
+/* type roles reused across sections (32->56, 18->24, 14->20; lh 150%) */
+.about-headline{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(32px + 24 * var(--v));line-height:1.5;letter-spacing:-0.01em}
+.about-lead{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(18px + 6 * var(--v));line-height:1.5}
+.about-paragraph{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 6 * var(--v));line-height:1.5}
 
-/* ---------- 01 hero — PINNED EXPANSION. Text column @216,320->400; the black-hole card rests as a
-   wide bottom strip (top 933->1170, full width minus gutters, R64) and scrolling scrubs it up/out to
-   cover the viewport (js/about-hero.js drives top/left/width/height/radius; reverse on scroll-up).
-   Title: 172->200px; Figma line gap -92 @1920 / -102 @2560 -> line tops (auto-box + gap) apart =
-   line-height 116->140px, glyph spill (-gap/2) = 46->51px above/below our boxes — hence 66->71
-   (20+spill) below the symbol and 46->51 above the intro, matching Figma's visual gaps. ---------- */
+/* ---------- 01 hero — PINNED EXPANSION. Text column @48/325 -> 216/320 -> 216/400; the black-hole
+   card rests as a wide bottom strip (top 744 -> 933 -> 1170) and scrolling scrubs it up/out to cover
+   the viewport (js/about-hero.js drives top/left/width/height/radius; reverse on scroll-up).
+   Title 120 -> 172 -> 200px; Figma line gap -64 / -92 / -102 -> line tops (auto-box + gap) apart =
+   line-height 81 -> 116 -> 140px; glyph spill (-gap/2) = 32 -> 46 -> 51 above/below our boxes — hence
+   52 -> 66 -> 71 (20+spill) below the symbol and 32 -> 46 -> 51 above the intro. ---------- */
 .about-hero{position:relative;height:200vh}                          /* 100vh stage + 100vh scrub */
 .about-hero-pin{position:sticky;top:0;height:100vh;overflow:hidden}
-.about-hero-inner{position:relative;z-index:2;height:100%;padding-top:calc(320 * var(--u) + 80 * var(--g))}
-.about-hero-symbol{display:block;width:calc(156 * var(--u));height:calc(8 * var(--u));margin:0 0 calc(66 * var(--u) + 5 * var(--g));
+.about-hero-inner{position:relative;z-index:2;height:100%;padding-top:calc(325px - 5 * var(--v) + 80 * var(--g))}
+.about-hero-symbol{display:block;width:156px;height:8px;margin:0 0 calc(52px + 14 * var(--v) + 5 * var(--g));
   transition:filter .35s ease}
 .about-hero-title{margin:0;color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:600;
-  font-size:calc(172 * var(--u) + 28 * var(--g));line-height:calc(116 * var(--u) + 24 * var(--g));
+  font-size:calc(120px + 52 * var(--v) + 28 * var(--g));line-height:calc(81px + 35 * var(--v) + 24 * var(--g));
   letter-spacing:-0.01em;display:flex;flex-direction:column;transition:color .35s ease}
-.about-hero-intro{width:calc(596 * var(--u));margin-top:calc(46 * var(--u) + 5 * var(--g))}
-.about-hero-lead{margin:0 0 calc(24 * var(--u));color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:600;
-  font-size:calc(22 * var(--u) + 2 * var(--g));line-height:1.5;transition:color .35s ease}
+.about-hero-intro{width:596px;margin-top:calc(32px + 14 * var(--v) + 5 * var(--g))}
+.about-hero-lead{margin:0 0 calc(16px + 8 * var(--v));color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:600;
+  font-size:calc(18px + 4 * var(--v) + 2 * var(--g));line-height:1.5;transition:color .35s ease}
 .about-hero-body{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;
-  font-size:calc(18 * var(--u) + 2 * var(--g));line-height:1.5;transition:color .35s ease}
+  font-size:calc(14px + 4 * var(--v) + 2 * var(--g));line-height:1.5;transition:color .35s ease}
 /* covered state: the card is behind the text -> text goes light, symbol inverts (header flips via .on-dark) */
 .about-hero.is-covered .about-hero-title,
 .about-hero.is-covered .about-hero-lead,
@@ -62,133 +63,91 @@
   .about-hero-title .line-1,.about-hero-title .line-2,.about-hero-lead,.about-hero-body{opacity:1;filter:none;transform:none;transition:none}}
 
 /* the black-hole card — state-A geometry in CSS (matches the JS at scrub 0, so no jump on load):
-   wide strip @216/933 1488x640 @1920 -> @218/1170 2129x900 @2560, R64. JS overrides inline while scrubbing. */
-.about-banner{position:absolute;z-index:1;top:calc(933 * var(--u) + 237 * var(--g));
-  left:calc(216 * var(--u) + 2 * var(--g));right:calc(216 * var(--u) - 3 * var(--g));
-  height:calc(640 * var(--u) + 260 * var(--g));border-radius:calc(64 * var(--u));overflow:hidden;background:#000}
+   wide strip 926x480 R32 @1024 -> 1488x640 R64 @1920 -> 2129x900 R64 @2560. JS overrides inline. */
+.about-banner{position:absolute;z-index:1;top:calc(744px + 189 * var(--v) + 237 * var(--g));
+  left:calc(48px + 168 * var(--v) + 2 * var(--g));right:calc(50px + 166 * var(--v) - 3 * var(--g));
+  height:calc(480px + 160 * var(--v) + 260 * var(--g));border-radius:calc(32px + 32 * var(--v));overflow:hidden;background:#000}
 .about-banner #about-blackhole{position:absolute;inset:0;width:100%;height:100%;display:block}
 
-/* ---------- 03 mission & vision + the three I's (identical in both frames; gap to banner 240) ---------- */
-.about-mission{padding-top:calc(240 * var(--u))}
-.about-eyebrow-serif{margin:0 0 calc(80 * var(--u));color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(48 * var(--u));line-height:1.2}
-.about-mission-head .about-headline{margin-bottom:calc(48 * var(--u))}
+/* ---------- 03 mission & vision + the three I's (gap to banner 160 -> 240) ---------- */
+.about-mission{padding-top:calc(160px + 80 * var(--v))}
+.about-eyebrow-serif{margin:0 0 calc(48px + 32 * var(--v));color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(32px + 16 * var(--v));line-height:1.2}
+.about-mission-head .about-headline{margin-bottom:calc(32px + 16 * var(--v))}
 
-.value-cards{list-style:none;margin:calc(160 * var(--u)) 0 0;padding:0;display:flex;justify-content:space-between}
+.value-cards{list-style:none;margin:calc(120px + 40 * var(--v)) 0 0;padding:0;display:flex;justify-content:space-between}
 .value-card{display:flex;flex-direction:column;align-items:center;text-align:center}
-/* per-card widths from Figma (both frames): 400 / 421 / 416 — li order is card, arrow, card, arrow, card */
-.value-cards li:nth-child(1){flex:0 0 calc(400 * var(--u))}
-.value-cards li:nth-child(3){flex:0 0 calc(421 * var(--u))}
-.value-cards li:nth-child(5){flex:0 0 calc(416 * var(--u))}
-.value-pill{display:flex;align-items:center;justify-content:center;width:calc(320 * var(--u) + 80 * var(--g));height:calc(320 * var(--u) + 80 * var(--g));
-  border-radius:999px;background:#3E3F44;color:#fff;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(24 * var(--u));letter-spacing:0.01em}   /* pill 320 -> 400 */
-.value-card-title{margin:calc(80 * var(--u)) 0 calc(32 * var(--u));color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(24 * var(--u));line-height:1.4}
-.value-card-body{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(20 * var(--u));line-height:1.5}
-/* plus-arrows between the pills, centred at pill height; arrow 64 -> 80, row 320 -> 400 */
-.value-arrow{display:flex;align-self:flex-start;height:calc(320 * var(--u) + 80 * var(--g));align-items:center;flex:none}
-.value-arrow img{width:calc(64 * var(--u) + 16 * var(--g));height:calc(64 * var(--u) + 16 * var(--g));display:block}
+/* per-card widths: equal thirds (277) @1024 -> Figma 400 / 421 / 416 @1920+ — li order: card, arrow, card, arrow, card */
+.value-cards li:nth-child(1){flex:0 0 calc(277px + 123 * var(--v))}
+.value-cards li:nth-child(3){flex:0 0 calc(277px + 144 * var(--v))}
+.value-cards li:nth-child(5){flex:0 0 calc(277px + 139 * var(--v))}
+.value-pill{display:flex;align-items:center;justify-content:center;width:calc(240px + 80 * var(--v) + 80 * var(--g));height:calc(240px + 80 * var(--v) + 80 * var(--g));
+  border-radius:999px;background:#3E3F44;color:#fff;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(20px + 4 * var(--v));letter-spacing:0.01em}   /* pill 240 -> 320 -> 400 */
+.value-card-title{margin:calc(48px + 32 * var(--v)) 0 calc(24px + 8 * var(--v));color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(18px + 6 * var(--v));line-height:1.4}
+.value-card-body{margin:0;width:max-content;max-width:96vw;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 6 * var(--v));line-height:1.5}   /* hug the <br> lines (don't wrap to the narrow card) — Figma lets the body overflow the pill column, centred */
+/* plus-arrows between the pills, centred at pill height; arrow 48 -> 64 -> 80 */
+.value-arrow{display:flex;align-self:flex-start;height:calc(240px + 80 * var(--v) + 80 * var(--g));align-items:center;flex:none}
+.value-arrow img{width:calc(48px + 16 * var(--v) + 16 * var(--g));height:calc(48px + 16 * var(--v) + 16 * var(--g));display:block}
 
-/* ---------- 04 finance × mobility + core values — left column @218, 1486 -> 1662 wide;
-   gap to mission 280 -> 400; graphic 312x252 at the column's right edge (both frames);
-   core values: flat 120 gap, no dividers (both frames). ---------- */
-.about-fusion{padding-top:calc(360 * var(--u) + 40 * var(--g))}   /* mission bottom -> fusion: 360 @1920 (320-pills) -> 400 @2560 */
-.about-fusion .about-inner{width:calc(1486 * var(--u) + 176 * var(--g));margin:0 auto 0 calc(218 * var(--u))}
+/* ---------- 04 finance × mobility + core values — left column @48/218, 928 -> 1486 -> 1662 wide;
+   gap to mission 180 -> 360 -> 400; graphic at the column's right edge (234x114 art @1024, swapped
+   for the 312x252 art at 1472px); core values: flat 64 -> 120 gap, no dividers. ---------- */
+.about-fusion{padding-top:calc(180px + 180 * var(--v) + 40 * var(--g))}
+.about-fusion .about-inner{width:calc(928px + 558 * var(--v) + 176 * var(--g));margin:0 auto 0 calc(48px + 170 * var(--v))}
 .about-fusion-head{position:relative}
-.about-fusion-head .about-headline{margin:0 0 calc(48 * var(--u))}
-.about-fusion-head .about-paragraph{max-width:calc(723 * var(--u))}
-.about-fusion-graphic{position:absolute;top:0;right:0;width:calc(312 * var(--u));height:calc(252 * var(--u))}
+.about-fusion-head .about-headline{margin:0 0 calc(32px + 16 * var(--v))}
+.about-fusion-head .about-paragraph{max-width:calc(694px + 29 * var(--v))}
+.about-fusion-graphic{position:absolute;top:0;right:0;width:calc(234px + 78 * var(--v));height:auto}
+.about-fusion-graphic--desk{display:none}
+@media (min-width:1472px){
+  .about-fusion-graphic--1024{display:none}
+  .about-fusion-graphic--desk{display:block}}
 
-.core-values{list-style:none;margin:calc(160 * var(--u)) 0 0;padding:0;display:flex;flex-direction:column;gap:calc(120 * var(--u))}
-.core-value{display:grid;grid-template-columns:calc(576 * var(--u)) 1fr;align-items:center;gap:calc(32 * var(--u))}
-.core-value-head{display:flex;align-items:center;gap:calc(24 * var(--u))}
-.core-value-icon{flex:none;width:calc(80 * var(--u));height:calc(80 * var(--u));display:flex;align-items:center;justify-content:center}
+.core-values{list-style:none;margin:calc(96px + 64 * var(--v)) 0 0;padding:0;display:flex;flex-direction:column;gap:calc(64px + 56 * var(--v))}
+.core-value{display:grid;grid-template-columns:calc(448px + 128 * var(--v)) 1fr;align-items:center;gap:32px}
+.core-value-head{display:flex;align-items:center;gap:24px}
+.core-value-icon{flex:none;width:80px;height:80px;display:flex;align-items:center;justify-content:center}
 .core-value-icon img{width:100%;height:100%;object-fit:contain;display:block}
-.core-value-title{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(24 * var(--u));line-height:1.3}
-.core-value-desc{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(18 * var(--u));line-height:1.5}
+.core-value-title{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(20px + 4 * var(--v));line-height:1.3}
+.core-value-desc{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 4 * var(--v));line-height:1.5}
 
-/* the fusion headline is 3 lines @1920 and 2 lines @2560 — the only non-interpolatable difference */
+/* the fusion headline is 3 lines up to 1920 and 2 lines @2560 — the only line-count flip */
 @media (min-width:2240px){ .br-1920{display:none} }
 
-/* ---------- 05 gallery — four 584x720 rounded cards from the left gutter @218, bleeding past the
-   right edge (heavily @1920, slightly @2560 — per design); gap to fusion 240 (both). ---------- */
-.about-gallery{padding-top:calc(240 * var(--u))}
-.about-gallery .about-inner{margin:0 0 0 calc(218 * var(--u))}
-.about-gallery-grid{display:grid;grid-template-columns:repeat(4, calc(584 * var(--u)));gap:calc(32 * var(--u))}
-.about-gallery-item{margin:0;height:calc(720 * var(--u));border-radius:calc(32 * var(--u));overflow:hidden}
+/* the AX copy breaks differently in the 1024 frame — swap the break set at 1472 (same as the graphic) */
+.br-1024{display:none}
+@media (max-width:1471px){ .br-1024{display:inline} .br-desk{display:none} }
+
+/* ---------- 05 gallery — four rounded cards from the left gutter, bleeding past the right edge;
+   288x356 R20.5 gap21 @1024 -> 584x720 R32 gap32 @1920+; gap to fusion 130 -> 240. ---------- */
+.about-gallery{padding-top:calc(130px + 110 * var(--v))}
+.about-gallery .about-inner{margin:0 0 0 calc(48px + 170 * var(--v))}
+.about-gallery-grid{display:grid;grid-template-columns:repeat(4, calc(288px + 296 * var(--v)));gap:calc(21.3px + 10.7 * var(--v))}
+.about-gallery-item{margin:0;height:calc(356px + 364 * var(--v));border-radius:calc(20.5px + 11.5 * var(--v));overflow:hidden}
 .about-gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
 
-/* ---------- 06 Beyond UX / The AX Creator + stats — title left, a 698 column right (both frames):
-   copy -> stats blocks, 160 apart; Years/Team spread across the column. Gap to gallery 240 -> 400.
-   Title: lh .8 (64px boxes) vs Figma auto-lh 96.8 boxes -> glyphs sit 16px high; padding compensates. ---------- */
-.about-axcreator{padding-top:calc(240 * var(--u) + 160 * var(--g))}
+/* ---------- 06 Beyond UX / The AX Creator + stats — title left (48 -> 80px), right column
+   480 -> 698 wide: copy -> stats blocks 96 -> 160 apart; Years/Team spread across the column.
+   Gap to gallery 160 -> 240 -> 400. Title line boxes 42 -> 64px vs Figma auto-boxes -> glyphs sit
+   8 -> 16px high; padding compensates. ---------- */
+.about-axcreator{padding-top:calc(160px + 80 * var(--v) + 160 * var(--g))}
 .about-axcreator-grid{display:flex;justify-content:space-between;align-items:flex-start}
-.about-display{margin:0;padding-top:calc(16 * var(--u));color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;
-  font-size:calc(80 * var(--u));line-height:0.8;display:flex;flex-direction:column}
-.about-axcreator-right{width:calc(698 * var(--u));display:flex;flex-direction:column;gap:calc(160 * var(--u))}
-.about-axcreator-copy{display:flex;flex-direction:column;gap:calc(32 * var(--u))}
-.about-stats{margin:0;display:flex;flex-direction:column;gap:calc(160 * var(--u))}
-.about-stats-row{display:flex;justify-content:space-between}
-.about-stat{display:flex;flex-direction:column;gap:calc(80 * var(--u))}
-.about-stat-label{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(16 * var(--u));line-height:1.2}
+.about-display{margin:0;padding-top:calc(8px + 8 * var(--v));color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;
+  font-size:calc(48px + 32 * var(--v));line-height:calc(42px + 22 * var(--v));display:flex;flex-direction:column}
+.about-axcreator-right{width:calc(448px + 250 * var(--v));display:flex;flex-direction:column;gap:calc(96px + 64 * var(--v))}
+.about-axcreator-copy{display:flex;flex-direction:column;gap:32px}
+.about-stats{margin:0;display:flex;flex-direction:column;gap:calc(96px + 64 * var(--v))}
+.about-stats-row{display:flex}
+.about-stats-row .about-stat{flex:1 1 0}   /* years / team split the row into equal halves (Figma: both fill) — team starts at 50%, NOT pushed to the right edge by space-between */
+.about-stat{display:flex;flex-direction:column;gap:calc(48px + 32 * var(--v))}   /* label -> number: 48 @1024 -> 80 @1920+ */
+.about-stat-label{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(13px + 3 * var(--v));line-height:1.2}
 .about-stat-num{margin:0;line-height:0}
 .about-stat-num img{display:block;width:auto}
-.about-stats > .about-stat .about-stat-num img{height:calc(166 * var(--u))}              /* 100+ */
-.about-stats-row .about-stat:first-child .about-stat-num img{height:calc(118 * var(--u))}   /* 8+  */
-.about-stats-row .about-stat:last-child .about-stat-num img{height:calc(136 * var(--u))}    /* 30+ */
+.about-stats > .about-stat .about-stat-num img{height:calc(98px + 68 * var(--v))}                 /* 100+ */
+.about-stats-row .about-stat:first-child .about-stat-num img{height:calc(71px + 47 * var(--v))}   /* 8+  */
+.about-stats-row .about-stat:last-child .about-stat-num img{height:calc(82px + 54 * var(--v))}    /* 30+ */
 
-/* ---------- 07 closing image — rounded card, side gutters 216->218; 920 -> 1080 tall; gap 240 ---------- */
-.about-fullbleed{height:calc(920 * var(--u) + 160 * var(--g));margin:calc(240 * var(--u)) calc(216 * var(--u) + 2 * var(--g)) 0;
-  border-radius:calc(64 * var(--u));overflow:hidden}
+/* ---------- 07 closing image — rounded card; 928x480 R32 @1024 -> 920 R64 @1920 -> 1080 @2560 ---------- */
+.about-fullbleed{height:calc(480px + 440 * var(--v) + 160 * var(--g));
+  margin:calc(160px + 80 * var(--v)) calc(48px + 168 * var(--v) + 2 * var(--g)) 0 calc(48px + 168 * var(--v));
+  border-radius:calc(32px + 32 * var(--v));overflow:hidden}
 .about-fullbleed img{width:100%;height:100%;object-fit:cover;display:block}
-
-/* ---------- responsive: stack the two-column blocks on narrow viewports (1024 Figma TBD) ---------- */
-@media (max-width:1040px){
-  .about-inner{width:auto;max-width:calc(100% - 96px);margin:0 auto}
-  .about-headline{font-size:clamp(28px,4.6vw,40px)}
-  .about-lead{font-size:clamp(18px,2.4vw,22px)}
-  .about-paragraph{font-size:clamp(15px,2vw,18px)}
-
-  .about-hero{height:auto;padding:clamp(120px,18vw,200px) 0 0}
-  .about-hero-pin{position:static;height:auto;overflow:visible}   /* no pin/scrub on mobile (1024 Figma TBD) */
-  .about-hero-inner{height:auto;padding-top:0;padding-bottom:clamp(64px,10vw,120px)}
-  .about-hero-symbol{width:120px;height:7px;margin:0 0 24px}
-  .about-hero-title{font-size:clamp(64px,13vw,150px);line-height:0.82}
-  .about-hero-intro{width:100%;margin-top:clamp(32px,7vw,64px)}
-  .about-hero-lead{font-size:clamp(18px,2.4vw,22px)}
-  .about-hero-body{font-size:clamp(15px,2vw,18px)}
-  .about-banner{position:static;width:100%;margin:0;height:clamp(280px,46vw,640px);border-radius:0}
-
-  .about-mission,.about-fusion,.about-axcreator{padding-top:clamp(96px,14vw,200px)}
-  .about-gallery{padding-top:clamp(48px,7vw,96px)}
-  .about-eyebrow-serif{font-size:clamp(30px,4.4vw,44px);margin-bottom:clamp(28px,4vw,56px)}
-  .value-cards{flex-direction:column;align-items:center;gap:clamp(56px,9vw,80px);margin-top:clamp(64px,9vw,110px)}
-  .value-cards li.value-card{flex:none;width:100%;max-width:480px}   /* outweighs the desktop nth-child flex bases */
-  .value-pill{width:min(360px,72vw);height:min(360px,72vw);font-size:clamp(20px,2.6vw,24px)}
-  .value-card-title{font-size:clamp(20px,2.6vw,24px);margin:clamp(36px,5vw,56px) 0 clamp(16px,2.4vw,28px)}
-  .value-card-body{font-size:clamp(15px,2vw,18px)}
-  .value-arrow{display:none}
-
-  .about-fusion .about-inner{width:auto;margin:0 auto}
-  .about-fusion-graphic{position:static;width:240px;height:auto;margin-top:24px}
-  .core-values{margin-top:clamp(56px,9vw,110px);gap:clamp(40px,6vw,72px)}
-  .core-value{grid-template-columns:1fr;gap:16px}
-  .core-value-icon{width:64px;height:64px}
-  .core-value-title{font-size:clamp(19px,2.6vw,24px)}
-  .core-value-desc{font-size:clamp(14px,1.9vw,18px)}
-
-  .about-gallery .about-inner{margin:0 auto}
-  .about-gallery-grid{grid-template-columns:1fr;gap:24px}
-  .about-gallery-item{height:auto;aspect-ratio:16 / 11;border-radius:24px}
-  .about-gallery-item--extra{display:none}   /* the 4th card duplicates the 3rd image — skip in a 1-col stack */
-
-  .about-axcreator-grid{flex-direction:column;gap:clamp(40px,7vw,72px)}
-  .about-display{padding-top:0;font-size:clamp(44px,8vw,72px);line-height:0.9}
-  .about-axcreator-right{width:100%;gap:clamp(48px,8vw,96px)}
-  .about-axcreator-copy{gap:clamp(20px,3vw,32px)}
-  .about-stats{gap:clamp(48px,8vw,96px)}
-  .about-stat{gap:clamp(20px,3vw,32px)}
-  .about-stats > .about-stat .about-stat-num img{height:clamp(80px,12vw,140px)}
-  .about-stats-row .about-stat:first-child .about-stat-num img{height:clamp(56px,9vw,100px)}
-  .about-stats-row .about-stat:last-child .about-stat-num img{height:clamp(64px,10vw,116px)}
-
-  .about-fullbleed{height:clamp(360px,60vw,720px);margin:clamp(96px,14vw,180px) 0 0;border-radius:0}
-}
