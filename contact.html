@@ -112,16 +112,16 @@
               <p class="ct-field-label">의뢰인 정보</p>
               <div class="ct-inputs">
                 <div class="ct-input-row">
-                  <input class="ct-input" type="text" placeholder="기업명">
-                  <input class="ct-input" type="text" placeholder="성함">
+                  <input class="ct-input" type="text" placeholder="기업명*">
+                  <input class="ct-input" type="text" placeholder="성함*">
                 </div>
                 <div class="ct-input-row">
                   <div class="ct-cell">
-                    <input class="ct-input" type="tel" inputmode="numeric" data-filter="num" placeholder="연락처">
+                    <input class="ct-input" type="tel" inputmode="numeric" data-filter="num" placeholder="연락처*">
                     <span class="ct-hint" role="alert"><span class="ct-hint-ico" aria-hidden="true">!</span><span class="ct-hint-msg">숫자만 입력할 수 있어요.</span></span>
                   </div>
                   <div class="ct-cell">
-                    <input class="ct-input" type="email" inputmode="email" data-filter="ascii" placeholder="이메일">
+                    <input class="ct-input" type="email" inputmode="email" data-filter="ascii" placeholder="이메일*">
                     <span class="ct-hint" role="alert"><span class="ct-hint-ico" aria-hidden="true">!</span><span class="ct-hint-msg">영문으로 입력해 주세요.</span></span>
                   </div>
                 </div>
@@ -378,11 +378,10 @@
     form.querySelectorAll('.ct-chips').forEach(g=>F.push({
       ok:()=>!!g.querySelector('.ct-chip.is-selected'), scroll:g.closest('.ct-field'), focus:g.querySelector('.ct-chip'), flash:g }));
     form.querySelectorAll('.ct-inputs .ct-input').forEach(inp=>{   // client info (excludes the readonly file-name field)
-      const isUrl=inp.type==='url';   // URL is pre-filled with https://www. — the bare prefix doesn't count as filled
-      F.push({ ok:()=>{ const v=inp.value.trim(); return isUrl ? (v!=='' && v!=='https://www.') : v!==''; }, scroll:inp, focus:inp, flash:inp });
+      if(inp.type==='url')return;   // 기존 사이트 URL = optional (기업명/성함/연락처/이메일만 필수)
+      F.push({ ok:()=>inp.value.trim()!=='', scroll:inp, focus:inp, flash:inp });
     });
-    const ta=form.querySelector('.ct-textarea');
-    if(ta)F.push({ ok:()=>ta.value.trim()!=='', scroll:ta, focus:ta, flash:ta });
+    // 프로젝트 내용(textarea) = optional — not gated (내용 없어도 제출 활성)
     const cb=form.querySelector('.ct-consent-input'), box=form.querySelector('.ct-consent-box');
     if(cb)F.push({ ok:()=>cb.checked, scroll:document.querySelector('.ct-consent'), focus:cb, flash:box });
 
