@@ -15,7 +15,7 @@
 .ct-hero{padding-top:calc(316px + 4*var(--v) + 80*var(--g))}
 .ct-symbol{display:block;width:156px;height:auto}
 .ct-hero-body{margin-top:20px;display:flex;flex-direction:column;align-items:flex-start}
-.ct-hero-head{display:flex;flex-direction:column;align-items:flex-start;gap:calc(20px + 12*var(--v) + 8*var(--g))}
+.ct-hero-head{display:flex;flex-direction:column;align-items:flex-start;align-self:stretch;gap:calc(20px + 12*var(--v) + 8*var(--g))}
 .ct-hero-title-row{display:flex;align-items:flex-end;gap:calc(16px + 8*var(--v))}
 .ct-hero-title{margin:0;display:flex;flex-direction:column;
   color:var(--ct-text);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:calc(120px + 52*var(--v) + 28*var(--g));line-height:calc(145px + 63*var(--v) + 34*var(--g));letter-spacing:-0.01em}
@@ -28,8 +28,8 @@
 /* intro + Company Brief: stacked (sub above button) at 1920/2560; side-by-side (button on the right) on
    tablet/iPad incl. the 1024 design (intentional per Figma). */
 .ct-hero-subrow{display:flex;flex-direction:column;align-items:flex-start;gap:80px}
-@media (max-width:1024px){   /* 1024 design: intro left, Company Brief button on the right of the 848-wide hero (x48 -> x896) */
-  .ct-hero-subrow{flex-direction:row;justify-content:space-between;align-items:flex-end;width:848px}
+@media (max-width:1180px){   /* tablet/iPad (incl. landscape 1080): intro left, Company Brief button on the right — fluid, 80px inset from the gutter (= 848 @1024, scales with the viewport) */
+  .ct-hero-subrow{flex-direction:row;justify-content:space-between;align-items:flex-end;width:calc(100% - 80px)}
   .ct-hero-sub{width:auto}
 }
 .ct-hero-lead{margin:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(18px + 4*var(--v) + 2*var(--g));line-height:1.5}
