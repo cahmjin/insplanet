@@ -275,8 +275,8 @@ html.lenis,html.lenis body{height:auto}
 .project-head{display:flex;align-items:center;gap:10px}
 .project-name{font-size:clamp(16px, calc(0.4464vw + 11.43px), 20px);font-weight:600;line-height:1}
 .project-arrow{display:inline-flex;align-items:center;justify-content:center;
-  width:clamp(24px, calc(0.8929vw + 14.86px), 32px);height:clamp(24px, calc(0.8929vw + 14.86px), 32px)}
-.project-arrow img{width:clamp(10.5px, calc(0.3906vw + 6.5px), 14px);height:clamp(10.5px, calc(0.3906vw + 6.5px), 14px)}
+  width:clamp(20px, calc(1.3393vw + 6.28px), 32px);height:clamp(20px, calc(1.3393vw + 6.28px), 32px)}   /* box 20@1024 -> 32@1920 (Figma) */
+.project-arrow img{width:clamp(9px, calc(0.3348vw + 5.57px), 12px);height:clamp(9px, calc(0.3348vw + 5.57px), 12px)}   /* arrow 9@1024 -> 12@1920 (Figma) */
 /* hover a project: arrow exits top-right, re-enters from bottom-left, settles (one cycle) */
 @keyframes project-arrow-cycle{
   0%  {transform:translate(0,0);opacity:1}

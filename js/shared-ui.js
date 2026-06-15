@@ -71,15 +71,15 @@
    <div class="menu-col menu-col-right">
     <ul class="project-list">
       <li>
-        <span class="project-head"><span class="project-name">RoAI</span><span class="project-arrow"><img src="assets/icon_arrow.svg" alt=""></span></span>
+        <span class="project-head"><span class="project-name">RoAI</span><span class="project-arrow"><img src="assets/icon_arrow_round.svg" alt=""></span></span>
         <span class="project-desc">로아는 김은경님 부자만들어줄 AI입니다. 일껄요. 이어야해요.</span>
       </li>
       <li>
-        <span class="project-head"><span class="project-name">Inspick</span><span class="project-arrow"><img src="assets/icon_arrow.svg" alt=""></span></span>
+        <span class="project-head"><span class="project-name">Inspick</span><span class="project-arrow"><img src="assets/icon_arrow_round.svg" alt=""></span></span>
         <span class="project-desc">인스픽도 김은경님 부자만들어줄 AI입니다. 일껄요. 이어야해요.</span>
       </li>
       <li>
-        <span class="project-head"><span class="project-name">Archy</span><span class="project-arrow"><img src="assets/icon_arrow.svg" alt=""></span></span>
+        <span class="project-head"><span class="project-name">Archy</span><span class="project-arrow"><img src="assets/icon_arrow_round.svg" alt=""></span></span>
         <span class="project-desc">아키도 김은경님 부자만들어줄 AI입니다. 일껄요. 이어야해요.</span>
       </li>
     </ul>
