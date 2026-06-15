@@ -128,7 +128,7 @@
 
 /* ---------- 05 gallery — four rounded cards from the left gutter, bleeding past the right edge;
    288x356 R20.5 gap21 @1024 -> 584x720 R32 gap32 @1920+; gap to fusion 130 -> 240. ---------- */
-.about-gallery{padding-top:calc(130px + 110 * var(--v))}
+.about-gallery{padding-top:calc(130px + 110 * var(--v));overflow:hidden;overflow:clip}   /* self-clip the right-bleed at the section box so it never widens the page. hidden;clip = progressive: old Safari (<16, no overflow:clip) falls back to hidden; modern uses clip (no scroll-container side effects). .about's overflow:clip can't be the only guard — it's silently ignored pre-Safari-16, which is what made the iPad scroll horizontally. No sticky lives in this section, so hidden is safe here (unlike .about, which hosts the hero-pin). */
 .about-gallery .about-inner{margin:0 0 0 calc(48px + 168 * var(--v) + 2 * var(--g))}   /* was 170*v -> 218 at 1920 too; now 48->216->218 */
 .about-gallery-grid{display:grid;grid-template-columns:repeat(4, calc(288px + 296 * var(--v)));gap:calc(21.3px + 10.7 * var(--v))}
 .about-gallery-item{margin:0;height:calc(356px + 364 * var(--v));border-radius:calc(20.5px + 11.5 * var(--v));overflow:hidden}
