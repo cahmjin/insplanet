@@ -3,25 +3,29 @@
    from style.css + js/shared-ui.js (shared chrome). Tokens: text #3E3F44, section-head #E1E1E1,
    field border #E5E5E5, placeholder #B5B5B5, accent dot #F03A3A. */
 .contact{position:relative;z-index:1;overflow:clip;   /* transparent (body is #fff) so the shared fixed #bg-line circles show through, like main/about */
+  /* 3-anchor responsive: values are calc(B + (C-B)*var(--g)) where B = 1920 Figma, C = 2560. --g ramps 0->1
+     across 1920->2560 (the page is designed at both). --v (1024->1920) is reserved for the later 1024 pass. */
+  --v:clamp(0px, calc((100vw - 1024px) / 896), 1px);
+  --g:clamp(0px, calc((100vw - 1920px) / 640), 1px);
   --ct-text:#3E3F44; --ct-head:#E1E1E1; --ct-line:#E5E5E5; --ct-ph:#B5B5B5}
-.ct-inner{margin:0 218px}                                   /* gutter 218 -> content 2124 @2560 */
+.ct-inner{margin:0 calc(216px + 2*var(--g))}   /* gutter 216@1920 -> 218@2560 */
 
 /* ---------- 01 hero ---------- */
-.ct-hero{padding-top:400px}
-.ct-symbol{display:block;width:156px;height:auto}
+.ct-hero{padding-top:calc(320px + 80*var(--g))}
+.ct-symbol{display:block;width:calc(134px + 22*var(--g));height:auto}
 .ct-hero-body{margin-top:20px;display:flex;flex-direction:column;align-items:flex-start;gap:80px}
-.ct-hero-head{display:flex;flex-direction:column;align-items:flex-start;gap:40px}
+.ct-hero-head{display:flex;flex-direction:column;align-items:flex-start;gap:calc(32px + 8*var(--g))}
 .ct-hero-title-row{display:flex;align-items:flex-end;gap:24px}
 .ct-hero-title{margin:0;display:flex;flex-direction:column;
-  color:var(--ct-text);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:200px;line-height:242px;letter-spacing:-0.01em}
-.ct-hero-title .line-2{margin-top:-92px}   /* Figma: two 242px line boxes overlapping -92 -> column 392 tall, baselines 150 apart */
+  color:var(--ct-text);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:calc(172px + 28*var(--g));line-height:calc(208px + 34*var(--g));letter-spacing:-0.01em}
+.ct-hero-title .line-2{margin-top:calc(-79px - 13*var(--g))}   /* -79@1920 -> -92@2560, scales with the title */
 /* red planet-dot after "Build your value" (Ellipse 1258, 32px #F03A3A = .16em, 24px gap), bottom on the
    baseline — same treatment as the about hero. */
 .ct-dot{display:inline-block;width:.16em;height:.16em;margin-left:.12em;vertical-align:-.025em;
   border-radius:50%;background:#F03A3A;opacity:0;transform:scale(0);transform-origin:center center}
 .ct-hero-sub{width:554px;display:flex;flex-direction:column;gap:24px}
-.ct-hero-lead{margin:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5}
-.ct-hero-desc{margin:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5}
+.ct-hero-lead{margin:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(22px + 2*var(--g));line-height:1.5}
+.ct-hero-desc{margin:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(18px + 2*var(--g));line-height:1.5}
 .ct-brief{display:inline-flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;
   border:1px solid var(--ct-text);border-radius:8px;color:var(--ct-text);text-decoration:none;
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:16px;line-height:1.5;
@@ -55,17 +59,17 @@
 
 /* ---------- 02 form ---------- */
 .ct-form{padding-top:240px}
-.ct-form-inner{display:flex;flex-direction:column;gap:400px;margin:0;border:0;padding:0}
-.ct-block{display:flex;justify-content:space-between;align-items:flex-start;gap:40px}
+.ct-form-inner{display:flex;flex-direction:column;gap:calc(240px + 160*var(--g));margin:0;border:0;padding:0}
+.ct-block{display:flex;justify-content:space-between;align-items:flex-start;gap:calc(32px + 8*var(--g))}
 /* section heading: dark color fills in from the LEFT on scroll, line 1 then line 2 (per-line --fill set
    by the inline script). gradient clipped to each line's text; default 0% = all #E1E1E1 (Figma), filled = #3E3F44. */
-.ct-block-head{margin:0;font-family:'Pretendard',sans-serif;font-weight:700;font-size:56px;line-height:1.5}
+.ct-block-head{margin:0;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(48px + 8*var(--g));line-height:1.5}
 .ct-block-head .ct-line{--fill:0%;display:block;width:fit-content;max-width:100%;
   background-image:linear-gradient(90deg, var(--ct-text) var(--fill), var(--ct-head) var(--fill));
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.ct-fields{width:738px;display:flex;flex-direction:column;gap:120px}
+.ct-fields{width:calc(728px + 10*var(--g));display:flex;flex-direction:column;gap:120px}
 .ct-field{margin:0;border:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:32px}
-.ct-field-label{margin:0;padding:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:700;font-size:24px;line-height:1.5}
+.ct-field-label{margin:0;padding:0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(20px + 4*var(--g));line-height:1.5}
 /* scroll reveal: form areas are born hidden (html.ct-rv set before paint -> no flash), then rise + fade in
    as they scroll into view (same elastic rise as Our Services svc-card) via the inline IO script.
    headings keep their colour-fill. no-JS / reduced-motion -> everything visible. */
@@ -81,7 +85,7 @@
 .ct-chip{flex:0 0 calc((100% - 48px) / 4);height:56px;padding:0 16px;
   display:inline-flex;align-items:center;justify-content:center;text-align:center;
   background:#fff;border:1px solid var(--ct-line);border-radius:999px;cursor:pointer;
-  color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;
+  color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(16px + 2*var(--g));line-height:1.5;
   transition:border-color .15s ease,background .15s ease,color .15s ease}
 .ct-chip:hover{border-color:var(--ct-text)}
 .ct-chip.is-selected{background:var(--ct-text);border-color:var(--ct-text);color:#fff}
@@ -91,7 +95,7 @@
 .ct-input-row{display:flex;gap:32px}
 .ct-input{flex:1;min-width:0;height:64px;padding:0 32px;background:#fff;
   border:1px solid var(--ct-line);border-radius:12px;color:var(--ct-text);
-  font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;outline:none}
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(16px + 2*var(--g));line-height:1.5;outline:none}
 .ct-input::placeholder{color:var(--ct-ph);font-weight:400}
 .ct-input:focus{border-color:var(--ct-text)}
 /* input cell: relative wrapper so the Korean-detected tooltip can anchor to the field */
@@ -113,7 +117,7 @@
 /* project content */
 .ct-content{display:flex;flex-direction:column;gap:32px}
 .ct-textarea{height:400px;padding:32px;background:#fff;border:1px solid var(--ct-line);border-radius:12px;
-  resize:none;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;outline:none;
+  resize:none;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(16px + 2*var(--g));line-height:1.5;outline:none;
   scrollbar-width:thin;scrollbar-color:#C5C8DC transparent}   /* Firefox: slim scrollbar */
 .ct-textarea::placeholder{color:var(--ct-ph);font-weight:400}
 .ct-textarea:focus{border-color:var(--ct-text)}
@@ -128,7 +132,7 @@
 .ct-file-name:placeholder-shown:focus{border-color:var(--ct-line)}   /* but no focus styling until a file is attached */
 .ct-file-btn{flex:none;height:64px;padding:0 24px;display:inline-flex;align-items:center;gap:12px;white-space:nowrap;
   background:#fff;border:1px solid var(--ct-text);border-radius:8px;cursor:pointer;color:var(--ct-text);
-  font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;transition:opacity .2s ease}
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(16px + 2*var(--g));line-height:1.5;transition:opacity .2s ease}
 .ct-file-btn:hover{opacity:.6}
 
 /* content-group: project-content section + consent row, 48px apart (Figma Frame 1216117589) */
@@ -141,13 +145,13 @@
 .ct-consent-box svg{display:block;width:40px;height:40px;transform:translate(-1px,-1px)}   /* optical nudge: the V check reads slightly low & right-heavy, so shift up-left 1px to centre it */
 .ct-consent-input:checked ~ .ct-consent-box{background:var(--ct-text);border-color:var(--ct-text);color:#fff}
 .ct-consent-input:focus-visible ~ .ct-consent-box{outline:2px solid var(--ct-text);outline-offset:2px}
-.ct-consent-text{margin:0;color:var(--ct-ph);font-family:'Pretendard',sans-serif;font-weight:400;font-size:18px;line-height:1.5;transition:color .15s ease}
+.ct-consent-text{margin:0;color:var(--ct-ph);font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(16px + 2*var(--g));line-height:1.5;transition:color .15s ease}
 .ct-consent-input:checked ~ .ct-consent-text{color:var(--ct-text);font-weight:600}
 
 /* submit */
-.ct-submit{width:272px;height:80px;padding:0 32px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
+.ct-submit{width:272px;height:calc(64px + 16*var(--g));padding:0 32px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
   background:var(--ct-ph);border:none;border-radius:999px;cursor:pointer;color:#fff;
-  font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5;
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(20px + 4*var(--g));line-height:1.5;
   transition:background-color .25s ease,opacity .2s ease}   /* inactive (gray) until every required field is filled */
 .ct-submit.is-ready{background:var(--ct-text)}              /* all filled -> dark / active */
 .ct-submit.is-ready:hover .ct-arrow img{animation:project-arrow-cycle .55s cubic-bezier(.22,1,.36,1)}   /* active: only the arrow cycle (same as 전체메뉴 project list), no opacity fade */
@@ -159,16 +163,16 @@
 .ct-flash{animation:ct-flash 1s ease}
 
 /* ---------- 03 Join Us (full-bleed) ---------- */
-.ct-join{position:relative;height:1440px;margin-top:240px;overflow:clip}
+.ct-join{position:relative;height:calc(1080px + 360*var(--g));margin-top:240px;overflow:clip}
 .ct-join-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-.ct-join-inner{position:absolute;left:218px;top:443px;width:610px;z-index:1;display:flex;flex-direction:column;align-items:flex-start}
-.ct-join-title{margin:0;color:var(--ct-text);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:200px;line-height:1.21;letter-spacing:-0.01em}
-.ct-join-sub{margin:32px 0 0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:700;font-size:24px;line-height:1.5}
-.ct-join-desc{margin:24px 0 0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5}
-.ct-join-btn{margin:80px 0 0;width:272px;height:80px;padding:0 32px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
+.ct-join-inner{position:absolute;left:calc(216px + 2*var(--g));top:calc(291px + 152*var(--g));width:610px;z-index:1;display:flex;flex-direction:column;align-items:flex-start}
+.ct-join-title{margin:0;color:var(--ct-text);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:calc(172px + 28*var(--g));line-height:1.21;letter-spacing:-0.01em}
+.ct-join-sub{margin:calc(20px + 12*var(--g)) 0 0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(22px + 2*var(--g));line-height:1.5}
+.ct-join-desc{margin:24px 0 0;color:var(--ct-text);font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(18px + 2*var(--g));line-height:1.5}
+.ct-join-btn{margin:calc(96px - 16*var(--g)) 0 0;width:272px;height:calc(64px + 16*var(--g));padding:0 32px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
   background:var(--ct-text);border-radius:999px;text-decoration:none;color:#fff;
-  font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5;transition:opacity .2s ease}
-.ct-join-btn:hover{opacity:.85}
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(20px + 4*var(--g));line-height:1.5;transition:opacity .2s ease}
+.ct-join-btn:hover .ct-arrow img{animation:project-arrow-cycle .55s cubic-bezier(.22,1,.36,1)}   /* same as the active 문의하기: arrow cycle only, no opacity fade */
 /* Join Us reveal: bg opens like doors (centre slit -> full) scrubbed by scroll (JS sets clip-path on .ct-join-bg);
    heading/copy/button fade up once it's fully open. .is-scrub armed by JS -> no-JS / reduced-motion stays open. */
 .ct-rv .ct-join-title,.ct-rv .ct-join-sub,.ct-rv .ct-join-desc,.ct-rv .ct-join-btn{
