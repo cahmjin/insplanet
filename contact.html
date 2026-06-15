@@ -189,15 +189,14 @@
 <div class="rc-modal" id="recruit-modal" role="dialog" aria-modal="true" aria-labelledby="rc-title" aria-hidden="true">
   <div class="rc-modal-dim" aria-hidden="true"></div>
   <form class="rc-card rc-form">
-    <div class="rc-head">
+    <button type="button" class="rc-close" aria-label="닫기"><!-- fixed top-right; floats over the scroll -->
+      <svg width="96" height="96" viewBox="0 0 96 96" fill="none"><path d="M24 24L72 72M72 24L24 72" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="rc-scroll" data-lenis-prevent><!-- only the X stays fixed; Careers + copy + form scroll, the CTA is fixed below -->
       <div class="rc-head-text">
         <p class="rc-eyebrow" id="rc-title">Careers</p>
         <p class="rc-lead">인스플래닛은 기술보다 사람을, 속도보다 본질을 먼저 생각합니다.<br>좋은 경험은 혼자가 아니라, 함께 쌓아 올린 신뢰에서 완성되기 때문입니다.<br>그 길 위에서 새로운 설렘을 함께 만들어갈 동료를 기다립니다.</p>
       </div>
-      <button type="button" class="rc-close" aria-label="닫기">
-        <svg width="96" height="96" viewBox="0 0 96 96" fill="none"><path d="M24 24L72 72M72 24L24 72" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-    </div>
     <div class="rc-body">
       <div class="rc-row rc-row--mid">
         <p class="rc-label">지원분야</p>
@@ -240,6 +239,7 @@
         </div>
       </div>
     </div>
+    </div><!-- /.rc-scroll -->
     <div class="rc-footer">
       <div class="rc-footer-slot" aria-hidden="true"></div>
       <button type="submit" class="ct-submit">

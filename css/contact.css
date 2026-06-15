@@ -194,55 +194,73 @@
 }
 
 /* ============================================================================
-   Careers recruit popup — modal opened by the Join Us 채용확인 button (Figma 1592:3646).
-   Leaf form controls reuse the contact .ct-* classes; --v/--g are pinned to 1 here so those
-   calc() formulas resolve to their 2560 sizes (the popup's only Figma so far), and the --ct-*
-   colour tokens are redeclared because the modal sits outside .contact. The chip-select +
-   연락처/이메일/URL input filters are picked up by the page-level handlers; open/close, file
-   attach, URL prefill and submit gating are scoped in the inline script. 1920/1024 responsive
-   comes later (same 3-anchor pass as the page).
+   Careers recruit popup — modal opened by the Join Us 채용확인 button.
+   Figma: 2560 (1592:3646) / 1920 (1592:3787) / 1024 (1596:3841). The shell (.rc-*) interpolates
+   across the 3 anchors with the page's --v/--g; leaf form controls reuse the contact .ct-* classes
+   (now responsive too, since --v/--g are viewport-driven here) with a few overrides where the
+   popup's 1920 step sits at the 2560 value instead of contact's mid-step (chip/file font, submit
+   height+font). --ct-* colour tokens are redeclared because the modal sits outside .contact.
+   open/close, file-attach, URL-prefill, submit-gating are scoped in the inline script.
+     value(A@1024, B@1920, C@2560) = calc(Apx + (B-A)*var(--v) + (C-B)*var(--g))
    ============================================================================ */
 .rc-modal{position:fixed;inset:0;z-index:110;
-  --v:1px;--g:1px;--ct-text:#3E3F44;--ct-line:#E5E5E5;--ct-ph:#B5B5B5;--ct-head:#E1E1E1;
+  --v:clamp(0px, calc((100vw - 1024px) / 896), 1px);
+  --g:clamp(0px, calc((100vw - 1920px) / 640), 1px);
+  --ct-text:#3E3F44;--ct-line:#E5E5E5;--ct-ph:#B5B5B5;--ct-head:#E1E1E1;
   display:flex;align-items:center;justify-content:center;padding:48px;
   opacity:0;visibility:hidden;pointer-events:none;transition:opacity .4s ease,visibility 0s linear .4s}
 .rc-modal.is-open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .4s ease}
 .rc-modal-dim{position:absolute;inset:0;background:#3E3F44;opacity:.6}   /* the page behind shows through; no own bg image (the Figma's was just a mock-up) */
 html.rc-lock{overflow:hidden}
 
-.rc-card{position:relative;z-index:1;width:1508px;max-width:100%;max-height:100%;overflow-y:auto;
-  background:#fff;border-radius:64px;padding:96px;display:flex;flex-direction:column;gap:96px;
-  transform:translateY(24px) scale(.985);transition:transform .45s cubic-bezier(.22,1,.36,1);
-  scrollbar-width:thin;scrollbar-color:#C5C8DC transparent}
+.rc-card{position:relative;z-index:1;width:calc(928px + 560*var(--v) + 20*var(--g));max-width:100%;max-height:100%;overflow:hidden;
+  background:#fff;border-radius:calc(32px + 32*var(--v));padding:calc(48px + 24*var(--v) + 24*var(--g));padding-right:calc(24px + 24*var(--v) + 24*var(--g));
+  display:flex;flex-direction:column;gap:calc(64px + 32*var(--g));
+  transform:translateY(24px) scale(.985);transition:transform .45s cubic-bezier(.22,1,.36,1)}
 .rc-modal.is-open .rc-card{transform:none}
-.rc-card::-webkit-scrollbar{width:6px}
-.rc-card::-webkit-scrollbar-thumb{background:#C5C8DC;border-radius:999px}
+/* fixed header + scrollable body: the Careers title + close X stay pinned; .rc-scroll (form + footer) scrolls.
+   data-lenis-prevent on .rc-scroll lets the mouse wheel scroll it — Lenis would otherwise swallow the wheel. */
+.rc-scroll{flex:1;min-height:0;overflow-y:auto;padding-right:24px;display:flex;flex-direction:column;gap:calc(64px + 32*var(--g));
+  scrollbar-width:thin;scrollbar-color:#C5C8DC transparent}   /* 24px = scrollbar gutter (the card's right padding is reduced by 24 to keep the form symmetric) */
+.rc-scroll::-webkit-scrollbar{width:6px}
+.rc-scroll::-webkit-scrollbar-thumb{background:#C5C8DC;border-radius:999px}
 
-/* header: text block (Careers + lead copy) | close X */
-.rc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:48px}
+/* header text (Careers + lead copy) — scrolls with the form now; only the X is fixed (below) */
 .rc-head-text{display:flex;flex-direction:column;gap:20px}
-.rc-eyebrow{margin:0;color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:120px;line-height:1;letter-spacing:-0.01em}
-.rc-lead{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5}
-.rc-close{flex:none;width:96px;height:96px;display:grid;place-items:center;
-  background:none;border:none;cursor:pointer;color:#3E3F44}
-.rc-close svg{display:block;width:96px;height:96px;transition:transform .5s cubic-bezier(.4,0,.2,1)}   /* design: 48px X mark (24->72) centred in the 96 box, 1.5 stroke */
+.rc-eyebrow{margin:0;color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:calc(64px + 32*var(--v) + 24*var(--g));line-height:1;letter-spacing:-0.01em}
+.rc-lead{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 4*var(--v) + 2*var(--g));line-height:1.5}
+.rc-close{position:absolute;z-index:2;top:calc(48px + 24*var(--v) + 24*var(--g));right:calc(48px + 24*var(--v) + 24*var(--g));
+  width:calc(64px + 32*var(--v));height:calc(64px + 32*var(--v));display:grid;place-items:center;
+  background:none;border:none;cursor:pointer;color:#3E3F44}   /* fixed top-right */
+.rc-close svg{display:block;width:100%;height:100%;transition:transform .5s cubic-bezier(.4,0,.2,1)}   /* design: 48px X mark (24->72) in a 96 box @2560 / 32 in 64 @1024, 1.5 stroke */
 .rc-close:hover svg{transform:rotate(360deg)}   /* hover: spin one full turn (reverses on hover-out) */
 
-/* body rows: [label | 950px content], space-between */
+/* body rows: [label | fields], space-between */
 .rc-body{display:flex;flex-direction:column;gap:64px}
 .rc-row{display:flex;justify-content:space-between;align-items:flex-start;gap:32px}
-.rc-row--mid{align-items:center}                 /* 지원분야: label centred with the single chip row */
+.rc-row--mid{align-items:center}                 /* 지원분야: label centred with the chip row */
 .rc-row--info .rc-label{margin-top:14px}         /* 기본정보: label centred with the first input */
-.rc-label{flex:none;margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:24px;line-height:1.5}
-.rc-fields{width:950px;flex:none;display:flex;flex-direction:column;gap:32px}
+.rc-label{flex:none;margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(18px + 2*var(--v) + 4*var(--g));line-height:1.5}
+.rc-fields{width:calc(640px + 310*var(--v));flex:none;display:flex;flex-direction:column;gap:calc(20px + 12*var(--v))}
 
-/* footer: 366px reserved slot (empty for now) then the 입사지원 button — left-packed per Figma (layout_P3HOL4 fill, flex-start) */
-.rc-footer{display:flex;justify-content:flex-start;align-items:center}
-.rc-footer-slot{flex:none;width:366px;height:62px}
-/* 입사지원 arrow keeps the reused .ct-arrow img size (16 @ --v:1) so it matches the 채용확인 button's arrow on the page */
-/* the page-level .ct-rv scroll-reveal hides every .ct-submit until it's observed in; the popup's submit
+/* footer: fixed at the card bottom; reserved slot (empty for now) then the 입사지원 button — left-packed per Figma */
+.rc-footer{flex:none;display:flex;justify-content:flex-start;align-items:center}
+.rc-footer-slot{flex:none;width:calc(192px + 202*var(--v) - 28*var(--g));height:62px}
+
+/* control overrides — the popup's 1920 step sits at the 2560 value, unlike contact's .ct-* mid-step */
+.rc-modal .ct-chip{font-size:calc(14px + 4*var(--v))}                                      /* 14 -> 18 -> 18 */
+.rc-modal .ct-file-btn{font-size:calc(14px + 4*var(--v))}                                  /* 14 -> 18 -> 18 */
+.rc-modal .ct-submit{width:calc(208px + 44*var(--v) + 20*var(--g))}                        /* 입사지원 width 208->252->272 (height 64->64->80 + font 16->20->24 now match the .ct-submit base) */
+/* 입사지원 arrow keeps the reused .ct-arrow size so it matches the 채용확인 button's arrow (11.31->16->16). */
+/* the page-level .ct-rv scroll-reveal hides every .ct-submit until observed in; the popup's submit
    isn't part of that pass, so keep it visible + restore its own background transition */
 .rc-modal .rc-footer .ct-submit{opacity:1;transform:none;pointer-events:auto;transition:background-color .25s ease}
+/* 지원분야 chips: 4-up at 1920+, 2-up across the 1024 range (the long labels can't fit 4-up in the 640 column) */
+@media (max-width:1439px){
+  .rc-modal .ct-chip{flex:0 0 calc((100% - 16px) / 2)}
+  .rc-row--mid{align-items:flex-start}                          /* 2-row chips: top-align the 지원분야 label... */
+  .rc-row--mid .rc-label{margin-top:calc(9px + 4*var(--v))}     /* ...centred with the FIRST chip row, not the whole block */
+}
 
 @media (prefers-reduced-motion:reduce){
   .rc-modal{transition:opacity .2s ease}
