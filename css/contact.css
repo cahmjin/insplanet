@@ -192,3 +192,62 @@
 @media (prefers-reduced-motion:reduce){
   .ct-rv .ct-join-title,.ct-rv .ct-join-sub,.ct-rv .ct-join-desc,.ct-rv .ct-join-btn{opacity:1;transform:none;transition:none}
 }
+
+/* ============================================================================
+   Careers recruit popup — modal opened by the Join Us 채용확인 button (Figma 1592:3646).
+   Leaf form controls reuse the contact .ct-* classes; --v/--g are pinned to 1 here so those
+   calc() formulas resolve to their 2560 sizes (the popup's only Figma so far), and the --ct-*
+   colour tokens are redeclared because the modal sits outside .contact. The chip-select +
+   연락처/이메일/URL input filters are picked up by the page-level handlers; open/close, file
+   attach, URL prefill and submit gating are scoped in the inline script. 1920/1024 responsive
+   comes later (same 3-anchor pass as the page).
+   ============================================================================ */
+.rc-modal{position:fixed;inset:0;z-index:110;
+  --v:1px;--g:1px;--ct-text:#3E3F44;--ct-line:#E5E5E5;--ct-ph:#B5B5B5;--ct-head:#E1E1E1;
+  display:flex;align-items:center;justify-content:center;padding:48px;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .4s ease,visibility 0s linear .4s}
+.rc-modal.is-open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .4s ease}
+.rc-modal-dim{position:absolute;inset:0;background:#3E3F44;opacity:.6}   /* the page behind shows through; no own bg image (the Figma's was just a mock-up) */
+html.rc-lock{overflow:hidden}
+
+.rc-card{position:relative;z-index:1;width:1508px;max-width:100%;max-height:100%;overflow-y:auto;
+  background:#fff;border-radius:64px;padding:96px;display:flex;flex-direction:column;gap:96px;
+  transform:translateY(24px) scale(.985);transition:transform .45s cubic-bezier(.22,1,.36,1);
+  scrollbar-width:thin;scrollbar-color:#C5C8DC transparent}
+.rc-modal.is-open .rc-card{transform:none}
+.rc-card::-webkit-scrollbar{width:6px}
+.rc-card::-webkit-scrollbar-thumb{background:#C5C8DC;border-radius:999px}
+
+/* header: text block (Careers + lead copy) | close X */
+.rc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:48px}
+.rc-head-text{display:flex;flex-direction:column;gap:20px}
+.rc-eyebrow{margin:0;color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:120px;line-height:1;letter-spacing:-0.01em}
+.rc-lead{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5}
+.rc-close{flex:none;width:96px;height:96px;display:grid;place-items:center;
+  background:none;border:none;cursor:pointer;color:#3E3F44}
+.rc-close svg{display:block;width:96px;height:96px;transition:transform .5s cubic-bezier(.4,0,.2,1)}   /* design: 48px X mark (24->72) centred in the 96 box, 1.5 stroke */
+.rc-close:hover svg{transform:rotate(360deg)}   /* hover: spin one full turn (reverses on hover-out) */
+
+/* body rows: [label | 950px content], space-between */
+.rc-body{display:flex;flex-direction:column;gap:64px}
+.rc-row{display:flex;justify-content:space-between;align-items:flex-start;gap:32px}
+.rc-row--mid{align-items:center}                 /* 지원분야: label centred with the single chip row */
+.rc-row--info .rc-label{margin-top:14px}         /* 기본정보: label centred with the first input */
+.rc-label{flex:none;margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:24px;line-height:1.5}
+.rc-fields{width:950px;flex:none;display:flex;flex-direction:column;gap:32px}
+
+/* footer: 366px reserved slot (empty for now) then the 입사지원 button — left-packed per Figma (layout_P3HOL4 fill, flex-start) */
+.rc-footer{display:flex;justify-content:flex-start;align-items:center}
+.rc-footer-slot{flex:none;width:366px;height:62px}
+/* 입사지원 arrow keeps the reused .ct-arrow img size (16 @ --v:1) so it matches the 채용확인 button's arrow on the page */
+/* the page-level .ct-rv scroll-reveal hides every .ct-submit until it's observed in; the popup's submit
+   isn't part of that pass, so keep it visible + restore its own background transition */
+.rc-modal .rc-footer .ct-submit{opacity:1;transform:none;pointer-events:auto;transition:background-color .25s ease}
+
+@media (prefers-reduced-motion:reduce){
+  .rc-modal{transition:opacity .2s ease}
+  .rc-card{transform:none;transition:none}
+  .rc-close svg{transition:none}
+  .rc-close:hover svg{transform:none}   /* no spin */
+  .rc-close:hover{opacity:.55}          /* dim instead */
+}
