@@ -169,3 +169,14 @@
   background:var(--ct-text);border-radius:999px;text-decoration:none;color:#fff;
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5;transition:opacity .2s ease}
 .ct-join-btn:hover{opacity:.85}
+/* Join Us reveal: bg opens like doors (centre slit -> full) scrubbed by scroll (JS sets clip-path on .ct-join-bg);
+   heading/copy/button fade up once it's fully open. .is-scrub armed by JS -> no-JS / reduced-motion stays open. */
+.ct-rv .ct-join-title,.ct-rv .ct-join-sub,.ct-rv .ct-join-desc,.ct-rv .ct-join-btn{
+  opacity:0;transform:translateY(32px);transition:opacity .6s ease,transform .8s cubic-bezier(.34,1.45,.5,1)}
+.ct-rv .ct-join.joined .ct-join-title{opacity:1;transform:none}
+.ct-rv .ct-join.joined .ct-join-sub{opacity:1;transform:none;transition-delay:.08s}
+.ct-rv .ct-join.joined .ct-join-desc{opacity:1;transform:none;transition-delay:.16s}
+.ct-rv .ct-join.joined .ct-join-btn{opacity:1;transform:none;transition-delay:.24s}
+@media (prefers-reduced-motion:reduce){
+  .ct-rv .ct-join-title,.ct-rv .ct-join-sub,.ct-rv .ct-join-desc,.ct-rv .ct-join-btn{opacity:1;transform:none;transition:none}
+}

@@ -221,6 +221,24 @@
     const io=new IntersectionObserver((es,o)=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); o.unobserve(e.target); } }),{threshold:0.18});
     areas.forEach(a=>io.observe(a));
   })();
+  // Join Us: the bg image opens like doors from a centre slit (276px @2560 = 10.78%) to full, scrubbed by
+  // scroll as the section enters; heading/copy/button fade up once it's fully open. reduced-motion -> open.
+  (function(){
+    const sec=document.querySelector('.ct-join'), bg=document.querySelector('.ct-join-bg');
+    if(!sec||!bg)return;
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches){ sec.classList.add('joined'); return; }
+    const SIDE=44.61;   // inset each side at the slit: (2560-276)/2 / 2560
+    let ticking=false;
+    const update=()=>{ ticking=false;
+      const vh=innerHeight, top=sec.getBoundingClientRect().top;
+      const p=Math.min(1,Math.max(0,(0.85*vh-top)/(0.67*vh)));   // 0 = section top at 0.85vh (a bit in, so it opens later) -> 1 at 0.18vh. (lower 0.85 = later start; bigger 0.67 = slower)
+      const side=(SIDE*(1-p)).toFixed(2);
+      bg.style.clipPath='inset(0 '+side+'% 0 '+side+'%)';
+      sec.classList.toggle('joined', p>=1);
+    };
+    addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+    addEventListener('resize',update); update();
+  })();
   // chip groups: [data-multi] = multi-select (업무 범위); others = single-select (성격/예산/기간, one per group, re-click clears)
   document.querySelectorAll('.ct-chips').forEach(group=>{
     const multi=group.hasAttribute('data-multi');
