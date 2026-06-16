@@ -62,12 +62,11 @@
 .pj-list{margin-top:160px;padding-bottom:240px}
 .pj-grid{display:grid;grid-template-columns:repeat(4, 416px);justify-content:space-between;row-gap:120px}
 .pj-card{position:relative;width:416px;height:560px;border-radius:32px;overflow:hidden;cursor:pointer;
-  opacity:0;transform:translateY(48px);transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}
-.pj-card.in{opacity:1;transform:none}
+  opacity:0;transform:translateY(80px);transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}
+.pj-card.in{opacity:1;transform:none}   /* every row rises up from below (80px) + fades; per-column delay below staggers each row L→R */
 .pj-grid .pj-card:nth-child(4n+2){transition-delay:.07s}
 .pj-grid .pj-card:nth-child(4n+3){transition-delay:.14s}
 .pj-grid .pj-card:nth-child(4n+4){transition-delay:.21s}
-.pj-grid .pj-card:nth-child(-n+4){transform:none}   /* first row: fade in only (no rise); rows 2+ keep the rise+fade */
 .pj-card-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s cubic-bezier(.22,1,.36,1)}
 .pj-card:hover .pj-card-img{transform:scale(1.05)}   /* hover: image zoom-in, blue dim + info on top */
 /* hover: blue dim (#1D53F1 @ 80%) reveals award (optional) + category + name */

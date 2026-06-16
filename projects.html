@@ -180,15 +180,19 @@
     }
     grid.innerHTML=html;
   })();
-  // reveal the filter bar + cards on scroll-in (IntersectionObserver) — same feel as the contact form areas
+  // reveal: the FIRST ROW of cards plays its sequential rise on load (no scroll needed); the filter bar + every
+  // card from row 2 on reveals on scroll-in (IntersectionObserver). Per-column transition-delay staggers L→R.
   (function(){
-    var targets=[].slice.call(document.querySelectorAll('.pj-cat, .pj-toggle, .pj-card'));
-    if(!targets.length)return;
-    if(matchMedia('(prefers-reduced-motion:reduce)').matches || !('IntersectionObserver' in window)){
-      targets.forEach(function(t){t.classList.add('in');}); return;
-    }
+    var firstRow=[].slice.call(document.querySelectorAll('.pj-grid .pj-card:nth-child(-n+4)'));
+    var onScroll=[].slice.call(document.querySelectorAll('.pj-cat, .pj-toggle, .pj-grid .pj-card:nth-child(n+5)'));
+    var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches || !('IntersectionObserver' in window);
+    if(reduce){ firstRow.concat(onScroll).forEach(function(t){t.classList.add('in');}); return; }
+    // first row: commit the from-below start state (force reflow) then add .in, so the rise transition plays on load
+    void document.body.offsetHeight;
+    firstRow.forEach(function(t){ t.classList.add('in'); });
+    // row 2 onward + filter bar: reveal as they scroll into view
     var io=new IntersectionObserver(function(es,o){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target);}});},{threshold:.18});
-    targets.forEach(function(t){io.observe(t);});
+    onScroll.forEach(function(t){io.observe(t);});
   })();
   (function(){
     const toggle=document.querySelector('.pj-toggle');
