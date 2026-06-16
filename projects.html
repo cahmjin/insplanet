@@ -57,7 +57,7 @@
       <article class="pj-card" data-category="mobile">
         <img class="pj-card-img" src="assets/projects/proj-01.png" alt="" loading="lazy" decoding="async">
         <div class="pj-card-over">
-          <img class="pj-card-award" src="assets/projects/award.svg" alt="수상" aria-hidden="true">
+          <img class="pj-card-award" src="assets/projects/wa-symbol.png" alt="수상" aria-hidden="true">
           <div class="pj-card-info"><span class="pj-card-cat">Mobile</span><h3 class="pj-card-name">신한 SoL증권<br>모바일 웹 리뉴얼</h3></div>
         </div>
       </article>
@@ -70,7 +70,7 @@
       <article class="pj-card" data-category="web">
         <img class="pj-card-img" src="assets/projects/proj-03.png" alt="" loading="lazy" decoding="async">
         <div class="pj-card-over">
-          <img class="pj-card-award" src="assets/projects/award.svg" alt="수상" aria-hidden="true">
+          <img class="pj-card-award" src="assets/projects/wa-symbol.png" alt="수상" aria-hidden="true">
           <div class="pj-card-info"><span class="pj-card-cat">Web</span><h3 class="pj-card-name">글로벌 이커머스<br>브랜드몰 구축</h3></div>
         </div>
       </article>
@@ -101,7 +101,7 @@
       <article class="pj-card" data-category="web">
         <img class="pj-card-img" src="assets/projects/proj-08.png" alt="" loading="lazy" decoding="async">
         <div class="pj-card-over">
-          <img class="pj-card-award" src="assets/projects/award.svg" alt="수상" aria-hidden="true">
+          <img class="pj-card-award" src="assets/projects/wa-symbol.png" alt="수상" aria-hidden="true">
           <div class="pj-card-info"><span class="pj-card-cat">Web</span><h3 class="pj-card-name">라이프스타일<br>커머스 플랫폼</h3></div>
         </div>
       </article>
@@ -153,6 +153,33 @@
     var done=false, reveal=function(){if(done)return;done=true;requestAnimationFrame(function(){hero.classList.add('in');});};
     if(document.fonts&&document.fonts.ready){document.fonts.ready.then(reveal);setTimeout(reveal,800);} else reveal();
   })();
+  // DUMMY grid — render 4×10 (40) cards, randomly distributed (seeded RNG so the layout is stable across
+  // reloads). Replaces the static fallback cards above. The publisher swaps this for the DB-rendered,
+  // newest-first list (each card just needs data-category + the same markup).
+  (function(){
+    var grid=document.querySelector('[data-status-panel="done"] .pj-grid'); if(!grid)return;
+    var IMGS=['proj-01','proj-02','proj-03','proj-04','proj-05','proj-06','proj-07','proj-08','proj-09','proj-10','proj-11'];
+    var POOL=[
+      {n:'신한 SoL증권<br>모바일 웹 리뉴얼',c:'Mobile'},{n:'모바일 뱅킹 앱<br>UX 리뉴얼',c:'Mobile'},{n:'핀테크 간편결제<br>서비스',c:'Mobile'},
+      {n:'모빌리티 예약<br>플랫폼',c:'Mobile'},{n:'O2O 서비스<br>모바일 리뉴얼',c:'Mobile'},
+      {n:'글로벌 이커머스<br>브랜드몰 구축',c:'Web'},{n:'기업 브랜드<br>사이트 구축',c:'Web'},{n:'라이프스타일<br>커머스 플랫폼',c:'Web'},
+      {n:'미디어 콘텐츠<br>포털 리뉴얼',c:'Web'},{n:'교육 콘텐츠<br>LMS 구축',c:'Web'},
+      {n:'AI 추천 커머스<br>플랫폼 컨설팅',c:'Consulting'},{n:'물류 관리 시스템<br>컨설팅',c:'Consulting'},{n:'헬스케어 데이터<br>대시보드',c:'Consulting'},
+      {n:'금융 데이터<br>분석 플랫폼',c:'Consulting'},{n:'디지털 트랜스포메이션<br>전략 컨설팅',c:'Consulting'}
+    ];
+    var s=234567; function rnd(){ s=s*16807%2147483647; return (s-1)/2147483646; }   // Park-Miller (deterministic)
+    var html='';
+    for(var i=0;i<40;i++){
+      var img=IMGS[(rnd()*IMGS.length)|0], p=POOL[(rnd()*POOL.length)|0], aw=rnd()<0.22;
+      html+='<article class="pj-card" data-category="'+p.c.toLowerCase()+'">'
+        +'<img class="pj-card-img" src="assets/projects/'+img+'.png" alt="" loading="lazy" decoding="async">'
+        +'<div class="pj-card-over">'
+        +(aw?'<img class="pj-card-award" src="assets/projects/wa-symbol.png" alt="수상" aria-hidden="true">':'')
+        +'<div class="pj-card-info"><span class="pj-card-cat">'+p.c+'</span><h3 class="pj-card-name">'+p.n+'</h3></div>'
+        +'</div></article>';
+    }
+    grid.innerHTML=html;
+  })();
   // reveal the filter bar + cards on scroll-in (IntersectionObserver) — same feel as the contact form areas
   (function(){
     var targets=[].slice.call(document.querySelectorAll('.pj-cat, .pj-toggle, .pj-card'));
@@ -188,6 +215,35 @@
       document.querySelectorAll('.pj-cats .pj-cat').forEach(function(x){ x.classList.toggle('is-active', x===c); });
       applyFilter(c.dataset.filter);
     });});
+  })();
+  // magnetic + spring hover on the project cards. The card's own CSS `transition:transform .9s` plus the
+  // per-column stagger `transition-delay` (cols 2-4 carry .07/.14/.21s) was swallowing this: every per-frame
+  // transform write reset that delay, so cols 2-4 never moved at all and col 1 only crept (the .9s curve mushed
+  // each frame). Fix: while the spring drives a card, drop its CSS transition (the JS spring IS the smoothing)
+  // and restore it once the card is back at rest. Runs after the grid render, so it binds the real cards.
+  (function(){
+    if(!matchMedia('(hover:hover) and (pointer:fine)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    var STRENGTH=0.16, STIFF=0.04, DAMP=0.90, MAX=25, clamp=function(v){return Math.max(-MAX,Math.min(MAX,v));};
+    var items=[];
+    document.querySelectorAll('.pj-grid .pj-card').forEach(function(el){
+      var it={el:el,tx:0,ty:0,x:0,y:0,vx:0,vy:0,zeroed:true};
+      el.addEventListener('mousemove',function(e){ var r=el.getBoundingClientRect();
+        it.tx=clamp((e.clientX-(r.left+r.width/2-it.x))*STRENGTH); it.ty=clamp((e.clientY-(r.top+r.height/2-it.y))*STRENGTH); });
+      el.addEventListener('mouseleave',function(){ it.tx=0; it.ty=0; });
+      items.push(it);
+    });
+    if(!items.length)return;
+    (function frame(){
+      for(var i=0;i<items.length;i++){ var it=items[i];
+        it.vx=(it.vx+(it.tx-it.x)*STIFF)*DAMP; it.x+=it.vx;
+        it.vy=(it.vy+(it.ty-it.y)*STIFF)*DAMP; it.y+=it.vy;
+        if(it.tx===0&&it.ty===0&&Math.abs(it.x)<.01&&Math.abs(it.y)<.01&&Math.abs(it.vx)<.01&&Math.abs(it.vy)<.01){
+          if(!it.zeroed){ it.x=it.y=it.vx=it.vy=0; it.el.style.transform=''; it.el.style.transition=''; it.zeroed=true; } continue; }
+        if(it.zeroed){ it.el.style.transition='none'; }   // entering active — let the spring drive transform directly
+        it.zeroed=false; it.el.style.transform='translate('+it.x.toFixed(2)+'px,'+it.y.toFixed(2)+'px)';
+      }
+      requestAnimationFrame(frame);
+    })();
   })();
 </script>
 </body>

@@ -130,7 +130,7 @@
     if(el){
       if(el.closest('.cta-arrow'))m='hide';              // the CTA arrow IS the cursor here -> hide the dot
       else if(el.closest(GROW_SEL))m='grow';
-      else if(el.closest('.proj-visual'))m='view';
+      else if(el.closest('.proj-visual')||el.closest('.pj-card'))m='view';   // projects-page cards -> "View Project" cursor
     }
     if(m!==mode){
       mode=m;
