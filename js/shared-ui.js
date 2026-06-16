@@ -62,7 +62,7 @@
   <div class="menu-inner">
    <div class="menu-col menu-col-left">
     <nav class="menu-nav">
-      <a class="menu-item" href="index.html"><span class="menu-label">Projects</span><span class="menu-badge">42</span></a>
+      <a class="menu-item" href="projects.html"><span class="menu-label">Projects</span><span class="menu-badge">42</span></a>
       <a class="menu-item" href="about.html"><span class="menu-label">About</span></a>
       <a class="menu-item" href="contact.html"><span class="menu-label">Contact</span></a>
     </nav>
