@@ -183,8 +183,11 @@
   // reveal: the FIRST ROW of cards plays its sequential rise on load (no scroll needed); the filter bar + every
   // card from row 2 on reveals on scroll-in (IntersectionObserver). Per-column transition-delay staggers L→R.
   (function(){
-    var firstRow=[].slice.call(document.querySelectorAll('.pj-grid .pj-card:nth-child(-n+4)'));
-    var onScroll=[].slice.call(document.querySelectorAll('.pj-cat, .pj-toggle, .pj-grid .pj-card:nth-child(n+5)'));
+    var grid=document.querySelector('[data-status-panel="done"] .pj-grid');
+    var cols=grid?getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length:4;   // 3 @1920 / 4 @2560
+    var allCards=grid?[].slice.call(grid.querySelectorAll('.pj-card')):[];
+    var firstRow=allCards.slice(0, cols);                                          // the visible first row, whatever the column count
+    var onScroll=[].slice.call(document.querySelectorAll('.pj-cat, .pj-toggle')).concat(allCards.slice(cols));
     var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches || !('IntersectionObserver' in window);
     if(reduce){ firstRow.concat(onScroll).forEach(function(t){t.classList.add('in');}); return; }
     // first row: commit the from-below start state (force reflow) then add .in, so the rise transition plays on load

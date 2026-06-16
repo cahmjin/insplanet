@@ -1,25 +1,33 @@
-/* ===== Projects ("Our Projects") page — Figma official_05_projects_01_2560 (node 1640:619).
-   Built at the 2560 baseline only (per request); 1920/1024 responsive comes later (3-anchor like
-   the other pages). Header / footer / menu / cursor come from shared-ui.js. The grid is DUMMY content
-   (placeholder images, random); the publisher swaps it for the DB-driven, newest-first list + the
-   category sort/filter. Only the 완료/진행중 toggle is wired here. ===== */
+/* ===== Projects ("Our Projects") page — Figma official_05_projects_01_1024 (1701:1621) / _1920 (1592:3498) /
+   _2560 (1640:619). 3-anchor responsive like about/contact: --v 0→1 across 1024→1920, --g 0→1 across 1920→2560;
+   value(A@1024,B@1920,C@2560)=calc(Apx + (B-A)*var(--v) + (C-B)*var(--g)). Below 1024 everything is flat at the
+   1024 design. The cards SHRINK at 1024 (259.44×349.25 → 416×560 by 1920, then constant), so the grid track +
+   every card internal scales on --v. The one un-interpolatable jump is the column count (3 cols ≤2240 / 4 cols
+   ≥2240) — media query + matching stagger + a JS first-row count. Header/footer/menu/cursor from shared-ui.js.
+   Grid is DUMMY content; the publisher swaps it for the DB-driven list + category sort. ===== */
 .projects-page{background:#fff}
-.pj{position:relative;z-index:1;overflow:hidden;overflow:clip}   /* contain the fixed-width content's bleed below 2560 (hidden;clip = iOS-WebKit-safe) */
+.pj{--v:clamp(0px, calc((100vw - 1024px) / 896), 1px);
+  --g:clamp(0px, calc((100vw - 1920px) / 640), 1px);
+  --pj-card-w:calc(259.44px + 156.56 * var(--v));   /* 259.44 @1024 → 416 @1920+ (used by the grid track AND the card) */
+  position:relative;z-index:1;overflow:hidden;overflow:clip}   /* contain the content column bleed (hidden;clip = iOS-WebKit-safe) */
 
-/* shared content column — 2126 wide, centred (≈217 gutters at 2560) */
-.pj-inner{width:2126px;max-width:100%;margin:0 auto}
+/* shared content column — gutters 48 → 216 → 217 (grid content 928 / 1488 / 2126). At 1024 the hero text +
+   filter bar are 80px narrower than the grid (848 vs 928): the 완료/진행중 toggle sits INSET from the grid's
+   right edge (x896, not flush at 976), and the rightmost card breaks out past it. This extra right margin on
+   hero+filter fades to 0 by 1920 (where filter = grid width again). */
+.pj-inner{margin:0 calc(48px + 168 * var(--v) + 1 * var(--g))}
+.pj-hero .pj-inner,.pj-filter .pj-inner{margin-right:calc(128px + 88 * var(--v) + 1 * var(--g))}
 
 /* ---------- hero ---------- */
-.pj-hero{padding-top:400px}
+.pj-hero{padding-top:calc(280px + 40 * var(--v) + 80 * var(--g))}
 .pj-symbol{display:block;width:156px;height:auto}
 .pj-hero-head{margin-top:20px}
 .pj-title-row{margin:0}
-.pj-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:200px;line-height:1;letter-spacing:-0.01em;color:#3E3F44}
-/* the red period — inline em pattern (same as .about-hero-dot): .16em = 32px dot, .12em = 24px gap,
-   baseline-aligned at 200px. (NOT a flex item + margin hack — that floated it above the baseline.) */
-.pj-dot{display:inline-block;width:.16em;height:.16em;margin-left:.12em;vertical-align:-.025em;border-radius:50%;background:#F03A3A}
-.pj-lead{margin:32px 0 0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:600;font-size:24px;line-height:1.5}
-.pj-desc{margin:24px 0 0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:20px;line-height:1.5}
+.pj-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:calc(120px + 52 * var(--v) + 28 * var(--g));line-height:1;letter-spacing:-0.01em;color:#3E3F44}
+/* the red period — 16→32 dot, 16→24 gap (scales on --v, constant 1920→2560 per the Figma). vertical-align keeps it on the baseline. */
+.pj-dot{display:inline-block;width:calc(16px + 16 * var(--v));height:calc(16px + 16 * var(--v));margin-left:calc(16px + 8 * var(--v));vertical-align:-.025em;border-radius:50%;background:#F03A3A}
+.pj-lead{margin:calc(20px + 12 * var(--g)) 0 0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(18px + 4 * var(--v) + 2 * var(--g));line-height:1.5}
+.pj-desc{margin:calc(16px + 8 * var(--v)) 0 0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 4 * var(--v) + 2 * var(--g));line-height:1.5}
 
 /* load reveal — same as the about/home/contact hero titles: the title settles in from a soft blur,
    lead/desc follow, then the red dot stamps in with a back-ease overshoot. .in is added to .pj-hero
@@ -38,11 +46,11 @@
 }
 
 /* ---------- filter bar: category chips (left) + status toggle (right) ---------- */
-.pj-filter{margin-top:202px}
+.pj-filter{margin-top:calc(89px + 67 * var(--v) + 46 * var(--g))}
 .pj-filter-inner{display:flex;justify-content:space-between;align-items:center}
-.pj-cats{display:flex;gap:16px}
-.pj-cat{width:170px;height:56px;border-radius:999px;border:1px solid #E5E5E5;background:#fff;color:#3E3F44;
-  font-family:'Pretendard',sans-serif;font-weight:600;font-size:18px;line-height:1.5;cursor:pointer;
+.pj-cats{display:flex;gap:calc(12px + 4 * var(--v))}
+.pj-cat{width:calc(96px + 74 * var(--v));height:calc(37px + 19 * var(--v));border-radius:999px;border:1px solid #E5E5E5;background:#fff;color:#3E3F44;
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(14px + 4 * var(--v));line-height:1.5;cursor:pointer;
   display:grid;place-items:center;opacity:0;transform:translateY(32px);
   transition:opacity .8s ease,transform .9s cubic-bezier(.22,1,.36,1),background-color .2s ease,border-color .2s ease,color .2s ease}
 .pj-cat.in{opacity:1;transform:none}
@@ -51,31 +59,42 @@
 .pj-toggle{position:relative;display:flex;align-items:center;padding:2px;border:1px solid #3E3F44;border-radius:8px;
   opacity:0;transform:translateY(32px);transition:opacity .8s ease .12s,transform .9s cubic-bezier(.22,1,.36,1) .12s}
 .pj-toggle.in{opacity:1;transform:none}
-.pj-toggle::before{content:"";position:absolute;top:2px;left:2px;width:64px;height:40px;border-radius:6px;background:#3E3F44;
-  transition:transform .3s cubic-bezier(.22,1,.36,1)}   /* the active fill slides between 완료 / 진행중 */
-.pj-toggle.is-ongoing::before{transform:translateX(64px)}
-.pj-status{position:relative;z-index:1;width:64px;height:40px;border:none;border-radius:6px;background:none;color:#CCCCCC;
-  font-family:'Pretendard',sans-serif;font-weight:600;font-size:16px;line-height:1.5;cursor:pointer;transition:color .25s ease}
+.pj-toggle::before{content:"";position:absolute;top:2px;left:2px;width:calc(56px + 8 * var(--v));height:calc(33px + 7 * var(--v));border-radius:6px;background:#3E3F44;
+  transition:transform .3s cubic-bezier(.22,1,.36,1)}   /* the active fill slides between 완료 / 진행중 (slide = button width 56→64) */
+.pj-toggle.is-ongoing::before{transform:translateX(calc(56px + 8 * var(--v)))}
+.pj-status{position:relative;z-index:1;width:calc(56px + 8 * var(--v));height:calc(33px + 7 * var(--v));border:none;border-radius:6px;background:none;color:#CCCCCC;
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(13px + 3 * var(--v));line-height:1.5;cursor:pointer;transition:color .25s ease}
 .pj-status.is-active{color:#fff}
 
-/* ---------- project grid ---------- */
-.pj-list{margin-top:160px;padding-bottom:240px}
-.pj-grid{display:grid;grid-template-columns:repeat(4, 416px);justify-content:space-between;row-gap:120px}
-.pj-card{position:relative;width:416px;height:560px;border-radius:32px;overflow:hidden;cursor:pointer;
+/* ---------- project grid — 3 cols @1024/1920 / 4 cols @2560 (switch at 2240, below). Cards + every internal
+   scale on --v (259.44×349.25 → 416×560). Column gaps are space-between so card edges line up with the filter. ---------- */
+.pj-list{margin-top:calc(64px + 56 * var(--v) + 40 * var(--g));padding-bottom:240px}
+.pj-grid{display:grid;grid-template-columns:repeat(3, var(--pj-card-w));justify-content:space-between;row-gap:calc(74.84px + 45.16 * var(--v))}
+.pj-card{position:relative;width:var(--pj-card-w);height:calc(349.25px + 210.75 * var(--v));border-radius:calc(19.96px + 12.04 * var(--v));overflow:hidden;cursor:pointer;
   opacity:0;transform:translateY(80px);transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}
 .pj-card.in{opacity:1;transform:none}   /* every row rises up from below (80px) + fades; per-column delay below staggers each row L→R */
-.pj-grid .pj-card:nth-child(4n+2){transition-delay:.07s}
-.pj-grid .pj-card:nth-child(4n+3){transition-delay:.14s}
-.pj-grid .pj-card:nth-child(4n+4){transition-delay:.21s}
+.pj-grid .pj-card:nth-child(3n+2){transition-delay:.07s}
+.pj-grid .pj-card:nth-child(3n+3){transition-delay:.14s}
 .pj-card-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s cubic-bezier(.22,1,.36,1)}
 .pj-card:hover .pj-card-img{transform:scale(1.05)}   /* hover: image zoom-in, blue dim + info on top */
 /* hover: blue dim (#1D53F1 @ 80%) reveals award (optional) + category + name */
 .pj-card-over{position:absolute;inset:0;background:rgba(29,83,241,.8);opacity:0;pointer-events:none;transition:opacity .35s ease}
 .pj-card:hover .pj-card-over{opacity:1}
-.pj-card-award{position:absolute;top:48px;left:48px;display:block;width:48px;height:48px}
-.pj-card-info{position:absolute;left:48px;right:48px;bottom:40px;display:flex;flex-direction:column;gap:12px}
-.pj-card-cat{color:#fff;font-family:'Pretendard',sans-serif;font-weight:600;font-size:16px;line-height:1.5}
-.pj-card-name{margin:0;color:#fff;font-family:'Pretendard',sans-serif;font-weight:700;font-size:32px;line-height:1.5}
+.pj-card-award{position:absolute;top:calc(28px + 20 * var(--v));left:calc(28px + 20 * var(--v));display:block;width:calc(32px + 16 * var(--v));height:calc(32px + 16 * var(--v))}
+.pj-card-info{position:absolute;left:calc(28px + 20 * var(--v));right:calc(28px + 20 * var(--v));bottom:calc(28.25px + 11.75 * var(--v));display:flex;flex-direction:column;gap:calc(8px + 8 * var(--v))}
+.pj-card-cat{color:#fff;font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(13px + 3 * var(--v));line-height:1.5}
+.pj-card-name{margin:0;color:#fff;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(20px + 12 * var(--v));line-height:1.5}
+
+/* ≥2240: switch to the 4-column grid (the 2560 design) — reset the 3-col stagger, apply the 4-col one.
+   (The JS first-row reveal reads the live column count, so it follows this automatically.) */
+@media (min-width:2240px){
+  .pj-grid{grid-template-columns:repeat(4, var(--pj-card-w))}
+  .pj-grid .pj-card:nth-child(3n+2),
+  .pj-grid .pj-card:nth-child(3n+3){transition-delay:0s}
+  .pj-grid .pj-card:nth-child(4n+2){transition-delay:.07s}
+  .pj-grid .pj-card:nth-child(4n+3){transition-delay:.14s}
+  .pj-grid .pj-card:nth-child(4n+4){transition-delay:.21s}
+}
 
 /* ---------- 진행중 — empty placeholder (screen not designed yet) ---------- */
 .pj-list--empty .pj-inner{min-height:560px;display:grid;place-items:center}
