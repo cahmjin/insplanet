@@ -25,8 +25,8 @@
     const scrub=sec.offsetHeight-vh;                                  // the track's extra height
     const p=scrub>0?clamp(-r.top/scrub):0;
     const q=ss(p);
-    // state-A card geometry (Figma): 926x480 R32 @48/744 -> 1488x640 R64 @216/933 -> 2129x900 R64 @218/1170
-    const aTop=744+189*v+237*g, aL=48+168*v+2*g, aR=50+166*v-3*g, aH=480+160*v+260*g, aRad=32+32*v;
+    // state-A card geometry (Figma; 1024 rest top nudged 744->699 to follow the hero padding-top -45): @48/699 -> @216/933 -> @218/1170
+    const aTop=699+234*v+237*g, aL=48+168*v+2*g, aR=50+166*v-3*g, aH=480+160*v+260*g, aRad=32+32*v;
     card.style.top=lerp(aTop,0,q).toFixed(1)+'px';
     card.style.left=lerp(aL,0,q).toFixed(1)+'px';
     card.style.right='auto';

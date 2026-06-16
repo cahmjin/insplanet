@@ -12,7 +12,7 @@
 .ct-inner{margin:0 calc(48px + 168*var(--v) + 2*var(--g))}   /* gutter 48@1024 -> 216@1920 -> 218@2560 */
 
 /* ---------- 01 hero ---------- */
-.ct-hero{padding-top:calc(316px + 4*var(--v) + 80*var(--g))}
+.ct-hero{padding-top:calc(280px + 40*var(--v) + 80*var(--g))}   /* 280@1024 (was 316) -> 320@1920 -> 400@2560 */
 .ct-symbol{display:block;width:156px;height:auto}
 .ct-hero-body{margin-top:20px;display:flex;flex-direction:column;align-items:flex-start}
 .ct-hero-head{display:flex;flex-direction:column;align-items:flex-start;align-self:stretch;gap:calc(20px + 12*var(--v) + 8*var(--g))}
