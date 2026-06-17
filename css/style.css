@@ -130,8 +130,9 @@ html.lenis,html.lenis body{height:auto}
   /* Our Partners — segment 1920->2560 (grid stays 5-col; gaps/cell-height flat above 1920) */
   .partners .partners-inner{width:clamp(1486px, calc(75.47vw + 37px), 1970px)}
   .partners .partners-desc{margin-top:clamp(24px, calc(2.5vw - 24px), 40px)}
-  /* Figma 2560 LEFT-ANCHORS the services/partners frames at the 218 gutter (asymmetric) instead of centering */
-  .services .services-inner,.partners .partners-inner{margin-left:clamp(216px, calc(0.3125vw + 210px), 218px);margin-right:auto}
+  /* Figma 2560 LEFT-ANCHORS the services/partners frames at the 218 gutter (asymmetric) instead of centering;
+     above 2560 the left margin caps (centres the 2560 frame) so the content stops hugging the far left */
+  .services .services-inner,.partners .partners-inner{margin-left:max(clamp(216px, calc(0.3125vw + 210px), 218px), calc((100vw - 2124px) / 2));margin-right:auto}
   /* (.partner-grid desc gap is a single 6.25vw clamp 64->160 in the base rule — covers 1920->2560 too) */
   /* Say Hello CTA — subtitle left indent 12 -> 14.5; title->row gap tightens 49 -> 20 */
   .contact-cta .cta-sub{margin-left:clamp(12px, calc(0.3906vw + 4.5px), 14.5px)}
