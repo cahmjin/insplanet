@@ -49,14 +49,14 @@
 /* ---------- filter bar: category chips (left) + status toggle (right) ---------- */
 .pj-filter{margin-top:calc(89px + 67 * var(--v) + 46 * var(--g))}
 .pj-filter-inner{display:flex;justify-content:space-between;align-items:center}
-.pj-cats{display:flex;gap:calc(12px + 4 * var(--v))}
+.pj-cats{display:flex;align-items:center}
+.pj-cats .pj-cat + .pj-cat{margin-left:calc(12px + 4 * var(--v))}   /* spacing via margin (not flex gap) so chips can collapse smoothly on 진행중 */
 .pj-cat{width:calc(96px + 74 * var(--v));height:calc(37px + 19 * var(--v));border-radius:999px;border:1px solid #E5E5E5;background:#fff;color:#3E3F44;
-  font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(14px + 4 * var(--v));line-height:1.5;cursor:pointer;
+  font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(14px + 4 * var(--v));line-height:1.5;cursor:pointer;white-space:nowrap;overflow:hidden;
   display:grid;place-items:center;opacity:0;transform:translateY(32px);
-  transition:opacity .8s ease,transform .9s cubic-bezier(.22,1,.36,1),background-color .2s ease,border-color .2s ease,color .2s ease}
+  transition:opacity .8s ease,transform .9s cubic-bezier(.22,1,.36,1),background-color .2s ease,border-color .2s ease,color .2s ease,width .5s cubic-bezier(.22,1,.36,1),margin-left .5s cubic-bezier(.22,1,.36,1),padding .5s ease,border-width .5s ease}
 .pj-cat.in{opacity:1;transform:none}
-.pj-cat:enabled:hover{border-color:#3E3F44}
-.pj-cat:disabled{opacity:.4;cursor:not-allowed}   /* 진행중: only ALL stays active, the category chips are disabled */
+.pj-cat:hover{border-color:#3E3F44}
 .pj-cat.is-active{background:#3E3F44;border-color:#3E3F44;color:#fff}
 .pj-toggle{position:relative;display:flex;align-items:center;padding:2px;border:1px solid #3E3F44;border-radius:8px;
   opacity:0;transform:translateY(32px);transition:opacity .8s ease .12s,transform .9s cubic-bezier(.22,1,.36,1) .12s}
@@ -67,6 +67,8 @@
 .pj-status{position:relative;z-index:1;width:calc(56px + 8 * var(--v));height:calc(33px + 7 * var(--v));border:none;border-radius:6px;background:none;color:#CCCCCC;
   font-family:'Pretendard',sans-serif;font-weight:600;font-size:calc(13px + 3 * var(--v));line-height:1.5;cursor:pointer;transition:color .25s ease}
 .pj-status.is-active{color:#fff}
+/* 진행중 panel has no category filter → keep only ALL; the other chips collapse + fade out (re-expand on 완료) */
+.pj-filter.is-ongoing .pj-cat:not([data-filter="all"]){width:0;margin-left:0;padding:0;border-width:0;opacity:0;pointer-events:none}
 
 /* ---------- project grid — 3 cols @1024/1920 / 4 cols @2560 (switch at 2240, below). Cards + every internal
    scale on --v (259.44×349.25 → 416×560). Column gaps are space-between so card edges line up with the filter. ---------- */

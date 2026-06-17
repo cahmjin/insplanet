@@ -222,14 +222,14 @@
         toggle.classList.toggle('is-ongoing', b.dataset.status==='ongoing');   // slide the active indicator
         const st=b.dataset.status;
         panels.forEach(p=>{ p.hidden = (p.dataset.statusPanel!==st); });
-        // 진행중 has no category filter — keep only ALL active, disable the other chips; re-enable on 완료
+        // 진행중 has no category filter — keep only the ALL chip (hide the others via CSS) + force ALL active so
+        // the lone chip reads as selected; on 완료 they all re-appear.
         var ongoing = (st==='ongoing');
-        document.querySelectorAll('.pj-cats .pj-cat').forEach(function(c){
-          var isAll = c.dataset.filter==='all';
-          c.disabled = ongoing && !isAll;
-          if(ongoing) c.classList.toggle('is-active', isAll);
-        });
-        if(ongoing) applyFilter('all');   // reset the (hidden) 완료 grid to All so it matches when you switch back
+        document.querySelector('.pj-filter').classList.toggle('is-ongoing', ongoing);
+        if(ongoing){
+          document.querySelectorAll('.pj-cats .pj-cat').forEach(function(c){ c.classList.toggle('is-active', c.dataset.filter==='all'); });
+          applyFilter('all');   // reset the (hidden) 완료 grid to All so it matches when you switch back
+        }
       }));
     }
     // category chips: active-switch + filter the cards by data-category (All = show every card).
