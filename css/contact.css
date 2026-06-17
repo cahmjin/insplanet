@@ -9,7 +9,7 @@
   --v:clamp(0px, calc((100vw - 1024px) / 896), 1px);
   --g:clamp(0px, calc((100vw - 1920px) / 640), 1px);
   --ct-text:#3E3F44; --ct-head:#E1E1E1; --ct-line:#E5E5E5; --ct-ph:#B5B5B5}
-.ct-inner{margin:0 calc(48px + 168*var(--v) + 2*var(--g))}   /* gutter 48@1024 -> 216@1920 -> 218@2560 */
+.ct-inner{margin:0 max(calc(48px + 168*var(--v) + 2*var(--g)), calc((100vw - 2124px) / 2))}   /* gutter 48@1024 -> 216@1920 -> 218@2560; above 2560 caps content at the 2560 width (2124), centred (header/footer keep spreading) */
 
 /* ---------- 01 hero ---------- */
 .ct-hero{padding-top:calc(280px + 40*var(--v) + 80*var(--g))}   /* 280@1024 (was 316) -> 320@1920 -> 400@2560 */

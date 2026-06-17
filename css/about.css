@@ -16,7 +16,7 @@
   position:relative;z-index:1;overflow:clip}
 
 /* shared content column — gutters 48 -> 216 / 216 -> 218 (928 / 1488 / 2126 wide) */
-.about-inner{width:auto;margin:0 calc(48px + 168 * var(--v) + 2 * var(--g)) 0 calc(48px + 168 * var(--v) + 2 * var(--g));position:relative}   /* left gutter 48->216->218, symmetric with the right (the +2*g was missing on the left -> 216 at 2560) */
+.about-inner{width:auto;margin:0 max(calc(48px + 168 * var(--v) + 2 * var(--g)), calc((100vw - 2124px) / 2));position:relative}   /* gutter 48->216->218; above 2560 caps content at the 2560 width (2124), centred (header/footer + the full-bleed black-hole banner keep spreading) */
 
 /* type roles reused across sections (32->56, 18->24, 14->20; lh 150%) */
 .about-headline{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(32px + 24 * var(--v));line-height:1.5;letter-spacing:-0.01em}
@@ -101,7 +101,7 @@
    gap to mission 180 -> 360 -> 400; graphic at the column's right edge (234x114 art @1024, swapped
    for the 312x252 art at 1472px); core values: flat 64 -> 120 gap, no dividers. ---------- */
 .about-fusion{padding-top:calc(180px + 180 * var(--v) + 40 * var(--g))}
-.about-fusion .about-inner{width:calc(928px + 558 * var(--v) + 176 * var(--g));margin:0 auto 0 calc(48px + 168 * var(--v) + 2 * var(--g))}   /* was 170*v -> 218 at 1920 too; now 48->216->218 like every other section */
+.about-fusion .about-inner{width:calc(928px + 558 * var(--v) + 176 * var(--g));margin:0 auto 0 max(calc(48px + 168 * var(--v) + 2 * var(--g)), calc((100vw - 2124px) / 2))}   /* gutter 48->216->218; above 2560 the left edge caps with the content column (centred), width/right stay as designed */
 .about-fusion-head{position:relative}
 .about-fusion-head .about-headline{margin:0 0 calc(32px + 16 * var(--v))}
 .about-fusion-head .about-paragraph{max-width:calc(694px + 29 * var(--v))}
@@ -129,7 +129,7 @@
 /* ---------- 05 gallery — four rounded cards from the left gutter, bleeding past the right edge;
    288x356 R20.5 gap21 @1024 -> 584x720 R32 gap32 @1920+; gap to fusion 130 -> 240. ---------- */
 .about-gallery{padding-top:calc(130px + 110 * var(--v));overflow:hidden;overflow:clip}   /* self-clip the right-bleed at the section box so it never widens the page. hidden;clip = progressive: old Safari (<16, no overflow:clip) falls back to hidden; modern uses clip (no scroll-container side effects). .about's overflow:clip can't be the only guard — it's silently ignored pre-Safari-16, which is what made the iPad scroll horizontally. No sticky lives in this section, so hidden is safe here (unlike .about, which hosts the hero-pin). */
-.about-gallery .about-inner{margin:0 0 0 calc(48px + 168 * var(--v) + 2 * var(--g))}   /* was 170*v -> 218 at 1920 too; now 48->216->218 */
+.about-gallery .about-inner{margin:0 0 0 max(calc(48px + 168 * var(--v) + 2 * var(--g)), calc((100vw - 2124px) / 2))}   /* gutter 48->216->218; above 2560 left edge caps with the content column; still bleeds right */
 .about-gallery-grid{display:grid;grid-template-columns:repeat(4, calc(288px + 296 * var(--v)));gap:calc(21.3px + 10.7 * var(--v))}
 .about-gallery-item{margin:0;height:calc(356px + 364 * var(--v));border-radius:calc(20.5px + 11.5 * var(--v));overflow:hidden}
 .about-gallery-item img{width:100%;height:100%;object-fit:cover;display:block}

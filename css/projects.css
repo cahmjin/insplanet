@@ -9,14 +9,15 @@
 .pj{--v:clamp(0px, calc((100vw - 1024px) / 896), 1px);
   --g:clamp(0px, calc((100vw - 1920px) / 640), 1px);
   --pj-card-w:calc(259.44px + 156.56 * var(--v));   /* 259.44 @1024 → 416 @1920+ (used by the grid track AND the card) */
+  --pj-cap:calc((100vw - 2126px) / 2);   /* above 2560 this exceeds the gutter → content caps at the 2560 width (2126), centred; header/footer (shared-ui, edge-anchored) keep spreading */
   position:relative;z-index:1;overflow:hidden;overflow:clip}   /* contain the content column bleed (hidden;clip = iOS-WebKit-safe) */
 
 /* shared content column — gutters 48 → 216 → 217 (grid content 928 / 1488 / 2126). At 1024 the hero text +
    filter bar are 80px narrower than the grid (848 vs 928): the 완료/진행중 toggle sits INSET from the grid's
    right edge (x896, not flush at 976), and the rightmost card breaks out past it. This extra right margin on
    hero+filter fades to 0 by 1920 (where filter = grid width again). */
-.pj-inner{margin:0 calc(48px + 168 * var(--v) + 1 * var(--g))}
-.pj-hero .pj-inner,.pj-filter .pj-inner{margin-right:calc(128px + 88 * var(--v) + 1 * var(--g))}
+.pj-inner{margin:0 max(calc(48px + 168 * var(--v) + 1 * var(--g)), var(--pj-cap))}
+.pj-hero .pj-inner,.pj-filter .pj-inner{margin-right:max(calc(128px + 88 * var(--v) + 1 * var(--g)), var(--pj-cap))}
 
 /* ---------- hero ---------- */
 .pj-hero{padding-top:calc(280px + 40 * var(--v) + 80 * var(--g))}
