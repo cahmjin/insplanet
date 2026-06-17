@@ -55,7 +55,8 @@
   display:grid;place-items:center;opacity:0;transform:translateY(32px);
   transition:opacity .8s ease,transform .9s cubic-bezier(.22,1,.36,1),background-color .2s ease,border-color .2s ease,color .2s ease}
 .pj-cat.in{opacity:1;transform:none}
-.pj-cat:hover{border-color:#3E3F44}
+.pj-cat:enabled:hover{border-color:#3E3F44}
+.pj-cat:disabled{opacity:.4;cursor:not-allowed}   /* 진행중: only ALL stays active, the category chips are disabled */
 .pj-cat.is-active{background:#3E3F44;border-color:#3E3F44;color:#fff}
 .pj-toggle{position:relative;display:flex;align-items:center;padding:2px;border:1px solid #3E3F44;border-radius:8px;
   opacity:0;transform:translateY(32px);transition:opacity .8s ease .12s,transform .9s cubic-bezier(.22,1,.36,1) .12s}
