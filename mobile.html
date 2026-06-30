@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no, email=no, address=no, date=no">
+<title>Insplanet — Mobile (hero WIP)</title>
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* ===== ISOLATED MOBILE HERO WORKSPACE =====
+     Only the hero — NO below-fold sections — so nothing overflows horizontally
+     and the layout viewport stays = device width (the below-hero desktop sections
+     were blowing vw out to 496 and pushing the fixed right-side controls off the
+     375 screen). Merge the mobile rules (already in style.css @media ≤767) back
+     into index.html once the lower sections are built for mobile. */
+  html,body{overflow-x:hidden}                 /* safety: no horizontal scroll/expansion */
+  #stage{height:100svh}                         /* fit the VISIBLE viewport (real mobile chrome) */
+  /* bg arcs: main.js normally sizes these; here they scale with the viewport
+     width (vw) instead of fixed px. Figma 375 basis: 603→160.8vw, 132→35.2vw … */
+  #bg-line .circ{width:160.8vw;height:160.8vw;border-radius:50%}
+  #bg-line .circ-1{left:35.2vw;top:-0.8vw}
+  #bg-line .circ-2{left:0.53vw;top:13.87vw}
+</style>
+</head>
+<body>
+<div id="page-root">
+<div id="stage">
+  <canvas id="blob" width="1920" height="1080"></canvas>
+
+  <div class="content">
+    <div id="left-block">
+      <img id="symbol" src="assets/symbol.svg" alt="">
+
+      <div id="head-title">
+        <span class="line-1">We Are</span>
+        <span class="line-2">Insplanet</span>
+      </div>
+
+      <div id="sub-title">
+        <span class="subtitle-head">호기심이 가득한 오늘, 무한한 가능성의 내일.</span>
+        <span class="subtitle-body">인스플래닛은 조금 더 즐겁고 진화된<br class="sb-br-m"> 디지털 경험을 만들기 위해 새로움을 고민합니다.<br class="sb-br-d"><span class="sb-rest">본질에 대한 이해와 넓은 시야로 누구나 공감할 수 있는 가치를 만듭니다.</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
+<div id="bg-line">
+  <span class="circ circ-1"></span>
+  <span class="circ circ-2"></span>
+</div>
+<a id="ci-logo" href="index.html" aria-label="Insplanet 홈"><img src="assets/ci_logo.svg" alt="Insplanet"></a>
+<a id="lets-talk" href="contact.html"><span>Let&rsquo;s Talk</span></a>
+<div id="full-menu" tabindex="-1"><img src="assets/menu_icon.svg" alt="menu"></div>
+<div id="scroll-hint">
+  <span class="bar"></span>
+  <span class="label">SCROLL</span>
+</div>
+
+</div><!-- /#page-root -->
+
+<!-- hero blob (self-contained, no menu/main.js dependency) -->
+<script src="js/blob.js"></script>
+<script>
+  // hero reveal (blur-in). main.js does this on the real page; minimal version here.
+  (function(){
+    function go(){
+      var h=document.getElementById('head-title'), s=document.getElementById('sub-title');
+      if(h)h.classList.add('in'); if(s)s.classList.add('in');
+    }
+    if(document.fonts&&document.fonts.ready){document.fonts.ready.then(go);}
+    setTimeout(go,500); // fallback if fonts hang
+  })();
+</script>
+</body>
+</html>

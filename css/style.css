@@ -620,3 +620,56 @@ html.lenis,html.lenis body{height:auto}
 /* menu -> page nav: blank the MAIN content (everything except the menu + cursor) so the full menu
    closes to reveal an empty page, then the next page zooms in. Set while the menu still covers it. */
 #page-root.pg-blank > :not(#menu-overlay):not(#cursor){opacity:0}
+
+/* subtitle-body breaks: desktop keeps both sentences (sb-br-d + sb-rest); the
+   "진화된" break (sb-br-m) is mobile-only. Defaults here = desktop unchanged. */
+.sb-br-m{display:none}
+
+/* ============================================================================
+   MOBILE (≤767px) — HOME HERO only. Figma official_01_main_375 (375×812).
+   First pass: just the #stage hero. The sections below the hero stay desktop
+   for now. Header controls (shared-ui) reposition site-wide to the 375 layout
+   (they were floored at the 1024 design values, so off-screen on a phone).
+   ============================================================================ */
+@media (max-width:767px){
+  /* --- header: logo / Let's Talk / hamburger / scroll-hint @ 375 --- */
+  #ci-logo{left:20px;top:28px;width:93px;height:16px}
+  #lets-talk{right:72px;top:23px}                 /* left edge ≈ x249, 20px gap to burger */
+  #lets-talk span{font-size:12px}
+  #full-menu{right:12px;top:16px;width:40px;height:40px}   /* x323, 40×40 */
+  #full-menu img{width:17.14px;height:10px}
+  #scroll-hint{right:20px;bottom:24px}            /* x334, 24px off bottom */
+  #scroll-hint .bar{height:64px}
+  #scroll-hint .label{font-size:11px}
+  /* DECOUPLE the hero chrome from the below-hero JS (those sections aren't
+     mobile-ready yet, so the adaptive-header sampling + footer scroll-hint hide
+     mis-fire here — flipping these white on the white hero, or hiding SCROLL).
+     Force the correct hero state on mobile. TODO: revisit once the lower
+     sections are done on mobile. */
+  #ci-logo.on-dark,#full-menu.on-dark img{filter:none}
+  #lets-talk.on-dark span,#scroll-hint.on-dark .label{color:#3E3F44}
+  #lets-talk.on-dark{border-bottom-color:#3E3F44}
+  #scroll-hint.on-dark .bar{background:rgba(62,63,68,.15)}
+  #scroll-hint.on-dark .bar::after{background:#3E3F44}
+  #scroll-hint.is-hidden{opacity:1}
+
+  /* --- blob: re-box the canvas; the shader recenters & resizes to min(W,H).
+         Figma planet is off-centre — centre at 65% x / 47% y (NOT dead centre)
+         and bleeds off the right edge (clipped by #stage). Position via left/top
+         calc, NOT transform — js/main.js drives an inline translateY on #blob
+         for scroll parallax; a transform here would be overridden. --- */
+  #blob{width:min(184vw,85vh);height:min(184vw,85vh);
+    left:calc(65% - min(92vw,42.5vh));top:calc(47% - min(92vw,42.5vh))}
+
+  /* --- content: symbol + title + subtitle, anchored bottom-left, 20px gutters --- */
+  #left-block{left:20px;right:20px;bottom:48px}
+  #symbol{width:117px;height:6px}
+  #head-title{width:auto;font-size:80px;margin-top:20px}   /* We Are / Insplanet */
+  #head-title .line-2{margin-top:-40px}
+  #sub-title{width:100%;margin-top:24px;gap:16px}
+  #sub-title .subtitle-head{font-size:16px}
+  #sub-title .subtitle-body{font-size:14px}
+  /* subtitle: mobile shows one (shortened) sentence, break after "진화된" */
+  #sub-title .sb-br-m{display:inline}
+  #sub-title .sb-br-d,#sub-title .sb-rest{display:none}
+}
