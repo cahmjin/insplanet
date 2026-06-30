@@ -633,11 +633,11 @@ html.lenis,html.lenis body{height:auto}
    ============================================================================ */
 @media (max-width:767px){
   /* --- header: logo / Let's Talk / hamburger / scroll-hint @ 375 --- */
-  #ci-logo{left:20px;top:28px;width:93px;height:16px}
-  #lets-talk{right:72px;top:23px}                 /* left edge ≈ x249, 20px gap to burger */
+  #ci-logo{left:20px;top:31px;width:104.9px;height:18px}   /* logo 104.9×18 */
+  #lets-talk{right:73px;top:27px}                 /* left edge ≈ x249 */
   #lets-talk span{font-size:12px}
-  #full-menu{right:12px;top:16px;width:40px;height:40px}   /* x323, 40×40 */
-  #full-menu img{width:17.14px;height:10px}
+  #full-menu{right:12px;top:16px;width:48px;height:48px}   /* x315, 48×48 */
+  #full-menu img{width:20.57px;height:12px}
   #scroll-hint{right:20px;bottom:24px}            /* x334, 24px off bottom */
   #scroll-hint .bar{height:64px}
   #scroll-hint .label{font-size:11px}
