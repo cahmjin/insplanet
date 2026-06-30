@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="format-detection" content="telephone=no, email=no, address=no, date=no">
+<!-- adaptive routing: desktop/tablet (≥768) bounce to the PC page; runs before CSS so no mobile flash -->
+<script>if(matchMedia('(min-width:768px)').matches)location.replace('index.html'+location.search+location.hash);</script>
 <title>Insplanet — Mobile (hero WIP)</title>
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/style.css">
