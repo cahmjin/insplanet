@@ -667,7 +667,7 @@ html.lenis,html.lenis body{height:auto}
          scroll (no transitions here — inline styles from the scrub script).
          Figma 1807:26605 / 1817:23457. --- */
   .m-beyond-pin{position:relative;z-index:1;height:360vh;background:transparent}   /* +100vh: statement holds while the Insight window grows over it */
-  .m-beyond-stage{position:sticky;top:0;height:100svh;overflow:hidden}
+  .m-beyond-stage{position:sticky;top:0;height:100vh;overflow:hidden}   /* vh (not svh): pinned stages must cover the LARGE viewport once the iOS bars collapse mid-scroll — svh left a bottom strip on iPhone */
   .m-beyond-title,.m-beyond-statement{position:absolute;left:20px;right:20px;top:50%;transform:translateY(-50%);margin:0;
     display:flex;flex-direction:column;align-items:flex-start;color:#3E3F44}
   .m-beyond-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:48px;line-height:1.211}
@@ -683,25 +683,25 @@ html.lenis,html.lenis body{height:auto}
      pinned behind (transparent stage; the dark .m-insight-frame is the visual).
      -176svh = 100svh (sticky arrival) + 76svh (grow phase = 0.2 × 380svh scrub);
      growth completes exactly when ch.02 unpins. */
-  .m-insight-pin{position:relative;z-index:2;height:480vh;margin-top:-176svh}
-  .m-insight-stage{position:sticky;top:0;height:100svh;overflow:hidden}
+  .m-insight-pin{position:relative;z-index:2;height:480vh;margin-top:-176vh}   /* vh to match the vh tracks — mixing svh here broke the grow/unpin seam on iPhone (svh≠vh by ~110px) */
+  .m-insight-stage{position:sticky;top:0;height:100vh;overflow:hidden}
   .m-insight-frame{position:absolute;inset:0;background:#0F0E0E;overflow:hidden;
     clip-path:inset(50% 50% round 24px)}   /* zero-size centre window until the scrub grows it */
   #insight-shader{position:absolute;inset:0}
   #insight-shader canvas{width:100%;height:100%;display:block}
   .m-insight-step{position:absolute;inset:0;opacity:0;pointer-events:none;color:#fff;
     font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}   /* outside .content — doesn't inherit it */
-  .m-insight-eyebrow{position:absolute;left:20px;top:160px;margin:0;
+  .m-insight-eyebrow{position:absolute;left:20px;top:19.7%;margin:0;   /* 160/812 — % so taller phones keep the proportion */
     font-weight:600;font-size:16px;line-height:1.2;text-transform:uppercase}
-  .m-insight-title{position:absolute;left:20px;right:20px;top:211px;margin:0;
+  .m-insight-title{position:absolute;left:20px;right:20px;top:26%;margin:0;   /* 211/812 */
     font-weight:700;font-size:40px;line-height:1.2}
   /* nums: per-num widths + natural aspect (like desktop .insight-num--02/--03) —
      the three SVG canvases differ (01 260×165, 02 292×170, 03 283×275), so one
      fixed box letterboxes 03 tiny. Top-anchored at the Figma y737 (stage clips). */
-  .m-insight-num{position:absolute;left:20px;top:737px;width:125.74px;height:auto}
+  .m-insight-num{position:absolute;left:20px;top:90.8%;width:125.74px;height:auto}   /* 737/812 */
   .m-insight-num--02{width:142px}
   .m-insight-num--03{width:138px}
-  .m-insight-dots{position:absolute;right:24px;top:519px;display:flex;flex-direction:column;gap:12px;opacity:0}
+  .m-insight-dots{position:absolute;right:24px;top:63.9%;display:flex;flex-direction:column;gap:12px;opacity:0}
   .m-insight-dots span{box-sizing:border-box;width:12px;height:12px;border-radius:50%;border:2px solid #fff}
   .m-insight-dots span.is-active{background:#fff}
 }
