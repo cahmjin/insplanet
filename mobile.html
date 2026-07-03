@@ -59,6 +59,31 @@
   </div>
 </section>
 
+<!-- chapter 03 (mobile): Insight — pinned 3-step swap on the dark shader bg (Figma 1932:30194).
+     Full-bleed #insight-shader (desktop insight-background bundle self-mounts into it);
+     steps swap by scroll scrub; dots track the active step (scrub script at the bottom). -->
+<section class="m-insight-pin">
+  <div class="m-insight-stage">
+    <div class="m-insight-frame"><div id="insight-shader"></div></div>
+    <div class="m-insight-step">
+      <p class="m-insight-eyebrow">Insight</p>
+      <h2 class="m-insight-title">비즈니스의<br>본질을 읽고,<br>더 깊은 아이디어를<br>제안합니다.</h2>
+      <img class="m-insight-num" src="assets/insight-num-01.svg" alt="01" aria-hidden="true">
+    </div>
+    <div class="m-insight-step">
+      <p class="m-insight-eyebrow">Interest</p>
+      <h2 class="m-insight-title">끊임없는<br>트렌드 탐구를 통해<br>남다른 사용자 경험을<br>설계합니다.</h2>
+      <img class="m-insight-num m-insight-num--02" src="assets/insight-num-02.svg" alt="02" aria-hidden="true">
+    </div>
+    <div class="m-insight-step">
+      <p class="m-insight-eyebrow">Innovation</p>
+      <h2 class="m-insight-title">검증된<br>프로젝트 노하우로<br>완벽한 디지털 전환을<br>실현합니다.</h2>
+      <img class="m-insight-num m-insight-num--03" src="assets/insight-num-03.svg" alt="03" aria-hidden="true">
+    </div>
+    <div class="m-insight-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div>
+  </div>
+</section>
+
 <!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
 <div id="bg-line">
   <span class="circ circ-1"></span>
@@ -79,6 +104,8 @@
 <!-- Lenis smooth scroll — same elastic feel as desktop (lerp .09). Touch stays
      native (momentum) by default; wheel/trackpad get the eased glide. -->
 <script src="js/vendor/lenis.min.js"></script>
+<!-- Insight bg: animated gradient through fluted glass (desktop bundle, self-mounts into #insight-shader) -->
+<script type="module" src="js/insight-background.bundle.js"></script>
 <script>
   // smooth scroll (desktop parity)
   (function(){
@@ -112,8 +139,66 @@
       ticking=false;
       var scrub=chapter.offsetHeight-innerHeight;
       var p=scrub>0?clamp(-chapter.getBoundingClientRect().top/scrub):0;
-      bLines.forEach(function(l,i){var o=i*0.06; set(l, clamp(p<0.33 ? (p-o)/0.20 : 1-(p-0.45-o)/0.15));});
-      fLines.forEach(function(l,i){set(l, clamp((p-0.62-i*0.06)/0.18));});
+      // constants = desktop timings ×0.615 (track 260vh→360vh keeps the felt pacing;
+      // statement completes by p≈0.5 then HOLDS while the Insight window grows over it)
+      bLines.forEach(function(l,i){var o=i*0.037; set(l, clamp(p<0.203 ? (p-o)/0.123 : 1-(p-0.277-o)/0.092));});
+      fLines.forEach(function(l,i){set(l, clamp((p-0.381-i*0.037)/0.111));});
+    }
+    addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+    addEventListener('resize',update);
+    update();
+  })();
+
+  // chapter 03: grow-in + 3-step swap. While the statement (ch.02) is still pinned
+  // behind, the dark frame grows from a point at the viewport centre (clip-path
+  // window) to full-bleed; growth ends exactly as ch.02 unpins. Text/dots appear
+  // only after the growth; then steps 01→02→03 swap. Header flips white while the
+  // dark frame actually covers it.
+  (function(){
+    var chapter=document.querySelector('.m-insight-pin');
+    if(!chapter)return;
+    var frame=chapter.querySelector('.m-insight-frame');
+    var steps=[].slice.call(chapter.querySelectorAll('.m-insight-step'));
+    var dots=chapter.querySelector('.m-insight-dots');
+    var dotEls=[].slice.call(chapter.querySelectorAll('.m-insight-dots span'));
+    var tops=['ci-logo','lets-talk','full-menu'].map(function(id){return document.getElementById(id);}).filter(Boolean);
+    var sh=document.getElementById('scroll-hint');
+    function clamp(v){return Math.min(1,Math.max(0,v));}
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches){
+      frame.style.clipPath='none';
+      steps.forEach(function(s,i){s.style.opacity=i===0?1:0;});
+      return;
+    }
+    var ticking=false;
+    function update(){
+      ticking=false;
+      var scrub=chapter.offsetHeight-innerHeight;
+      var p=scrub>0?clamp(-chapter.getBoundingClientRect().top/scrub):0;
+      // grow: p 0→0.2, eased; window inset 50%→0 (zero-size centre → full-bleed)
+      var g=clamp(p/0.2), gs=g*g*(3-2*g);
+      var ins=(50*(1-gs)).toFixed(2), rad=(24*(1-gs)).toFixed(1);
+      frame.style.clipPath=gs>=1?'none':'inset('+ins+'% '+ins+'% round '+rad+'px)';
+      // text gate: nothing shows until the frame is full
+      var gate=clamp((p-0.22)/0.06);
+      if(dots)dots.style.opacity=gate.toFixed(3);
+      // steps: af 0→2 across the remaining scrub (hold at the end)
+      var af=clamp((p-0.30)/0.58)*2;
+      var active=Math.max(0,Math.min(2,Math.round(af)));
+      dotEls.forEach(function(d,i){d.classList.toggle('is-active',i===active);});
+      steps.forEach(function(s,i){
+        var d=af-i, ad=Math.abs(d);
+        s.style.opacity=(gate*clamp(1-ad)).toFixed(3);
+        s.style.filter='blur('+(ad*10).toFixed(2)+'px)';
+        var rise=d<0?-d:0;
+        s.style.transform='translateY('+(rise*40).toFixed(1)+'px)';
+      });
+      // header contrast: white only while the dark frame actually covers the zones
+      var r=chapter.querySelector('.m-insight-stage').getBoundingClientRect();
+      var covered=gs>=0.9;
+      var topOn=covered && r.top<=40 && r.bottom>=40;
+      var botOn=covered && r.top<=innerHeight-90 && r.bottom>=innerHeight-90;
+      tops.forEach(function(el){el.classList.toggle('on-dark',topOn);});
+      if(sh)sh.classList.toggle('on-dark',botOn);
     }
     addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
     addEventListener('resize',update);
