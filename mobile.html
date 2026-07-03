@@ -16,7 +16,9 @@
      were blowing vw out to 496 and pushing the fixed right-side controls off the
      375 screen). Merge the mobile rules (already in style.css @media ≤767) back
      into index.html once the lower sections are built for mobile. */
-  html,body{overflow-x:hidden}                 /* safety: no horizontal scroll/expansion */
+  html,body{overflow-x:clip}                   /* safety: no horizontal scroll/expansion.
+     clip, NOT hidden — overflow-x:hidden makes body a scroll container, which
+     KILLS position:sticky (the m-beyond pin). clip blocks the bleed without that. */
   #stage{height:100svh}                         /* fit the VISIBLE viewport (real mobile chrome) */
   /* bg arcs: main.js normally sizes these; here they scale with the viewport
      width (vw) instead of fixed px. Figma 375 basis: 603→160.8vw, 132→35.2vw … */
@@ -47,6 +49,16 @@
   </div>
 </div>
 
+<!-- chapter 02 (mobile): Beyond UX — pinned swap in ONE viewport (Figma 1807:26605 / 1817:23457).
+     Both texts overlap in the same centred spot inside a sticky stage; scrolling through the tall
+     track scrubs Beyond out and the statement in (scrub script at the bottom of this file). -->
+<section class="m-beyond-pin">
+  <div class="m-beyond-stage">
+    <h2 class="m-beyond-title"><span class="line-1">Beyond UX</span><span class="line-2">The AX Creator</span></h2>
+    <p class="m-beyond-statement"><span>기술에 가치를 더해,</span><span>내일의 설렘을 완성합니다.</span></p>
+  </div>
+</section>
+
 <!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
 <div id="bg-line">
   <span class="circ circ-1"></span>
@@ -64,7 +76,17 @@
 
 <!-- hero blob (self-contained, no menu/main.js dependency) -->
 <script src="js/blob.js"></script>
+<!-- Lenis smooth scroll — same elastic feel as desktop (lerp .09). Touch stays
+     native (momentum) by default; wheel/trackpad get the eased glide. -->
+<script src="js/vendor/lenis.min.js"></script>
 <script>
+  // smooth scroll (desktop parity)
+  (function(){
+    if(!window.Lenis || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    var lenis=new Lenis({lerp:0.09,smoothWheel:true});
+    window.__lenis=lenis;
+    (function raf(t){lenis.raf(t);requestAnimationFrame(raf);})();
+  })();
   // hero reveal (blur-in). main.js does this on the real page; minimal version here.
   (function(){
     function go(){
@@ -73,6 +95,29 @@
     }
     if(document.fonts&&document.fonts.ready){document.fonts.ready.then(go);}
     setTimeout(go,500); // fallback if fonts hang
+  })();
+
+  // chapter 02 scrub: pin the stage, swap Beyond -> statement by scroll progress
+  // (port of the desktop js/main.js beyond-swap; same phase constants)
+  (function(){
+    var chapter=document.querySelector('.m-beyond-pin');
+    if(!chapter)return;
+    var bLines=[].slice.call(chapter.querySelectorAll('.m-beyond-title .line-1,.m-beyond-title .line-2'));
+    var fLines=[].slice.call(chapter.querySelectorAll('.m-beyond-statement span'));
+    function clamp(v){return Math.min(1,Math.max(0,v));}
+    function set(l,s){l.style.opacity=s.toFixed(3);l.style.filter='blur('+(16*(1-s)).toFixed(2)+'px)';}
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches){bLines.forEach(function(l){set(l,0);});fLines.forEach(function(l){set(l,1);});return;}
+    var ticking=false;
+    function update(){
+      ticking=false;
+      var scrub=chapter.offsetHeight-innerHeight;
+      var p=scrub>0?clamp(-chapter.getBoundingClientRect().top/scrub):0;
+      bLines.forEach(function(l,i){var o=i*0.06; set(l, clamp(p<0.33 ? (p-o)/0.20 : 1-(p-0.45-o)/0.15));});
+      fLines.forEach(function(l,i){set(l, clamp((p-0.62-i*0.06)/0.18));});
+    }
+    addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+    addEventListener('resize',update);
+    update();
   })();
 </script>
 </body>

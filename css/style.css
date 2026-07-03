@@ -668,8 +668,22 @@ html.lenis,html.lenis body{height:auto}
   #head-title .line-2{margin-top:-0.5em}                    /* overlap scales with the font */
   #sub-title{width:100%;margin-top:24px;gap:16px}
   #sub-title .subtitle-head{font-size:16px}
-  #sub-title .subtitle-body{font-size:14px}
+  #sub-title .subtitle-body{font-size:15px}
   /* subtitle: mobile shows one (shortened) sentence, break after "진화된" */
   #sub-title .sb-br-m{display:inline}
   #sub-title .sb-br-d,#sub-title .sb-rest{display:none}
+
+  /* --- chapter 02 (mobile): Beyond UX pinned swap. Tall track + sticky stage;
+         both texts overlap centred (20px gutter), JS scrubs opacity/blur by
+         scroll (no transitions here — inline styles from the scrub script).
+         Figma 1807:26605 / 1817:23457. --- */
+  .m-beyond-pin{position:relative;z-index:1;height:260vh;background:transparent}
+  .m-beyond-stage{position:sticky;top:0;height:100svh;overflow:hidden}
+  .m-beyond-title,.m-beyond-statement{position:absolute;left:20px;right:20px;top:50%;transform:translateY(-50%);margin:0;
+    display:flex;flex-direction:column;align-items:flex-start;color:#3E3F44}
+  .m-beyond-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:48px;line-height:1.211}
+  .m-beyond-title .line-1{padding-left:4px}   /* Figma row inset 4px */
+  .m-beyond-title .line-2{margin-top:-24px}   /* Figma column gap -24 */
+  .m-beyond-statement{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:32px;line-height:1.3}
+  .m-beyond-title .line-1,.m-beyond-title .line-2,.m-beyond-statement span{opacity:0;filter:blur(16px)}
 }
