@@ -84,6 +84,43 @@
   </div>
 </section>
 
+<!-- chapter 04 (mobile): Our Services — stacked cards (Figma 1944:30210).
+     Banners reuse the PC images (images/service-*.png, cover-cropped). Cards rise in on scroll (IO below). -->
+<section class="m-svc">
+  <h2 class="m-svc-heading">Our Services</h2>
+  <div class="m-svc-cards">
+
+    <article class="m-svc-card">
+      <h3 class="m-svc-title">Mega Finance</h3>
+      <ul class="m-svc-tags"><li>UI/UX Design</li><li>Online Promotion</li><li>SNS Event</li><li>Total Campaign</li></ul>
+      <p class="m-svc-desc">신한 ‘슈퍼SOL’ 6년 전담 운영 및 차세대 통합 기획 등 제1금융권 핵심 플랫폼의 혁신을 주도해왔습니다.</p>
+      <div class="m-svc-media"><img src="images/service-mega-finance.png" alt="Mega Finance" loading="lazy"></div>
+    </article>
+
+    <article class="m-svc-card">
+      <h3 class="m-svc-title">Mobility &amp; Enterprise</h3>
+      <ul class="m-svc-tags"><li>UI/UX Design</li><li>Online Promotion</li><li>SNS Event</li><li>Total Campaign</li></ul>
+      <p class="m-svc-desc">대규모 모빌리티 플랫폼 구축 및 기술 시각화 노하우로 차세대 비즈니스를 지원합니다.</p>
+      <div class="m-svc-media"><img src="images/service-mobility.png" alt="Mobility & Enterprise" loading="lazy"></div>
+    </article>
+
+    <article class="m-svc-card">
+      <h3 class="m-svc-title">SI Synergy &amp; Partnership</h3>
+      <ul class="m-svc-tags"><li>UI/UX Design</li><li>Online Promotion</li><li>SNS Event</li><li>Total Campaign</li></ul>
+      <p class="m-svc-desc">LG CNS, 신한DS의 공식 협력사로서 대형 SI 주사업자와의 완벽한 시너지로 프로젝트의 성공을 이끕니다.</p>
+      <div class="m-svc-media"><img src="images/service-si-synergy.png" alt="SI Synergy & Partnership" loading="lazy"></div>
+    </article>
+
+    <article class="m-svc-card">
+      <h3 class="m-svc-title">AX Tech &amp; Design Sys.</h3>
+      <ul class="m-svc-tags"><li>UI/UX Design</li><li>Online Promotion</li><li>SNS Event</li><li>Total Campaign</li></ul>
+      <p class="m-svc-desc">고유 디자인 시스템과 자체 AX 솔루션 R&amp;D를 통해 프로젝트 생산성과 기술 경쟁력을 극대화합니다.</p>
+      <div class="m-svc-media"><img src="images/service-ax-tech.png" alt="AX Tech & Design System" loading="lazy"></div>
+    </article>
+
+  </div>
+</section>
+
 <!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
 <div id="bg-line">
   <span class="circ circ-1"></span>
@@ -203,6 +240,19 @@
     addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
     addEventListener('resize',update);
     update();
+  })();
+
+  // chapter 04 reveal: each service card rises in once as it enters the viewport
+  (function(){
+    var cards=[].slice.call(document.querySelectorAll('.m-svc-card'));
+    if(!cards.length)return;
+    if(!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion:reduce)').matches){
+      cards.forEach(function(c){c.classList.add('in');});return;
+    }
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:0.15});
+    cards.forEach(function(c){io.observe(c);});
   })();
 </script>
 </body>
