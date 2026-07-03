@@ -723,4 +723,22 @@ html.lenis,html.lenis body{height:auto}
     transition:opacity .6s ease,transform .9s cubic-bezier(.22,1,.36,1)}
   .m-svc-card.in{opacity:1;transform:none}
   @media (prefers-reduced-motion:reduce){.m-svc-card{opacity:1;transform:none;transition:none}}
+
+  /* --- chapter 05 (mobile): Our Partners — 3-col logo grid (Figma 1949:30363).
+         Logos = PC assets at 0.64 scale (var --lw/--lh are the PC design sizes). --- */
+  .m-partners{position:relative;z-index:1;padding:86px 20px 120px;background:transparent;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
+  .m-partners-heading{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:32px;line-height:1.211}
+  .m-partners-desc{margin:24px 0 0;font-weight:400;font-size:15px;line-height:1.5}
+  .m-partner-grid{margin-top:60px;display:flex;flex-direction:column;gap:25.6px}
+  .m-partner-row{display:flex;align-items:center;gap:19.2px}
+  .m-partner-row span{flex:1 1 0;height:44.8px;display:flex;align-items:center;justify-content:center}
+  .m-partner-row img{width:calc(var(--lw) * 0.64px);height:calc(var(--lh) * 0.64px)}
+  /* reveal: rise+fade once .in lands (IO in mobile.html) */
+  .m-partners-heading,.m-partners-desc,.m-partner-row{opacity:0;transform:translateY(32px);
+    transition:opacity .6s ease,transform .9s cubic-bezier(.22,1,.36,1)}
+  .m-partners-desc{transition-delay:.1s}
+  .m-partners-heading.in,.m-partners-desc.in,.m-partner-row.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .m-partners-heading,.m-partners-desc,.m-partner-row{opacity:1;transform:none;transition:none}}
 }

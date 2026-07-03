@@ -121,6 +121,55 @@
   </div>
 </section>
 
+<!-- chapter 05 (mobile): Our Partners — 3-col logo grid (Figma 1949:30363).
+     Logos reuse the PC assets at 0.64 scale (--lw/--lh copied from index.html). Rows rise in on scroll. -->
+<section class="m-partners">
+  <h2 class="m-partners-heading">Our Partners</h2>
+  <p class="m-partners-desc">고객이 지향하는 브랜드 철학의 본질을 심도 있게 분석하여 최선의 결과물을 만들어냅니다. 브랜드의 메시지가 사용자에게 가장 친밀하게 전달되고 사람들의 마음속에 깊은 영감으로 남을 수 있도록, 보이지 않는 디테일까지 끊임없이 고민합니다.</p>
+  <div class="m-partner-grid">
+    <div class="m-partner-row">
+      <span><img src="images/partners/partner-01.png" style="--lw:96;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-02.png" style="--lw:92;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-03.png" style="--lw:137;--lh:24" alt="" loading="lazy"></span>
+    </div>
+    <div class="m-partner-row">
+      <span><img src="images/partners/partner-04.png" style="--lw:156;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-05.png" style="--lw:50;--lh:16" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-06.png" style="--lw:134;--lh:24" alt="" loading="lazy"></span>
+    </div>
+    <div class="m-partner-row">
+      <span><img src="images/partners/partner-07.png" style="--lw:102;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-08.png" style="--lw:111;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-09.png" style="--lw:63;--lh:24" alt="" loading="lazy"></span>
+    </div>
+    <div class="m-partner-row">
+      <span><img src="images/partners/partner-10.png" style="--lw:117;--lh:30" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-11.png" style="--lw:66;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-12.png" style="--lw:105;--lh:24" alt="" loading="lazy"></span>
+    </div>
+    <div class="m-partner-row">
+      <span><img src="images/partners/partner-13.png" style="--lw:31;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-14.png" style="--lw:74;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-15.png" style="--lw:109;--lh:20" alt="" loading="lazy"></span>
+    </div>
+    <div class="m-partner-row">
+      <span><img src="images/partners/partner-16.png" style="--lw:71;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-17.png" style="--lw:139;--lh:20" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-18.png" style="--lw:63;--lh:18" alt="" loading="lazy"></span>
+    </div>
+    <div class="m-partner-row">
+      <span><img src="images/partners/partner-19.png" style="--lw:62;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-20.png" style="--lw:67;--lh:32" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-21.png" style="--lw:106;--lh:32" alt="" loading="lazy"></span>
+    </div>
+    <div class="m-partner-row">
+      <span><img src="images/partners/partner-22.png" style="--lw:80;--lh:24" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-23.png" style="--lw:49;--lh:36" alt="" loading="lazy"></span>
+      <span><img src="images/partners/partner-24.png" style="--lw:113;--lh:30" alt="" loading="lazy"></span>
+    </div>
+  </div>
+</section>
+
 <!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
 <div id="bg-line">
   <span class="circ circ-1"></span>
@@ -253,6 +302,19 @@
       es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
     },{threshold:0.15});
     cards.forEach(function(c){io.observe(c);});
+  })();
+
+  // chapter 05 reveal: heading/desc then logo rows rise in as they enter (stagger via CSS delay)
+  (function(){
+    var items=[].slice.call(document.querySelectorAll('.m-partners-heading,.m-partners-desc,.m-partner-row'));
+    if(!items.length)return;
+    if(!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion:reduce)').matches){
+      items.forEach(function(el){el.classList.add('in');});return;
+    }
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:0.2});
+    items.forEach(function(el){io.observe(el);});
   })();
 </script>
 </body>
