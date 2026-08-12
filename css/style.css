@@ -268,7 +268,7 @@ html.lenis,html.lenis body{height:auto}
   height:clamp(40px, calc(2.2321vw + 17.14px), 60px);padding:0 clamp(16px, calc(0.8929vw + 6.86px), 24px);
   border-radius:999px;background:#fff;color:#3E3F44;
   font-family:'Roboto Serif',serif;font-weight:400;font-size:clamp(24px, calc(0.8929vw + 14.86px), 32px);line-height:1}
-.menu-copy{margin:0;font-size:clamp(12px, calc(0.2232vw + 9.71px), 14px);font-weight:600;line-height:150%}
+.menu-copy{margin:0;font-size:clamp(12px, calc(0.2232vw + 9.71px), 14px);font-weight:600;line-height:150%;text-transform:uppercase}
 
 /* right column — project list */
 .project-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:clamp(32px, calc(2.6786vw + 4.57px), 56px)}
@@ -853,5 +853,5 @@ html.lenis,html.lenis body{height:auto}
     border:1px solid #FFF;border-radius:8px;color:#FFF;text-decoration:none;font-weight:600;font-size:14px;line-height:1.5}
   .m-menu-brief-ico{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
   .m-menu-brief-ico img{width:11.31px;height:11.31px}
-  .m-menu-copy{margin:0;color:#FFF;font-weight:600;font-size:13px;line-height:1.5}
+  .m-menu-copy{margin:0;color:#FFF;font-weight:600;font-size:13px;line-height:1.5;text-transform:uppercase}
 }
