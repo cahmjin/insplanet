@@ -170,6 +170,36 @@
   </div>
 </section>
 
+<!-- chapter 06 (mobile): Our Projects — 3-slide swipe carousel (dummy content mirrors
+     PC index.html .projects; Figma y6945→7025, 80px gap from Partners). -->
+<section class="m-proj">
+  <h2 class="m-proj-title">Our Projects</h2>
+  <div class="m-proj-carousel">
+    <div class="m-proj-track" data-lenis-prevent>
+      <!-- data-ind: indicator theme while this card is active (dark = dark dots on a light image) -->
+      <div class="m-proj-card" data-ind="dark" style="background:#164DEE"><img src="images/projects/dm1.png" alt="" loading="lazy"></div>
+      <div class="m-proj-card" style="background:#E5392F"><img src="images/projects/dm2.png" alt="" loading="lazy"></div>
+      <div class="m-proj-card" style="background:#F5B400"><img src="images/projects/dm3.png" alt="" loading="lazy"></div>
+    </div>
+    <div class="m-proj-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div>
+  </div>
+  <div class="m-proj-info">
+    <article class="m-proj-slide is-active">
+      <h3 class="m-proj-name">신한 SoL증권<br>모바일 웹 리뉴얼 1</h3>
+      <dl class="m-proj-meta"><dt>Client</dt><dd>신한투자증권</dd><dt>Launch</dt><dd>Jan, 2024</dd></dl>
+    </article>
+    <article class="m-proj-slide">
+      <h3 class="m-proj-name">신한 SoL증권<br>모바일 웹 리뉴얼 2</h3>
+      <dl class="m-proj-meta"><dt>Client</dt><dd>신한투자증권</dd><dt>Launch</dt><dd>Feb, 2024</dd></dl>
+    </article>
+    <article class="m-proj-slide">
+      <h3 class="m-proj-name">신한 SoL증권<br>모바일 웹 리뉴얼 3</h3>
+      <dl class="m-proj-meta"><dt>Client</dt><dd>신한투자증권</dd><dt>Launch</dt><dd>Mar, 2024</dd></dl>
+    </article>
+  </div>
+  <a class="m-proj-more" href="#"><span>See More Projects</span><span class="m-proj-more-ico"><img src="assets/icon_arrow_more.svg" alt=""></span></a>
+</section>
+
 <!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
 <div id="bg-line">
   <span class="circ circ-1"></span>
@@ -315,6 +345,40 @@
       es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
     },{threshold:0.2});
     items.forEach(function(el){io.observe(el);});
+  })();
+
+  // chapter 06: Our Projects carousel — track scroll drives dot + info crossfade
+  // (index by nearest card offsetLeft, not clientWidth/index math — accounts for the 12px gap);
+  // dots also scroll the track directly.
+  (function(){
+    var track=document.querySelector('.m-proj-track');
+    if(!track)return;
+    var cards=[].slice.call(track.querySelectorAll('.m-proj-card'));
+    var dots=[].slice.call(document.querySelectorAll('.m-proj-dots span'));
+    var slides=[].slice.call(document.querySelectorAll('.m-proj-slide'));
+    if(!cards.length)return;
+    // offsetLeft is relative to .m-proj (offsetParent), so card 0 sits at the section's
+    // 20px gutter — normalize against it to get true scroll positions [0, 347, 694]
+    var base=cards[0].offsetLeft;
+    function nearestIndex(){
+      var sl=track.scrollLeft, best=0, bestD=Infinity;
+      cards.forEach(function(c,i){var d=Math.abs((c.offsetLeft-base)-sl); if(d<bestD){bestD=d;best=i;}});
+      return best;
+    }
+    var dotsWrap=document.querySelector('.m-proj-dots');
+    function setActive(i){
+      dots.forEach(function(d,j){d.classList.toggle('is-active',j===i);});
+      slides.forEach(function(s,j){s.classList.toggle('is-active',j===i);});
+      if(dotsWrap)dotsWrap.classList.toggle('is-dark',cards[i].dataset.ind==='dark');
+    }
+    var ticking=false;
+    track.addEventListener('scroll',function(){
+      if(!ticking){ticking=true;requestAnimationFrame(function(){ticking=false;setActive(nearestIndex());});}
+    },{passive:true});
+    dots.forEach(function(d,i){
+      d.addEventListener('click',function(){track.scrollTo({left:cards[i].offsetLeft-base,behavior:'smooth'});});
+    });
+    setActive(nearestIndex()); // initial paint (applies .is-dark for card 1's light image)
   })();
 </script>
 </body>

@@ -741,4 +741,39 @@ html.lenis,html.lenis body{height:auto}
   .m-partners-heading.in,.m-partners-desc.in,.m-partner-row.in{opacity:1;transform:none}
   @media (prefers-reduced-motion:reduce){
     .m-partners-heading,.m-partners-desc,.m-partner-row{opacity:1;transform:none;transition:none}}
+
+  /* --- chapter 06 (mobile): Our Projects — 3-slide swipe carousel (dummy content mirrors
+         PC index.html .projects; Figma y6945→7025, 80px gap from Partners). --- */
+  .m-proj{position:relative;z-index:1;padding:80px 20px 96px;background:transparent;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
+  .m-proj-title{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:32px;line-height:1.211}
+  .m-proj-carousel{margin-top:48px;position:relative}
+  .m-proj-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .m-proj-track::-webkit-scrollbar{display:none}
+  .m-proj-card{flex:0 0 100%;height:320px;border-radius:24px;overflow:hidden;scroll-snap-align:start}
+  .m-proj-card img{display:block;width:100%;height:100%;object-fit:cover}
+  /* dots overlay the card, bottom-center (Figma: y284 in the 320 card = 24px from bottom), white on color */
+  .m-proj-dots{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);
+    display:flex;gap:12px;z-index:1}
+  .m-proj-dots span{box-sizing:border-box;width:12px;height:12px;border-radius:50%;
+    border:2px solid #FFF;background:transparent;cursor:pointer}
+  .m-proj-dots span.is-active{border-color:transparent;background:#FFF}
+  /* per-slide indicator theme: .is-dark when the active card's bottom area is light */
+  .m-proj-dots.is-dark span{border-color:#1A1A1A}
+  .m-proj-dots.is-dark span.is-active{border-color:transparent;background:#1A1A1A}
+  /* info: 3 slides stacked in the same grid cell (grid-area:1/1), crossfade via .is-active */
+  .m-proj-info{position:relative;display:grid;margin-top:48px}
+  .m-proj-slide{grid-area:1/1;opacity:0;transition:opacity .35s ease}
+  .m-proj-slide.is-active{opacity:1}
+  .m-proj-name{margin:0;font-weight:700;font-size:28px;line-height:1.2}
+  .m-proj-meta{margin:48px 0 0;display:grid;grid-template-columns:151px 1fr;row-gap:22px}
+  .m-proj-meta dt{margin:0;font-weight:700;font-size:15px;line-height:1.5}
+  .m-proj-meta dd{margin:0;font-weight:400;font-size:15px;line-height:1.5}
+  .m-proj-more{margin-top:48px;display:inline-flex;align-items:center;height:41px;
+    padding:10px 12px 10px 16px;border:0.83px solid #3E3F44;border-radius:6.67px;gap:10px;
+    text-decoration:none;font-weight:600;font-size:14px;line-height:1.5;color:#3E3F44}
+  .m-proj-more-ico{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
+  .m-proj-more-ico img{width:100%;height:100%}
+  @media (prefers-reduced-motion:reduce){.m-proj-slide{transition:none}}
 }
