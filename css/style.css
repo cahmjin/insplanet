@@ -844,7 +844,7 @@ html.lenis,html.lenis body{height:auto}
     display:flex;align-items:center;font-family:'Roboto Serif',serif;font-weight:400;font-size:20px}
 
   .m-menu-family{margin:auto 0 0;list-style:none;padding:0;display:flex;flex-direction:row;gap:40px}   /* Figma rev: family row joins the bottom-anchored stack (y604); the single auto gap above it absorbs device height */
-  .m-menu-family li{display:flex;align-items:center;gap:10px;color:#FFF;font-weight:600;font-size:18px}
+  .m-menu-family li{display:flex;align-items:center;gap:10px;color:#FFF;font-weight:600;font-size:16px}
   .m-menu-fam-ico{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
   .m-menu-fam-ico img{width:9px;height:9px}
 
