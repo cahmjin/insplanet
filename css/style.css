@@ -829,6 +829,7 @@ html.lenis,html.lenis body{height:auto}
 
   .m-menu-scroll{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;
     -webkit-overflow-scrolling:touch;padding:24.63vh 20px 32px;   /* nav top responds to height (Figma 200/812); bottom stack is bottom-anchored */
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;   /* like PC .menu-inner — body has no font, so without this the menu falls to Apple SD Gothic */
     display:flex;flex-direction:column;
     opacity:0;transform:translateY(18px);
     transition:opacity .45s ease,transform .55s cubic-bezier(.22,1,.36,1)}
