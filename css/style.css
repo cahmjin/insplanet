@@ -776,4 +776,43 @@ html.lenis,html.lenis body{height:auto}
   .m-proj-more-ico{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
   .m-proj-more-ico img{width:100%;height:100%}
   @media (prefers-reduced-motion:reduce){.m-proj-slide{transition:none}}
+
+  /* --- chapter 07 (mobile): Say Hello CTA — black full-viewport, PC's WebGL horizon glow reused
+         (js/cta-glow.js finds canvas.cta-glow — its global rule below sizes the canvas to fill
+         the section, no new rule needed here). Reveal mirrors PC .contact-cta: blur fade-in,
+         title -> sub -> arrow staggered. --- */
+  .m-cta{position:relative;height:100vh;background:#141414;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:center;padding:0 25px;color:#FFF;z-index:1;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
+  .m-cta-inner{position:relative;z-index:1;width:100%;max-width:325px;margin:0 auto}   /* Figma content width; centres when the viewport is wider than 375 */
+  .m-cta-title{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:80px;line-height:1.211}
+  .m-cta-sub{margin:24px 0 0 10.5px;font-weight:400;font-size:18px;line-height:1.5}
+  .m-cta-arrow{margin:40px auto 0;width:40px;height:40px;border-radius:50%;background:#FFF;
+    display:flex;align-items:center;justify-content:center}
+  .m-cta-arrow svg{width:18px;height:18px;display:block}
+  /* reveal: fade up from a blur, staggered, once the section is 20% visible (.in added by IO in mobile.html) */
+  .m-cta-title,.m-cta-sub,.m-cta-arrow{opacity:0;filter:blur(8px);transition:opacity .9s ease,filter .9s ease}
+  .m-cta.in .m-cta-title{opacity:1;filter:blur(0)}
+  .m-cta.in .m-cta-sub{opacity:1;filter:blur(0);transition-delay:.18s}
+  .m-cta.in .m-cta-arrow{opacity:1;filter:blur(0);transition-delay:.36s}
+  @media (prefers-reduced-motion:reduce){.m-cta-title,.m-cta-sub,.m-cta-arrow{opacity:1;filter:none;transition:none}}
+
+  /* --- chapter 08 (mobile): footer — CI logo (wordmark + planet SVG) reuses the PC asset paths under
+         new m-footer-ci-* classes (see mobile.html for why: avoids inheriting the PC .footer-wordmark/
+         .footer-planet scroll-reveal, which stays opacity:0 without a .footer.in this page never sets). --- */
+  /* full-viewport section like Insight/CTA (Figma frame was mis-authored at 768 — design intent is 812
+     = device height). Top padding = fixed-header zone (~80px: hamburger bottom y64 + breathing room);
+     the CI centres itself in the space between that and the bottom info block (auto margins), so it
+     stays visually balanced under the header on any device height. vh not svh (project rule). */
+  .m-footer{background:#FFF;height:100vh;display:flex;flex-direction:column;padding:80px 20px 54px;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
+  .m-footer-ci{position:relative;width:246px;line-height:0;margin:auto 0}   /* centres between header pad and info block */
+  .m-footer-ci-wordmark{display:block;width:100%;height:auto}     /* in flow -> sizes the container */
+  .m-footer-ci-planet{position:absolute;inset:0;width:100%;height:100%}   /* overlay, same coords */
+  .m-footer-info{font-style:normal}   /* bottom-anchored by the CI's auto margins above */
+  .m-footer-info p{margin:0;font-weight:600;font-size:12px;line-height:1.5}
+  .m-footer-info p + p{margin-top:16px}
+  .m-footer-tf{display:flex}
+  .m-footer-tf span:first-child{width:159px}
+  .m-footer-copy{margin:48px 0 0;font-weight:600;font-size:12px;line-height:1.5;text-transform:uppercase}
 }
