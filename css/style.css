@@ -804,17 +804,17 @@ html.lenis,html.lenis body{height:auto}
      = device height). Top padding = fixed-header zone (~80px: hamburger bottom y64 + breathing room);
      the CI centres itself in the space between that and the bottom info block (auto margins), so it
      stays visually balanced under the header on any device height. vh not svh (project rule). */
-  .m-footer{background:#FFF;height:100vh;display:flex;flex-direction:column;padding:80px 20px 54px;
+  .m-footer{background:#FFF;height:100vh;display:flex;flex-direction:column;padding:80px 20px 32px;
     font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
   .m-footer-ci{position:relative;width:246px;line-height:0;margin:auto 0}   /* centres between header pad and info block */
   .m-footer-ci-wordmark{display:block;width:100%;height:auto}     /* in flow -> sizes the container */
   .m-footer-ci-planet{position:absolute;inset:0;width:100%;height:100%}   /* overlay, same coords */
   .m-footer-info{font-style:normal}   /* bottom-anchored by the CI's auto margins above */
-  .m-footer-info p{margin:0;font-weight:600;font-size:12px;line-height:1.5}
+  .m-footer-info p{margin:0;font-weight:600;font-size:13px;line-height:1.5}
   .m-footer-info p + p{margin-top:16px}
   .m-footer-tf{display:flex}
   .m-footer-tf span:first-child{width:159px}
-  .m-footer-copy{margin:48px 0 0;font-weight:600;font-size:12px;line-height:1.5;text-transform:uppercase}
+  .m-footer-copy{margin:48px 0 0;font-weight:600;font-size:13px;line-height:1.5;text-transform:uppercase}
 
   /* --- chapter 09 (mobile): full-menu overlay — PC's circular reveal + halftone canvas (js/main.js
          IIFE ported into mobile.html's inline script) is reused as-is via the global #menu-overlay/
@@ -828,7 +828,7 @@ html.lenis,html.lenis body{height:auto}
   #menu-close img{width:16.29px;height:16.29px}
 
   .m-menu-scroll{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;
-    -webkit-overflow-scrolling:touch;padding:200px 20px 32px;   /* bottom: Figma copy ends 780 → 812-780 */
+    -webkit-overflow-scrolling:touch;padding:24.63vh 20px 32px;   /* nav top responds to height (Figma 200/812); bottom stack is bottom-anchored */
     display:flex;flex-direction:column;
     opacity:0;transform:translateY(18px);
     transition:opacity .45s ease,transform .55s cubic-bezier(.22,1,.36,1)}
@@ -842,15 +842,15 @@ html.lenis,html.lenis body{height:auto}
   .m-menu-badge{height:32px;padding:0 12px;border-radius:999px;background:#FFF;color:#3E3F44;
     display:flex;align-items:center;font-family:'Roboto Serif',serif;font-weight:400;font-size:20px}
 
-  .m-menu-family{margin:52px 0 0;list-style:none;padding:0;display:flex;flex-direction:column;gap:24px}   /* Figma: nav ends ~464.6, family y517; row gap 24 */
-  .m-menu-family li{display:flex;align-items:center;gap:10px;color:#FFF;font-weight:600;font-size:16px}
+  .m-menu-family{margin:auto 0 0;list-style:none;padding:0;display:flex;flex-direction:row;gap:40px}   /* Figma rev: family row joins the bottom-anchored stack (y604); the single auto gap above it absorbs device height */
+  .m-menu-family li{display:flex;align-items:center;gap:10px;color:#FFF;font-weight:600;font-size:18px}
   .m-menu-fam-ico{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
   .m-menu-fam-ico img{width:9px;height:9px}
 
-  .m-menu-bottom{margin-top:auto;display:flex;flex-direction:column;align-items:flex-start;gap:40px}
+  .m-menu-bottom{margin-top:48px;display:flex;flex-direction:column;align-items:flex-start;gap:48px}   /* Figma bottom group: family → 48 → brief → 48 → copy */
   .m-menu-brief{display:inline-flex;align-items:center;gap:12px;padding:10px 12px;
     border:1px solid #FFF;border-radius:8px;color:#FFF;text-decoration:none;font-weight:600;font-size:14px;line-height:1.5}
   .m-menu-brief-ico{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
   .m-menu-brief-ico img{width:11.31px;height:11.31px}
-  .m-menu-copy{margin:0;color:#FFF;font-weight:600;font-size:12px;line-height:1.5}
+  .m-menu-copy{margin:0;color:#FFF;font-weight:600;font-size:13px;line-height:1.5}
 }
