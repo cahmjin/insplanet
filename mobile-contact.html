@@ -144,8 +144,8 @@
         <!-- consent: 24px circle checkbox (Figma) + agreement text, ported from PC .ct-consent -->
         <label class="mc-consent">
           <input type="checkbox" class="mc-consent-input">
-          <span class="mc-consent-box" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6.6 12 10.2 15.6 17.4 8.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <a class="mc-consent-text" href="#">이용약관 및 개인정보처리방침에 동의합니다.</a>
+          <span class="mc-consent-box" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6.6 12 10.2 15.6 17.4 8.4" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="mc-consent-text"><a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의합니다.</span>
         </label>
       </div>
       <button type="submit" class="mc-submit">
@@ -154,6 +154,22 @@
       </button>
     </div>
   </form>
+</section>
+
+<!-- 03 Join Us (Figma 2542:43910): bg photo opens like doors from a centre slit (scroll-scrubbed,
+     PC .ct-join port), text/button fade up once fully open. 채용확인 → recruit popup은 모바일
+     디자인 대기 — href="#" placeholder. -->
+<section class="mc-join">
+  <img class="mc-join-bg" src="assets/contact/joinus-bg-3443cd.png" alt="" aria-hidden="true">
+  <div class="mc-join-inner">
+    <h2 class="mc-join-title">Join Us.</h2>
+    <p class="mc-join-sub">당신의 가능성이 인스플래닛의 미래가 됩니다.</p>
+    <p class="mc-join-desc">우리는 기술과 사람 사이의 가장 완벽한 연결을 고민합니다. 인스플래닛이라는 무대 위에서 당신의 가치를 마음껏 증명해 보세요.</p>
+    <a class="mc-join-btn" href="#">
+      <span>채용확인</span>
+      <span class="mc-arrow" aria-hidden="true"><img src="assets/icon_arrow.svg" alt=""></span>
+    </a>
+  </div>
 </section>
 
 <!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
@@ -222,6 +238,25 @@
       requestAnimationFrame(function(){hero.classList.add('in');}); }
     if(document.fonts&&document.fonts.ready){document.fonts.ready.then(reveal);setTimeout(reveal,800);}
     else reveal();
+  })();
+
+  // Join Us: the bg opens like doors from a centre slit to full, scrubbed by scroll as the section
+  // enters; text/button fade up once fully open (.joined). PC contact.html .ct-join port 1:1.
+  (function(){
+    var sec=document.querySelector('.mc-join'), bg=document.querySelector('.mc-join-bg');
+    if(!sec||!bg)return;
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches){ sec.classList.add('joined'); return; }
+    var SIDE=44.61;   // inset each side at the slit (PC value: (2560-276)/2 / 2560)
+    var ticking=false;
+    function update(){ ticking=false;
+      var vh=innerHeight, top=sec.getBoundingClientRect().top;
+      var p=Math.min(1,Math.max(0,(0.85*vh-top)/(0.67*vh)));
+      var side=(SIDE*(1-p)).toFixed(2);
+      bg.style.clipPath='inset(0 '+side+'% 0 '+side+'%)';
+      sec.classList.toggle('joined', p>=1);
+    }
+    addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+    addEventListener('resize',update); update();
   })();
 
   // footer CI reveal — wordmark blur-fades up, planet scales in a beat later

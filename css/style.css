@@ -1009,13 +1009,16 @@ html.lenis,html.lenis body{height:auto}
   /* consent — 24px circle checkbox (gray check default -> dark fill + white check when agreed) + linked agreement text */
   .mc-consent{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
   .mc-consent-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-  .mc-consent-box{flex:none;width:24px;height:24px;border-radius:50%;background:#FFF;border:1px solid #E5E5E5;
+  .mc-consent-box{flex:none;width:24px;height:24px;border-radius:50%;background:#FFF;border:0.6px solid #E5E5E5;   /* Figma icon: circle stroke 0.6, check 0.9 */
     display:grid;place-items:center;color:#E1E1E1;transition:background .15s ease,border-color .15s ease,color .15s ease}
   .mc-consent-box svg{display:block;width:24px;height:24px}
   .mc-consent-input:checked ~ .mc-consent-box{background:#3E3F44;border-color:#3E3F44;color:#FFF}
   .mc-consent-input:focus-visible ~ .mc-consent-box{outline:2px solid #3E3F44;outline-offset:2px}
+  /* Figma ts1: only 이용약관/개인정보처리방침 are underlined SemiBold dark — the rest of the
+     sentence stays plain gray (PC keeps the whole line plain; mobile Figma adds the term links) */
   .mc-consent-text{color:#B5B5B5;font-family:inherit;font-weight:400;font-size:14px;line-height:1.5;
-    text-decoration:underline;transition:color .15s ease}
+    text-decoration:none;transition:color .15s ease}
+  .mc-consent-text a{color:#3E3F44;font-weight:600;text-decoration:underline;text-underline-offset:2px}
   .mc-consent-input:checked ~ .mc-consent-text{color:#3E3F44;font-weight:600}
 
   /* submit — gray/inactive until every required field above is filled, dark/active once ready (ported
@@ -1039,6 +1042,29 @@ html.lenis,html.lenis body{height:auto}
   .ct-rv .mc-consent.in,.ct-rv .mc-submit.in{opacity:1;transform:none;pointer-events:auto}
   @media (prefers-reduced-motion:reduce){
     .ct-rv .mc-consent,.ct-rv .mc-submit{opacity:1;transform:none;transition:none;pointer-events:auto}}
+
+  /* ---- 03 Join Us (Figma 2542:43910, 375×680): bg doors-open scrub (inline JS sets clip-path,
+     PC .ct-join port), absolutely placed content per the Figma anchors ---- */
+  .mc-join{position:relative;height:680px;overflow:hidden;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
+  .mc-join-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .mc-join-inner{position:absolute;inset:0}
+  .mc-join-title{margin:0;position:absolute;left:20px;top:80px;
+    font-family:'Cormorant Garamond',serif;font-weight:600;font-size:72px;line-height:1.21;letter-spacing:-0.01em}
+  .mc-join-sub{margin:0;position:absolute;left:20px;top:191px;width:335px;font-weight:600;font-size:16px;line-height:1.5;word-break:keep-all}
+  .mc-join-desc{margin:0;position:absolute;left:20px;top:231px;width:335px;font-weight:400;font-size:15px;line-height:1.5;word-break:keep-all}
+  .mc-join-btn{position:absolute;left:20px;top:420px;width:208px;height:64px;padding:0 24px;
+    display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
+    background:#3E3F44;border-radius:999px;color:#FFF;text-decoration:none;font-weight:600;font-size:16px;line-height:1.5}
+  /* joined reveal (PC .ct-join.joined stagger) */
+  .ct-rv .mc-join-title,.ct-rv .mc-join-sub,.ct-rv .mc-join-desc,.ct-rv .mc-join-btn{
+    opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}
+  .ct-rv .mc-join.joined .mc-join-title{opacity:1;transform:none}
+  .ct-rv .mc-join.joined .mc-join-sub{opacity:1;transform:none;transition-delay:.08s}
+  .ct-rv .mc-join.joined .mc-join-desc{opacity:1;transform:none;transition-delay:.16s}
+  .ct-rv .mc-join.joined .mc-join-btn{opacity:1;transform:none;transition-delay:.24s}
+  @media (prefers-reduced-motion:reduce){
+    .ct-rv .mc-join-title,.ct-rv .mc-join-sub,.ct-rv .mc-join-desc,.ct-rv .mc-join-btn{opacity:1;transform:none;transition:none}}
 
   /* tap feedback (js/tap-feel.js): spring scale on touch — the hover-less mobile "press feel".
      Runs as an ANIMATION (not an :active transition) so it can't collide with elements that

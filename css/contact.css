@@ -154,6 +154,7 @@
 .ct-consent-input:checked ~ .ct-consent-box{background:var(--ct-text);border-color:var(--ct-text);color:#fff}
 .ct-consent-input:focus-visible ~ .ct-consent-box{outline:2px solid var(--ct-text);outline-offset:2px}
 .ct-consent-text{margin:0;color:var(--ct-ph);font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 2*var(--v) + 2*var(--g));line-height:1.5;transition:color .15s ease}
+.ct-consent-text a{color:var(--ct-text);font-weight:600;text-decoration:underline;text-underline-offset:2px}   /* 이용약관/개인정보처리방침 terms only — matches the mobile Figma ts1 style */
 .ct-consent-input:checked ~ .ct-consent-text{color:var(--ct-text);font-weight:600}
 
 /* submit */
