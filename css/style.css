@@ -858,11 +858,13 @@ html.lenis,html.lenis body{height:auto}
   /* --- mobile-contact.html hero — "Hello / Build your value" + intro + Company Brief Download
          (Figma official_05_projects_01_375). Header chrome/footer/menu reuse the shared rules
          above; only the .mc-* hero-specific rules live here. --- */
-  /* one flow group: symbol+title / sub / brief stack in normal flow (fixed 32/40 gaps) so a short
-     viewport can never overlap them — the section grows past 100vh and scrolls instead. Only the
-     group's START anchors to the device height (38.67vh = Figma 314/812). */
+  /* one flow group, BOTTOM-anchored: the brief button sits 4.93vh (40/812) off the viewport bottom
+     and the sub/title stack up from it with fixed 32/40 gaps — shortening the copy moves the TOP of
+     the group down, never the button. Top padding is only a safety clearance for the fixed header;
+     on short viewports the section grows past 100vh and scrolls instead of overlapping. */
   .mc-hero{position:relative;min-height:100vh;background:#FFF;overflow:hidden;
-    display:flex;flex-direction:column;align-items:flex-start;padding:38.67vh 20px 40px}
+    display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
+    padding:120px 20px 5.91vh}   /* bottom: Figma brief ends 764 -> 48/812 */
   /* bg arcs: same look as the home hero's #bg-line circles (border 1px #000 @ 6% opacity),
      but scoped to this section (position:absolute, not fixed) since this page has no #bg-line. */
   .mc-hero-bg{position:absolute;inset:0;overflow:hidden}
@@ -880,14 +882,14 @@ html.lenis,html.lenis body{height:auto}
   .mc-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#F03A3A;
     margin-left:8px;vertical-align:-.025em}   /* baseline like a full stop (PC .ct-dot) — not vertically centred */
 
-  .mc-sub{position:relative;width:100%;max-width:335px;margin-top:32px;display:flex;flex-direction:column;gap:16px;   /* measured gap at 812 (559 - head bottom 527) */
+  .mc-sub{position:relative;width:100%;max-width:335px;margin-top:24px;display:flex;flex-direction:column;gap:16px;   /* Figma rev: head ends ~565, sub y589 */
     color:#3E3F44}
   .mc-sub-head{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;   /* body has no default font — must be explicit */
     font-weight:600;font-size:16px;line-height:1.5;word-break:keep-all}
   .mc-sub-body{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
     font-weight:400;font-size:15px;line-height:1.5;word-break:keep-all}   /* 어절 단위 줄바꿈 — CJK 기본은 글자 단위라 "당신의"가 중간에 잘림 */
 
-  .mc-brief{position:relative;margin-top:40px;   /* measured gap at 812 (brief 729 - sub bottom 689); bottom space = hero padding-bottom */
+  .mc-brief{position:relative;margin-top:48px;   /* Figma rev: sub ends ~675, brief y723; bottom space = hero padding-bottom */
     display:inline-flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;
     border:1px solid #3E3F44;border-radius:8px;color:#3E3F44;text-decoration:none;background:#FFF;
     font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:600;font-size:14px;line-height:1.5}
