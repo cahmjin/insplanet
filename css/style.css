@@ -948,6 +948,83 @@ html.lenis,html.lenis body{height:auto}
   @media (prefers-reduced-motion:reduce){
     .ct-rv .mc-field{opacity:1;transform:none;transition:none;pointer-events:auto}}
 
+  /* --- mobile-contact.html form / step 2: 의뢰인 정보 + 프로젝트 내용 + 동의 + 제출 (Figma 2520:43495) —
+         ports PC contact.css's .ct-input/.ct-cell/.ct-hint, .ct-textarea, .ct-file*, .ct-consent*,
+         .ct-submit 1:1. sizes are the 375 Figma values (PC has no matching breakpoint here). --- */
+  .mc-fields2{gap:120px}
+  .mc-content-group{display:flex;flex-direction:column;gap:32px}   /* 프로젝트 내용 field + consent, 32px apart (PC's .ct-content-group is 48 — mobile Figma is tighter) */
+  .mc-form2-inner{margin:0;border:0;padding:0}
+  .mc-field-label--lg{font-size:20px}   /* 프로젝트 내용 label only */
+
+  .mc-inputs{display:flex;flex-direction:column;gap:20px}
+  .mc-input-row{display:flex;gap:20px}
+  .mc-input{flex:1;min-width:0;height:56px;padding:0 24px;background:#FFF;border:1px solid #E5E5E5;
+    border-radius:12px;color:#3E3F44;font-family:inherit;font-weight:600;font-size:14px;line-height:1.5;outline:none}
+  .mc-input::placeholder{color:#B5B5B5;font-weight:400}
+  .mc-input:focus{border-color:#3E3F44}
+  /* input cell: relative wrapper so the Korean-detected tooltip can anchor to the field — ported from PC .ct-cell/.ct-hint */
+  .mc-cell{flex:1;min-width:0;position:relative;display:flex}
+  .mc-hint{position:absolute;left:16px;top:calc(100% + 10px);z-index:6;
+    display:inline-flex;align-items:center;gap:8px;padding:8px 12px;
+    background:#FFF;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.16),0 0 0 1px rgba(0,0,0,.05);
+    white-space:nowrap;pointer-events:none;
+    opacity:0;transform:translateY(-4px) scale(.98);transform-origin:20px -8px;
+    transition:opacity .16s ease,transform .16s ease}
+  .mc-cell.show-hint .mc-hint{opacity:1;transform:none}
+  .mc-hint::before{content:"";position:absolute;left:18px;top:-5px;width:10px;height:10px;background:#FFF;
+    border-radius:2px;transform:rotate(45deg);box-shadow:-2px -2px 3px rgba(0,0,0,.04)}
+  .mc-hint-ico{flex:none;width:20px;height:20px;border-radius:6px;background:#F5A623;color:#FFF;
+    display:grid;place-items:center;font-weight:800;font-size:13px;line-height:1}
+  .mc-hint-msg{color:#3E3F44;font-weight:500;font-size:13px;line-height:1.3}
+
+  /* project content — textarea + file attach row */
+  .mc-textarea{width:100%;margin-top:24px;height:280px;padding:24px;background:#FFF;border:1px solid #E5E5E5;
+    border-radius:12px;resize:none;color:#3E3F44;font-family:inherit;font-weight:600;font-size:14px;line-height:1.5;outline:none}
+  .mc-textarea::placeholder{color:#B5B5B5;font-weight:400}
+  .mc-textarea:focus{border-color:#3E3F44}
+  .mc-file{display:flex;gap:16px;margin-top:16px}
+  .mc-file-name{flex:1;min-width:0;cursor:default;caret-color:transparent}   /* empty: no caret; the button opens the dialog */
+  .mc-file-name:not(:placeholder-shown){cursor:text;caret-color:#3E3F44}    /* file attached: text caret so Backspace-to-remove reads as keyboard-editable */
+  .mc-file-name:placeholder-shown:focus{border-color:#E5E5E5}               /* no focus styling until a file is attached */
+  .mc-file-btn{flex:none;height:56px;padding:0 24px;display:inline-flex;align-items:center;white-space:nowrap;
+    background:#FFF;border:1px solid #3E3F44;border-radius:8px;cursor:pointer;color:#3E3F44;
+    font-family:inherit;font-weight:600;font-size:14px;line-height:1.5;transition:opacity .2s ease}
+  .mc-file-btn:active{opacity:.6}
+
+  /* consent — 24px circle checkbox (gray check default -> dark fill + white check when agreed) + linked agreement text */
+  .mc-consent{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+  .mc-consent-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+  .mc-consent-box{flex:none;width:24px;height:24px;border-radius:50%;background:#FFF;border:1px solid #E5E5E5;
+    display:grid;place-items:center;color:#E1E1E1;transition:background .15s ease,border-color .15s ease,color .15s ease}
+  .mc-consent-box svg{display:block;width:24px;height:24px}
+  .mc-consent-input:checked ~ .mc-consent-box{background:#3E3F44;border-color:#3E3F44;color:#FFF}
+  .mc-consent-input:focus-visible ~ .mc-consent-box{outline:2px solid #3E3F44;outline-offset:2px}
+  .mc-consent-text{color:#B5B5B5;font-family:inherit;font-weight:400;font-size:14px;line-height:1.5;
+    text-decoration:underline;transition:color .15s ease}
+  .mc-consent-input:checked ~ .mc-consent-text{color:#3E3F44;font-weight:600}
+
+  /* submit — gray/inactive until every required field above is filled, dark/active once ready (ported
+     from PC .ct-submit gating states) */
+  .mc-submit{width:208px;height:64px;padding:0 24px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
+    background:#B5B5B5;border:none;border-radius:999px;cursor:pointer;color:#FFF;
+    font-family:inherit;font-weight:600;font-size:16px;line-height:1.5;transition:background-color .25s ease,opacity .2s ease}
+  .mc-submit.is-ready{background:#3E3F44}
+  .mc-submit.is-ready:hover .mc-arrow img{animation:project-arrow-cycle .55s cubic-bezier(.22,1,.36,1)}
+  .mc-submit:not(.is-ready):hover{background:#A6A7AD}
+  .mc-arrow{display:grid;place-items:center;width:20px;height:20px;flex:none}
+  .mc-arrow img{width:11.31px;height:11.31px;display:block}
+  /* jump-to-missing: a brief red ring pulses on the first unfilled field when 문의하기 is pressed early */
+  @keyframes mc-flash{0%{box-shadow:0 0 0 0 rgba(240,58,58,0)}12%{box-shadow:0 0 0 3px rgba(240,58,58,.30)}100%{box-shadow:0 0 0 0 rgba(240,58,58,0)}}
+  .mc-flash{animation:mc-flash 1s ease}
+
+  /* rise reveal: consent + submit join the same html.ct-rv IO reveal as .mc-field (step 1's rule above
+     already covers .mc-field, which step 2 reuses; this adds the two step-2-only areas) */
+  .ct-rv .mc-consent,.ct-rv .mc-submit{opacity:0;transform:translateY(48px);pointer-events:none;
+    transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}
+  .ct-rv .mc-consent.in,.ct-rv .mc-submit.in{opacity:1;transform:none;pointer-events:auto}
+  @media (prefers-reduced-motion:reduce){
+    .ct-rv .mc-consent,.ct-rv .mc-submit{opacity:1;transform:none;transition:none;pointer-events:auto}}
+
   /* tap feedback (js/tap-feel.js): spring scale on touch — the hover-less mobile "press feel".
      Runs as an ANIMATION (not an :active transition) so it can't collide with elements that
      carry their own delayed transform transitions (reveals). */

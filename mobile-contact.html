@@ -97,6 +97,65 @@
   </div>
 </section>
 
+<!-- 02 form / step 2: 의뢰인 정보 + 프로젝트 내용 + 동의 + 제출 (Figma 2520:43495). ports PC contact.html's
+     .ct-input/.ct-hint filter+tooltip, .ct-file* attach, .ct-consent toggle and .ct-submit gating+jump
+     interactions 1:1 (see inline script below); actual send is the publisher's job, same as PC. -->
+<section class="mc-form mc-form2">
+  <div class="mc-form-headwrap">
+    <h2 class="mc-form-head"><span class="mc-line">의뢰하시는 분의</span><span class="mc-line">정보와 내용을 확인할께요.</span></h2>
+  </div>
+  <form class="mc-form2-inner" autocomplete="off">
+    <div class="mc-fields mc-fields2">
+      <div class="mc-field">
+        <p class="mc-field-label">의뢰인 정보</p>
+        <div class="mc-inputs">
+          <div class="mc-input-row">
+            <input class="mc-input" type="text" placeholder="기업명*">
+            <input class="mc-input" type="text" placeholder="성함*">
+          </div>
+          <div class="mc-input-row">
+            <div class="mc-cell">
+              <input class="mc-input" type="tel" inputmode="numeric" data-filter="num" placeholder="연락처*">
+              <span class="mc-hint" role="alert"><span class="mc-hint-ico" aria-hidden="true">!</span><span class="mc-hint-msg">숫자만 입력할 수 있어요.</span></span>
+            </div>
+            <div class="mc-cell">
+              <input class="mc-input" type="email" inputmode="email" data-filter="ascii" placeholder="이메일*">
+              <span class="mc-hint" role="alert"><span class="mc-hint-ico" aria-hidden="true">!</span><span class="mc-hint-msg">영문으로 입력해 주세요.</span></span>
+            </div>
+          </div>
+          <div class="mc-input-row">
+            <div class="mc-cell">
+              <input class="mc-input" type="url" inputmode="url" data-filter="ascii" placeholder="기존 사이트 URL">
+              <span class="mc-hint" role="alert"><span class="mc-hint-ico" aria-hidden="true">!</span><span class="mc-hint-msg">영문으로 입력해 주세요.</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mc-content-group">
+        <div class="mc-field">
+          <p class="mc-field-label mc-field-label--lg">프로젝트 내용</p>
+          <textarea class="mc-textarea" placeholder="구체적일수록 자세한 상담이 가능해요."></textarea>
+          <div class="mc-file">
+            <input class="mc-input mc-file-name" type="text" inputmode="none" aria-readonly="true" placeholder="최대 50MB 까지 첨부가능">
+            <button type="button" class="mc-file-btn">파일첨부</button>
+            <input type="file" class="mc-file-input" hidden>
+          </div>
+        </div>
+        <!-- consent: 24px circle checkbox (Figma) + agreement text, ported from PC .ct-consent -->
+        <label class="mc-consent">
+          <input type="checkbox" class="mc-consent-input">
+          <span class="mc-consent-box" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6.6 12 10.2 15.6 17.4 8.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <a class="mc-consent-text" href="#">이용약관 및 개인정보처리방침에 동의합니다.</a>
+        </label>
+      </div>
+      <button type="submit" class="mc-submit">
+        <span>문의하기</span>
+        <span class="mc-arrow" aria-hidden="true"><img src="assets/icon_arrow.svg" alt=""></span>
+      </button>
+    </div>
+  </form>
+</section>
+
 <!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
 <div id="bg-line">
   <span class="circ circ-1"></span>
@@ -196,12 +255,15 @@
     addEventListener('resize',update); update();
   })();
 
-  // form fields rise + fade in as they scroll into view (same elastic rise as .mc-svc-card). ported from
-  // PC contact.html's .ct-field IO reveal. graceful: no JS / reduced-motion -> everything stays visible.
+  // form areas rise + fade in as they scroll into view (same elastic rise as .mc-svc-card). ported from
+  // PC contact.html's .ct-field/.ct-consent/.ct-submit IO reveal. graceful: no JS / reduced-motion ->
+  // everything stays visible. two <section class="mc-form"> steps exist (chips step + step 2 below), so
+  // areas are gathered across BOTH via a document-wide selector rather than a single querySelector('.mc-form').
   (function(){
-    var html=document.documentElement, form=document.querySelector('.mc-form');
-    if(!form){ html.classList.remove('ct-rv'); return; }
-    var areasNL=form.querySelectorAll('.mc-field'); var areas=[]; for(var i=0;i<areasNL.length;i++)areas.push(areasNL[i]);
+    var html=document.documentElement, forms=document.querySelectorAll('.mc-form');
+    if(!forms.length){ html.classList.remove('ct-rv'); return; }
+    var areasNL=document.querySelectorAll('.mc-form .mc-field, .mc-form .mc-consent, .mc-form .mc-submit');
+    var areas=[]; for(var i=0;i<areasNL.length;i++)areas.push(areasNL[i]);
     if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;   // CSS media query keeps areas visible
     if(!areas.length||!('IntersectionObserver'in window)){ html.classList.remove('ct-rv'); return; }   // unhide if we can't observe
     var io=new IntersectionObserver(function(es,o){
@@ -231,6 +293,113 @@
         }
       })(groupsNL[g]);
     }
+  })();
+
+  // step 2 client-info input restrictions: 연락처 = digits only, 이메일/URL = ASCII only (blocks Korean) —
+  // filter live, keep caret. ported 1:1 from PC contact.html's .ct-input[data-filter] handler.
+  (function(){
+    var HANGUL=/[ᄀ-ᇿ㄰-㆏가-힣]/;   // conjoining + compatibility jamo + composed syllables
+    var f={ num:function(v){return v.replace(/[^0-9]/g,'');}, ascii:function(v){return v.replace(/[^\x00-\x7F]/g,'');} };
+    var inputsNL=document.querySelectorAll('.mc-input[data-filter]');
+    for(var i=0;i<inputsNL.length;i++){
+      (function(inp){
+        var fn=f[inp.dataset.filter]; if(!fn)return;
+        var cell=inp.closest('.mc-cell'); var t;
+        // keyboard in Korean (IME) state -> composes Hangul: surface the tooltip the instant it's detected
+        function showHint(){ if(!cell)return; cell.classList.add('show-hint'); clearTimeout(t); t=setTimeout(function(){cell.classList.remove('show-hint');},2600); }
+        inp.addEventListener('compositionupdate',function(e){ if(HANGUL.test(e.data||'')) showHint(); });
+        inp.addEventListener('input',function(){
+          var start=inp.selectionStart, before=inp.value, after=fn(before);
+          if(after!==before){ showHint();   // field rejected a character -> tooltip
+            inp.value=after; var pos=Math.max(0,start-(before.length-after.length)); try{inp.setSelectionRange(pos,pos);}catch(e){} }
+        });
+      })(inputsNL[i]);
+    }
+  })();
+
+  // step 2 file attach: ONLY the 파일첨부 button opens the native dialog; show the name, cap 50MB.
+  // ported 1:1 from PC contact.html's file-attach handler (value-locked name field, Backspace removes).
+  (function(){
+    var btn=document.querySelector('.mc-file-btn'), input=document.querySelector('.mc-file-input'), name=document.querySelector('.mc-file-name');
+    if(!btn||!input||!name)return;
+    var MAX=50*1024*1024;                               // 50MB
+    var official='';                                    // the only legitimate value (picker-set or empty)
+    function setName(v){ official=v; name.value=v; }
+    function clear(){ input.value=''; setName(''); }
+    function lock(){ if(name.value!==official) name.value=official; }   // wipe anything typed back, incl. Korean
+    btn.addEventListener('click',function(){ input.click(); });
+    input.addEventListener('change',function(){
+      var file=input.files[0]; if(!file)return;
+      if(file.size>MAX){ alert('최대 50MB까지 첨부할 수 있어요.'); clear(); return; }
+      setName(file.name); try{name.focus({preventScroll:true});}catch(e){}
+    });
+    name.addEventListener('keydown',function(e){ if((e.key==='Backspace'||e.key==='Delete')&&official){ e.preventDefault(); clear(); } });
+    name.addEventListener('beforeinput',function(e){ e.preventDefault(); });
+    name.addEventListener('input',lock);
+    name.addEventListener('compositionend',lock);
+  })();
+
+  // step 2 기존 사이트 URL: pre-fill the scheme on focus so the user only types the domain; clear on blur if
+  // left at just the prefix. ported 1:1 from PC contact.html.
+  (function(){
+    var url=document.querySelector('.mc-input[type="url"]'); if(!url)return;
+    var PREFIX='https://www.';
+    url.addEventListener('focus',function(){ if(url.value!=='')return;
+      url.value=PREFIX;
+      function caret(){ try{url.setSelectionRange(PREFIX.length,PREFIX.length);}catch(e){} }
+      caret(); setTimeout(caret,0);   // re-place the caret at the end after a click's mouseup
+    });
+    url.addEventListener('blur',function(){ if(url.value===PREFIX) url.value=''; });
+  })();
+
+  // step 2 submit gating + jump-to-first-missing: the 문의하기 button stays inactive (gray) until every
+  // required field is filled/checked — from step 1's 프로젝트 업무 범위 chips down through step 2's consent
+  // checkbox (both steps sit in one visual flow, same as PC's single ct-form-inner covering both blocks).
+  // pressing it while incomplete scrolls to the first missing field and pulses it. 파일첨부/내용/URL are
+  // optional. ported 1:1 from PC contact.html's gating logic; actual submission is wired by the publisher.
+  (function(){
+    var root=document.getElementById('page-root'), form=document.querySelector('.mc-form2-inner'), btn=document.querySelector('.mc-submit');
+    if(!root||!form||!btn)return;
+    var F=[];   // required fields in visual order: {ok, scroll, focus, flash}
+    var chipsNL=document.querySelectorAll('.mc-chips');
+    for(var i=0;i<chipsNL.length;i++){
+      (function(g){
+        F.push({ ok:function(){ return !!g.querySelector('.mc-chip.is-selected'); }, scroll:g.closest('.mc-field'), focus:g.querySelector('.mc-chip'), flash:g });
+      })(chipsNL[i]);
+    }
+    var clientInputsNL=form.querySelectorAll('.mc-inputs .mc-input');   // client info (excludes the readonly-behaviour file-name field)
+    for(var j=0;j<clientInputsNL.length;j++){
+      (function(inp){
+        if(inp.type==='url')return;   // 기존 사이트 URL = optional (기업명/성함/연락처/이메일만 필수)
+        F.push({ ok:function(){ return inp.value.trim()!==''; }, scroll:inp, focus:inp, flash:inp });
+      })(clientInputsNL[j]);
+    }
+    // 프로젝트 내용(textarea) = optional — not gated
+    var cb=form.querySelector('.mc-consent-input'), box=form.querySelector('.mc-consent-box');
+    if(cb)F.push({ ok:function(){ return cb.checked; }, scroll:document.querySelector('.mc-consent'), focus:cb, flash:box });
+
+    function refresh(){
+      var ready=true;
+      for(var k=0;k<F.length;k++){ if(!F[k].ok()){ ready=false; break; } }
+      btn.classList.toggle('is-ready',ready);
+    }
+    function jump(f){
+      var off=-Math.round(innerHeight*0.28);
+      if(window.__lenis&&window.__lenis.scrollTo) window.__lenis.scrollTo(f.scroll,{offset:off,duration:1});
+      else f.scroll.scrollIntoView({behavior:'smooth',block:'center'});
+      setTimeout(function(){ try{f.focus.focus({preventScroll:true});}catch(e){} },650);
+      var fe=f.flash; if(fe){ fe.classList.remove('mc-flash'); void fe.offsetWidth; fe.classList.add('mc-flash'); setTimeout(function(){fe.classList.remove('mc-flash');},1000); }
+    }
+    form.addEventListener('submit',function(e){ e.preventDefault();
+      var bad=null;
+      for(var k=0;k<F.length;k++){ if(!F[k].ok()){ bad=F[k]; break; } }
+      if(bad){ jump(bad); return; }
+      // all required fields filled — submission wiring is the publisher's job (same as PC)
+    });
+    root.addEventListener('input',refresh);
+    root.addEventListener('change',refresh);
+    root.addEventListener('click',refresh);   // chip toggles: class is set during the chip's own click, before this bubbles
+    refresh();
   })();
 </script>
 <!-- mobile full-menu overlay (shared across ≤767 pages): injects #menu-overlay markup + wires open/close -->
