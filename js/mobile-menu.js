@@ -15,9 +15,9 @@
       '<div id="menu-panel"></div>' +
       '<div class="m-menu-scroll" data-lenis-prevent>' +
         '<nav class="m-menu-nav">' +
-          '<a class="m-menu-item" href="#"><span>Projects</span><span class="m-menu-badge">42</span></a>' +
+          '<a class="m-menu-item" href="mobile-projects.html"><span>Projects</span><span class="m-menu-badge">42</span></a>' +
           '<a class="m-menu-item" href="#"><span>About</span></a>' +
-          '<a class="m-menu-item" href="mobile-contact.html"><span>Contact</span></a>' +   // Projects/About stay "#" until their mobile pages exist
+          '<a class="m-menu-item" href="mobile-contact.html"><span>Contact</span></a>' +   // About stays "#" until its mobile page exists
         '</nav>' +
         '<ul class="m-menu-family">' +
           '<li><span>RoAI</span><span class="m-menu-fam-ico"><img src="assets/icon_arrow_round.svg" alt=""></span></li>' +
@@ -162,6 +162,13 @@
       if(root){root.style.transition='opacity .25s ease';root.style.opacity='0';}
       setTimeout(function(){location.href=href;},260);
     }
+    // bfcache restore brings the inline opacity:0 back with it — clear it so Back never
+    // lands on a blank page (PC parity: main.js pageshow guard)
+    addEventListener('pageshow',function(e){
+      if(!e.persisted)return;
+      var root=document.getElementById('page-root');
+      if(root){root.style.transition='';root.style.opacity='';}
+    });
 
     var logo=document.getElementById('menu-logo');
     if(logo){
@@ -177,25 +184,36 @@
       });
     }
 
-    // current-page menu item -> dimmed + label struck (PC shared-ui.js is-current parity);
-    // clicking it just closes the menu instead of reloading. Other real links leave with the fade.
+    // current-page menu item -> dimmed + label struck (PC shared-ui.js is-current parity) AND
+    // the href is REMOVED — the current page's item is NOT a link at all (PC full-menu rule),
+    // so a tap can never navigate no matter what else happens; it just closes the menu.
+    // Detection: full-path compare with a basename fallback so it holds under clean-URL
+    // serving (/mobile-contact), direct .html serving (/mobile-contact.html) and file://.
     var np=function(p){return p.replace(/\.html?$/i,'').replace(/(^|\/)index$/i,'$1');};
-    var here=np(location.pathname);
+    var here=np(location.pathname), hereBase=here.split('/').pop();
     [].slice.call(overlay.querySelectorAll('.m-menu-nav .m-menu-item[href]')).forEach(function(a){
       var href=a.getAttribute('href');
       if(!href||href.charAt(0)==='#')return;
       var same=false;
-      try{ same = np(new URL(a.href,location.href).pathname)===here; }catch(_){}
-      if(same)a.classList.add('is-current');
+      try{
+        var p=np(new URL(a.href,location.href).pathname), pBase=p.split('/').pop();
+        same = p===here || (pBase!=='' && pBase===hereBase);
+      }catch(_){}
+      if(same){
+        a.classList.add('is-current');
+        a.removeAttribute('href');            // not a link anymore — default navigation is impossible
+        a.setAttribute('aria-current','page');
+      }
       a.addEventListener('click',function(e){
         e.preventDefault();
-        if(same){ close(); return; }
+        if(same)return;   // current page: dead item — no nav, no close (PC main.js parity)
         leaveTo(href);
       });
     });
 
-    // header chrome links (CI logo / Let's Talk) get the same leave fade
-    [].slice.call(document.querySelectorAll('#ci-logo,#lets-talk')).forEach(function(a){
+    // header chrome links (CI logo / Let's Talk) + in-content internal links (See More Projects)
+    // get the same leave fade
+    [].slice.call(document.querySelectorAll('#ci-logo,#lets-talk,.m-proj-more')).forEach(function(a){
       a.addEventListener('click',function(e){
         var href=a.getAttribute('href');
         if(!href||href.charAt(0)==='#')return;
