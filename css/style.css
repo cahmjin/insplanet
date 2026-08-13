@@ -1045,7 +1045,7 @@ html.lenis,html.lenis body{height:auto}
 
   /* ---- 03 Join Us (Figma 2542:43910, 375×680): bg doors-open scrub (inline JS sets clip-path,
      PC .ct-join port), absolutely placed content per the Figma anchors ---- */
-  .mc-join{position:relative;height:680px;overflow:hidden;
+  .mc-join{position:relative;z-index:1;height:680px;overflow:hidden;   /* above the fixed #bg-line so the arcs sit behind the photo */
     font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
   .mc-join-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .mc-join-inner{position:absolute;inset:0}
