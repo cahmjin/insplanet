@@ -151,6 +151,23 @@
     }
     openBtn.addEventListener('click',open);
     closeBtn.addEventListener('click',close);
+
+    // menu logo -> home, PC parity (main.js #menu-logo): on the mobile HOME close + return to the
+    // top (the jump happens while the dark panel still covers, so it reads as a clean re-entry);
+    // on any other mobile page navigate home.
+    var logo=document.getElementById('menu-logo');
+    if(logo){
+      logo.style.cursor='pointer';
+      logo.addEventListener('click',function(){
+        if(/(^|\/)mobile(\.html)?$/.test(location.pathname)){
+          close();   // first: restarts Lenis (a stopped Lenis ignores scrollTo) — the panel still covers while it shrinks, hiding the jump
+          if(window.__lenis)window.__lenis.scrollTo(0,{immediate:true,force:true});
+          else window.scrollTo(0,0);
+        } else {
+          location.href='mobile.html';
+        }
+      });
+    }
     addEventListener('keydown',function(e){if(e.key==='Escape'&&overlay.classList.contains('open'))close();});
   })();
 })();
