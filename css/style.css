@@ -854,4 +854,69 @@ html.lenis,html.lenis body{height:auto}
   .m-menu-brief-ico{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
   .m-menu-brief-ico img{width:11.31px;height:11.31px}
   .m-menu-copy{margin:0;color:#FFF;font-weight:600;font-size:13px;line-height:1.5;text-transform:uppercase}
+
+  /* --- mobile-contact.html hero — "Hello / Build your value" + intro + Company Brief Download
+         (Figma official_05_projects_01_375). Header chrome/footer/menu reuse the shared rules
+         above; only the .mc-* hero-specific rules live here. --- */
+  /* one flow group: symbol+title / sub / brief stack in normal flow (fixed 32/40 gaps) so a short
+     viewport can never overlap them — the section grows past 100vh and scrolls instead. Only the
+     group's START anchors to the device height (38.67vh = Figma 314/812). */
+  .mc-hero{position:relative;min-height:100vh;background:#FFF;overflow:hidden;
+    display:flex;flex-direction:column;align-items:flex-start;padding:38.67vh 20px 40px}
+  /* bg arcs: same look as the home hero's #bg-line circles (border 1px #000 @ 6% opacity),
+     but scoped to this section (position:absolute, not fixed) since this page has no #bg-line. */
+  .mc-hero-bg{position:absolute;inset:0;overflow:hidden}
+  .mc-hero-bg .circ{position:absolute;border-radius:50%;border:1px solid #000;opacity:.06;width:160.8vw;height:160.8vw}
+  .mc-hero-bg .circ-1{left:35.2vw;top:-0.8vw}
+  .mc-hero-bg .circ-2{left:0.53vw;top:13.87vw}
+
+  .mc-head{position:relative}   /* in flow — start point comes from the hero's 38.67vh padding-top */
+  .mc-symbol{display:block;width:117px;height:6px}
+  .mc-title{margin:16px 0 0;font-family:'Cormorant Garamond',serif;font-weight:600;color:#3E3F44;
+    display:flex;flex-direction:column;align-items:flex-start;line-height:1.211}   /* 16px gap: symbol y314+6 -> title y336 */
+  .mc-t1{font-size:72px}
+  .mc-t2{font-size:80px;margin-top:-32px}
+  .mc-t3{font-size:72px;margin-top:-48px}
+  .mc-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#F03A3A;
+    margin-left:8px;vertical-align:-.025em}   /* baseline like a full stop (PC .ct-dot) — not vertically centred */
+
+  .mc-sub{position:relative;width:100%;max-width:335px;margin-top:32px;display:flex;flex-direction:column;gap:16px;   /* measured gap at 812 (559 - head bottom 527) */
+    color:#3E3F44}
+  .mc-sub-head{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;   /* body has no default font — must be explicit */
+    font-weight:600;font-size:16px;line-height:1.5;word-break:keep-all}
+  .mc-sub-body{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-weight:400;font-size:15px;line-height:1.5;word-break:keep-all}   /* 어절 단위 줄바꿈 — CJK 기본은 글자 단위라 "당신의"가 중간에 잘림 */
+
+  .mc-brief{position:relative;margin-top:40px;   /* measured gap at 812 (brief 729 - sub bottom 689); bottom space = hero padding-bottom */
+    display:inline-flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;
+    border:1px solid #3E3F44;border-radius:8px;color:#3E3F44;text-decoration:none;background:#FFF;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:600;font-size:14px;line-height:1.5}
+  .mc-brief-ico{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
+  .mc-brief-ico img{width:11.31px;height:11.31px;
+    filter:brightness(.25)}   /* icon_download.svg is a fixed WHITE stroke (no currentColor) — .m-menu-brief-ico
+       gets away with it on the dark menu panel, but this button sits on #FFF, so darken it to
+       approximate #3E3F44 (white * .25 ≈ #3F3F3F) rather than adding a second SVG asset */
+
+  /* load reveal — PC contact hero port (contact.css .ct-hero): title lines settle from a soft blur
+     (.in added by the inline script once the serif webfont is ready), the intro follows, the brief
+     button joins last, then the red dot stamps in with a bounce. 3 title lines on mobile (PC has 2)
+     -> stagger extends 0/.14/.28 and the dot shifts to ~1.34s. */
+  .mc-t1,.mc-t2,.mc-t3{opacity:0;filter:blur(18px);transform:translateY(.05em) scale(1.04);transform-origin:left center;
+    transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.22,1,.36,1)}
+  .mc-t2{transition-delay:.14s}
+  .mc-t3{transition-delay:.28s}
+  .mc-dot{opacity:0;transform:scale(0);transform-origin:center center}
+  .mc-sub-head,.mc-sub-body{opacity:0;filter:blur(8px);transform:translateY(10px);
+    transition:opacity .9s ease,filter .9s ease,transform .9s cubic-bezier(.22,1,.36,1)}
+  .mc-sub-head{transition-delay:.5s}
+  .mc-sub-body{transition-delay:.62s}
+  .mc-brief{opacity:0;filter:blur(8px);transform:translateY(10px);
+    transition:opacity .9s ease .74s,filter .9s ease .74s,transform .9s cubic-bezier(.22,1,.36,1) .74s}
+  .mc-hero.in .mc-t1,.mc-hero.in .mc-t2,.mc-hero.in .mc-t3,
+  .mc-hero.in .mc-sub-head,.mc-hero.in .mc-sub-body,.mc-hero.in .mc-brief{opacity:1;filter:blur(0);transform:none}
+  .mc-hero.in .mc-dot{opacity:1;transform:scale(1);
+    transition:transform .42s cubic-bezier(.34,1.56,.64,1) 1.34s,opacity .18s ease 1.32s}
+  @media (prefers-reduced-motion:reduce){
+    .mc-t1,.mc-t2,.mc-t3,.mc-sub-head,.mc-sub-body,.mc-brief{opacity:1;filter:none;transform:none;transition:none}
+    .mc-dot{opacity:1;transform:none}}
 }
