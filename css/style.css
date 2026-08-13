@@ -919,4 +919,11 @@ html.lenis,html.lenis body{height:auto}
   @media (prefers-reduced-motion:reduce){
     .mc-t1,.mc-t2,.mc-t3,.mc-sub-head,.mc-sub-body,.mc-brief{opacity:1;filter:none;transform:none;transition:none}
     .mc-dot{opacity:1;transform:none}}
+
+  /* tap feedback (js/tap-feel.js): spring scale on touch — the hover-less mobile "press feel".
+     Runs as an ANIMATION (not an :active transition) so it can't collide with elements that
+     carry their own delayed transform transitions (reveals). */
+  @keyframes m-tap{0%{transform:scale(1)}35%{transform:scale(.94)}100%{transform:scale(1)}}
+  .is-tapped{animation:m-tap .32s cubic-bezier(.34,1.56,.64,1)}
+  @media (prefers-reduced-motion:reduce){.is-tapped{animation:none}}
 }
