@@ -853,6 +853,10 @@ html.lenis,html.lenis body{height:auto}
     font-family:'Cormorant Garamond',serif;font-weight:600;font-size:64px;line-height:1.211}   /* badge top-aligns like PC (.menu-badge superscript), per Figma row */
   .m-menu-badge{height:32px;padding:0 12px;border-radius:999px;background:#FFF;color:#3E3F44;
     display:flex;align-items:center;font-family:'Roboto Serif',serif;font-weight:400;font-size:20px}
+  /* the page you're on: dimmed + label-only strikethrough (PC .menu-item.is-current parity —
+     the badge span is never crossed) */
+  .m-menu-item.is-current{color:#A1A1A1}
+  .m-menu-item.is-current span:first-child{text-decoration:line-through;text-decoration-thickness:.05em}
 
   .m-menu-family{margin:auto 0 0;list-style:none;padding:0;display:flex;flex-direction:row;gap:40px}   /* Figma rev: family row joins the bottom-anchored stack (y604); the single auto gap above it absorbs device height */
   .m-menu-family li{display:flex;align-items:center;gap:10px;color:#FFF;font-weight:600;font-size:16px}

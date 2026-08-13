@@ -155,6 +155,14 @@
     // menu logo -> home, PC parity (main.js #menu-logo): on the mobile HOME close + return to the
     // top (the jump happens while the dark panel still covers, so it reads as a clean re-entry);
     // on any other mobile page navigate home.
+    // leave fade — PC parity (main.js closeThenGo / global link fade): fade #page-root out,
+    // then navigate. Reads as a soft hand-off into the next page's pg-enter fade.
+    function leaveTo(href){
+      var root=document.getElementById('page-root');
+      if(root){root.style.transition='opacity .25s ease';root.style.opacity='0';}
+      setTimeout(function(){location.href=href;},260);
+    }
+
     var logo=document.getElementById('menu-logo');
     if(logo){
       logo.style.cursor='pointer';
@@ -164,10 +172,49 @@
           if(window.__lenis)window.__lenis.scrollTo(0,{immediate:true,force:true});
           else window.scrollTo(0,0);
         } else {
-          location.href='mobile.html';
+          leaveTo('mobile.html');
         }
       });
     }
+
+    // current-page menu item -> dimmed + label struck (PC shared-ui.js is-current parity);
+    // clicking it just closes the menu instead of reloading. Other real links leave with the fade.
+    var np=function(p){return p.replace(/\.html?$/i,'').replace(/(^|\/)index$/i,'$1');};
+    var here=np(location.pathname);
+    [].slice.call(overlay.querySelectorAll('.m-menu-nav .m-menu-item[href]')).forEach(function(a){
+      var href=a.getAttribute('href');
+      if(!href||href.charAt(0)==='#')return;
+      var same=false;
+      try{ same = np(new URL(a.href,location.href).pathname)===here; }catch(_){}
+      if(same)a.classList.add('is-current');
+      a.addEventListener('click',function(e){
+        e.preventDefault();
+        if(same){ close(); return; }
+        leaveTo(href);
+      });
+    });
+
+    // header chrome links (CI logo / Let's Talk) get the same leave fade
+    [].slice.call(document.querySelectorAll('#ci-logo,#lets-talk')).forEach(function(a){
+      a.addEventListener('click',function(e){
+        var href=a.getAttribute('href');
+        if(!href||href.charAt(0)==='#')return;
+        e.preventDefault();
+        leaveTo(href);
+      });
+    });
+
     addEventListener('keydown',function(e){if(e.key==='Escape'&&overlay.classList.contains('open'))close();});
+  })();
+
+  // SCROLL hint hides once the footer is in view (PC main.js parity). #scroll-hint has a global
+  // opacity transition, so toggling the style fades it.
+  (function(){
+    var sh=document.getElementById('scroll-hint'), footer=document.querySelector('.m-footer');
+    if(!sh||!footer||!('IntersectionObserver'in window))return;
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ sh.style.opacity=e.isIntersecting?'0':''; });
+    },{threshold:0});
+    io.observe(footer);
   })();
 })();
