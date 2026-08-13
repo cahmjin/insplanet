@@ -837,7 +837,7 @@ html.lenis,html.lenis body{height:auto}
   @media (prefers-reduced-motion:reduce){
     .m-menu-scroll{opacity:1;transform:none;transition:none}}
 
-  .m-menu-nav{display:flex;flex-direction:column;gap:16px;align-items:flex-start}
+  .m-menu-nav{display:flex;flex-direction:column;gap:0;align-items:flex-start}
   .m-menu-item{display:flex;align-items:flex-start;gap:12px;color:#FFF;text-decoration:none;
     font-family:'Cormorant Garamond',serif;font-weight:600;font-size:64px;line-height:1.211}   /* badge top-aligns like PC (.menu-badge superscript), per Figma row */
   .m-menu-badge{height:32px;padding:0 12px;border-radius:999px;background:#FFF;color:#3E3F44;
