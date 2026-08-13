@@ -14,6 +14,8 @@
      clip, NOT hidden — overflow-x:hidden makes body a scroll container, which
      KILLS position:sticky (used elsewhere on mobile pages). clip blocks the bleed without that. */
 </style>
+<!-- set before paint so the form's scroll-reveal areas start hidden without a flash (PC contact.html parity; removed if JS is off) -->
+<script>document.documentElement.classList.add('ct-rv')</script>
 </head>
 <body>
 <div id="page-root">
@@ -34,7 +36,62 @@
   <a class="mc-brief" href="#">Company Brief Download<span class="mc-brief-ico"><img src="assets/icon_download.svg" alt=""></span></a>
 </section>
 
-<!-- 폼 영역: 피그마 미디자인 — 디자인 나오면 여기에 -->
+<!-- 02 form / step 1: 기본정보 칩 선택 (Figma 2511:43420). 이후 블록(연락처 등)은 디자인 대기 -->
+<section class="mc-form">
+  <div class="mc-form-headwrap">
+    <h2 class="mc-form-head"><span class="mc-line">프로젝트의</span><span class="mc-line">기본정보를 확인할께요.</span></h2>
+  </div>
+  <div class="mc-fields">
+    <div class="mc-field">
+      <p class="mc-field-label">프로젝트 업무 범위</p>
+      <div class="mc-chips" data-multi>
+        <button type="button" class="mc-chip">웹사이트</button>
+        <button type="button" class="mc-chip">앱</button>
+        <button type="button" class="mc-chip">AI</button>
+        <button type="button" class="mc-chip">CMS</button>
+        <button type="button" class="mc-chip">플랫폼</button>
+        <button type="button" class="mc-chip">이커머스</button>
+        <button type="button" class="mc-chip">브랜딩</button>
+        <button type="button" class="mc-chip">유지보수</button>
+        <button type="button" class="mc-chip">기타</button>
+      </div>
+    </div>
+    <div class="mc-field">
+      <p class="mc-field-label">프로젝트 성격</p>
+      <div class="mc-chips">
+        <button type="button" class="mc-chip">신규</button>
+        <button type="button" class="mc-chip">리뉴얼</button>
+        <button type="button" class="mc-chip">부분개편</button>
+        <button type="button" class="mc-chip">컨설팅</button>
+        <button type="button" class="mc-chip">기타</button>
+      </div>
+    </div>
+    <div class="mc-field">
+      <p class="mc-field-label">프로젝트 예산</p>
+      <div class="mc-chips">
+        <button type="button" class="mc-chip">1억 미만</button>
+        <button type="button" class="mc-chip">1~2억</button>
+        <button type="button" class="mc-chip">2~3억</button>
+        <button type="button" class="mc-chip">3~4억</button>
+        <button type="button" class="mc-chip">4~5억</button>
+        <button type="button" class="mc-chip">5억~10억</button>
+        <button type="button" class="mc-chip">미정</button>
+      </div>
+    </div>
+    <div class="mc-field">
+      <p class="mc-field-label">프로젝트 기간</p>
+      <div class="mc-chips">
+        <button type="button" class="mc-chip">2개월</button>
+        <button type="button" class="mc-chip">4개월</button>
+        <button type="button" class="mc-chip">6개월</button>
+        <button type="button" class="mc-chip">8개월</button>
+        <button type="button" class="mc-chip">10개월</button>
+        <button type="button" class="mc-chip">1년 이상</button>
+        <button type="button" class="mc-chip">미정</button>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
 <div id="bg-line">
@@ -102,6 +159,74 @@
       requestAnimationFrame(function(){hero.classList.add('in');}); }
     if(document.fonts&&document.fonts.ready){document.fonts.ready.then(reveal);setTimeout(reveal,800);}
     else reveal();
+  })();
+
+  // form heading: dark colour fills in from the LEFT, line 1 first then line 2, as each heading scrolls
+  // up through the reading zone. Ported 1:1 from PC contact.html's .ct-block-head sweep (.mc-line/--fill).
+  (function(){
+    var headsNL=document.querySelectorAll('.mc-form-head'); if(!headsNL.length)return;
+    var heads=[]; for(var i=0;i<headsNL.length;i++)heads.push(headsNL[i]);
+    var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    function paint(h,p){
+      var linesNL=h.querySelectorAll('.mc-line'); var ws=[]; var total=0, i;
+      for(i=0;i<linesNL.length;i++){ var w=linesNL[i].getBoundingClientRect().width; ws.push(w); total+=w; }
+      if(!total)total=1;
+      var front=p*total;
+      for(i=0;i<linesNL.length;i++){
+        var f=Math.min(1,Math.max(0,front/(ws[i]||1)));
+        linesNL[i].style.setProperty('--fill',(f*100).toFixed(1)+'%');
+        front-=ws[i];
+      }
+    }
+    if(reduce){ for(var i=0;i<heads.length;i++)paint(heads[i],1); return; }
+    var ticking=false;
+    function update(){
+      ticking=false; var vh=innerHeight;
+      for(var i=0;i<heads.length;i++){
+        var h=heads[i], top=h.getBoundingClientRect().top;
+        var p=Math.min(1,Math.max(0,(vh-top)/(vh*0.67)));   // gray when it enters (top=100%vh) -> full at the upper third, gradual over 0.67vh of scroll
+        paint(h,p);
+      }
+    }
+    addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+    addEventListener('resize',update); update();
+  })();
+
+  // form fields rise + fade in as they scroll into view (same elastic rise as .mc-svc-card). ported from
+  // PC contact.html's .ct-field IO reveal. graceful: no JS / reduced-motion -> everything stays visible.
+  (function(){
+    var html=document.documentElement, form=document.querySelector('.mc-form');
+    if(!form){ html.classList.remove('ct-rv'); return; }
+    var areasNL=form.querySelectorAll('.mc-field'); var areas=[]; for(var i=0;i<areasNL.length;i++)areas.push(areasNL[i]);
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;   // CSS media query keeps areas visible
+    if(!areas.length||!('IntersectionObserver'in window)){ html.classList.remove('ct-rv'); return; }   // unhide if we can't observe
+    var io=new IntersectionObserver(function(es,o){
+      for(var i=0;i<es.length;i++){ var e=es[i]; if(e.isIntersecting){ e.target.classList.add('in'); o.unobserve(e.target); } }
+    },{threshold:0.18});
+    for(var i=0;i<areas.length;i++)io.observe(areas[i]);
+  })();
+
+  // chip groups: [data-multi] = multi-select (업무 범위); others = single-select (성격/예산/기간, one per
+  // group, re-click clears). Ported 1:1 from PC contact.html's .ct-chips handler.
+  (function(){
+    var groupsNL=document.querySelectorAll('.mc-chips');
+    for(var g=0; g<groupsNL.length; g++){
+      (function(group){
+        var multi=group.hasAttribute('data-multi');
+        var chipsNL=group.querySelectorAll('.mc-chip');
+        for(var c=0;c<chipsNL.length;c++){
+          (function(chip){
+            chip.addEventListener('click',function(){
+              if(multi){ chip.classList.toggle('is-selected'); return; }
+              var on=chip.classList.contains('is-selected');
+              var allNL=group.querySelectorAll('.mc-chip');
+              for(var k=0;k<allNL.length;k++)allNL[k].classList.remove('is-selected');
+              if(!on) chip.classList.add('is-selected');
+            });
+          })(chipsNL[c]);
+        }
+      })(groupsNL[g]);
+    }
   })();
 </script>
 <!-- mobile full-menu overlay (shared across ≤767 pages): injects #menu-overlay markup + wires open/close -->
