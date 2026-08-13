@@ -61,8 +61,8 @@
   </div>
 </section>
 
-<!-- project grid: 2-col, 8 dummy cards (Figma has no mobile 진행중 design — the toggle just swaps this
-     grid for a plain placeholder message; see report). First row reveals with the hero on load, rows 2-4
+<!-- project grid: 2-col, 8 dummy cards. The 완료/진행중 toggle swaps this grid for the 진행중 card
+     list below (Figma official_05_projects_02_375). First row reveals with the hero on load, rows 2-4
      rise+fade on scroll (PC .pj-grid port). data-category is DUMMY (spread across web/mobile/consulting
      for the filter to demo against) — the publisher replaces this with the DB's real category per card. -->
 <section class="mp-grid-section">
@@ -76,8 +76,51 @@
     <article class="mp-card" data-category="mobile"><img src="images/projects/mobile/pm7.png" alt="" loading="lazy" decoding="async"></article>
     <article class="mp-card" data-category="web"><img src="images/projects/mobile/pm8.png" alt="" loading="lazy" decoding="async"></article>
   </div>
-  <div class="mp-panel mp-empty" data-status-panel="ongoing" hidden>
-    <p class="mp-empty-msg">진행중인 프로젝트는 준비 중입니다.</p>
+  <!-- 진행중 — DUMMY card list (Figma official_05_projects_02_375, node 2590:43560): each card is the
+       mobile variant of a PC .pj-table row — 고객사 logo + 분류 on top, 프로젝트명, 수행기간. Same dummy
+       data as PC's table; assets/projects/table-logo-m.png is the KB placeholder logo (98×48 box).
+       The publisher replaces these cards + per-client logos with the DB-driven list. -->
+  <div class="mp-panel mp-list" data-status-panel="ongoing" hidden>
+    <article class="mp-ocard">
+      <div class="mp-ocard-top"><img class="mp-ocard-logo" src="assets/projects/table-logo-m.png" alt="KB국민은행" loading="lazy" decoding="async"><span class="mp-ocard-cat">Etc.</span></div>
+      <h3 class="mp-ocard-name">KB 직원용 단말화면 개선</h3>
+      <p class="mp-ocard-period">2026.07.01~2027.07.01</p>
+    </article>
+    <article class="mp-ocard">
+      <div class="mp-ocard-top"><img class="mp-ocard-logo" src="assets/projects/table-logo-m.png" alt="KB국민은행" loading="lazy" decoding="async"><span class="mp-ocard-cat">Mobile</span></div>
+      <h3 class="mp-ocard-name">KB스타뱅킹 앱 UX 고도화</h3>
+      <p class="mp-ocard-period">2026.05.01~2026.12.31</p>
+    </article>
+    <article class="mp-ocard">
+      <div class="mp-ocard-top"><img class="mp-ocard-logo" src="assets/projects/table-logo-m.png" alt="KB국민은행" loading="lazy" decoding="async"><span class="mp-ocard-cat">Consulting</span></div>
+      <h3 class="mp-ocard-name">차세대 여신 시스템 구축</h3>
+      <p class="mp-ocard-period">2026.03.15~2027.09.30</p>
+    </article>
+    <article class="mp-ocard">
+      <div class="mp-ocard-top"><img class="mp-ocard-logo" src="assets/projects/table-logo-m.png" alt="KB국민은행" loading="lazy" decoding="async"><span class="mp-ocard-cat">Web</span></div>
+      <h3 class="mp-ocard-name">통합 고객 포털 리뉴얼</h3>
+      <p class="mp-ocard-period">2026.08.01~2027.02.28</p>
+    </article>
+    <article class="mp-ocard">
+      <div class="mp-ocard-top"><img class="mp-ocard-logo" src="assets/projects/table-logo-m.png" alt="KB국민은행" loading="lazy" decoding="async"><span class="mp-ocard-cat">Etc.</span></div>
+      <h3 class="mp-ocard-name">AI 상담 챗봇 도입</h3>
+      <p class="mp-ocard-period">2026.06.01~2027.06.01</p>
+    </article>
+    <article class="mp-ocard">
+      <div class="mp-ocard-top"><img class="mp-ocard-logo" src="assets/projects/table-logo-m.png" alt="KB국민은행" loading="lazy" decoding="async"><span class="mp-ocard-cat">Web</span></div>
+      <h3 class="mp-ocard-name">마이데이터 서비스 구축</h3>
+      <p class="mp-ocard-period">2026.04.01~2026.11.30</p>
+    </article>
+    <article class="mp-ocard">
+      <div class="mp-ocard-top"><img class="mp-ocard-logo" src="assets/projects/table-logo-m.png" alt="KB국민은행" loading="lazy" decoding="async"><span class="mp-ocard-cat">Mobile</span></div>
+      <h3 class="mp-ocard-name">KB증권 MTS 개선</h3>
+      <p class="mp-ocard-period">2026.09.01~2027.03.31</p>
+    </article>
+    <article class="mp-ocard">
+      <div class="mp-ocard-top"><img class="mp-ocard-logo" src="assets/projects/table-logo-m.png" alt="KB국민은행" loading="lazy" decoding="async"><span class="mp-ocard-cat">Web</span></div>
+      <h3 class="mp-ocard-name">임직원 교육 LMS 구축</h3>
+      <p class="mp-ocard-period">2026.07.15~2027.07.15</p>
+    </article>
   </div>
 </section>
 
@@ -165,17 +208,24 @@
   })();
 
   // 완료/진행중 status toggle — PC .pj-toggle port: slides the active fill, swaps the visible panel.
-  // no mobile Figma for 진행중 content, so its panel is a plain placeholder message (see report).
+  // On 진행중 the All category chip is DISABLED (Figma official_05_projects_02_375 shows it at 40%
+  // opacity — the card list has no category filter): the native select gets disabled so the OS
+  // bottom-sheet can't open, and .mp-all dims via .is-disabled. Back on 완료 it re-enables with the
+  // previous category selection intact (the select's value is never touched).
   (function(){
     var toggle=document.querySelector('.mp-toggle'); if(!toggle)return;
     var btns=[].slice.call(toggle.querySelectorAll('.mp-status'));
     var panels=[].slice.call(document.querySelectorAll('.mp-panel[data-status-panel]'));
+    var allChip=document.querySelector('.mp-all');
+    var allSelect=document.querySelector('.mp-all-select');
     btns.forEach(function(b){
       b.addEventListener('click',function(){
         btns.forEach(function(s){ s.classList.toggle('is-active', s===b); s.setAttribute('aria-pressed', s===b ? 'true' : 'false'); });
-        var st=b.dataset.status;
-        toggle.classList.toggle('is-ongoing', st==='ongoing');
+        var st=b.dataset.status, ongoing=(st==='ongoing');
+        toggle.classList.toggle('is-ongoing', ongoing);
         panels.forEach(function(p){ p.hidden = (p.dataset.statusPanel!==st); });
+        if(allSelect) allSelect.disabled=ongoing;
+        if(allChip) allChip.classList.toggle('is-disabled', ongoing);
       });
     });
   })();

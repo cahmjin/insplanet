@@ -1106,6 +1106,11 @@ html.lenis,html.lenis body{height:auto}
     background:#3E3F44;border:none;border-radius:999px;color:#FFF;cursor:pointer;
     font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:600;font-size:14px;line-height:1.5}
   .mp-all-ico{flex:none;width:24px;height:24px}
+  /* disabled while 진행중 is active (Figma official_05_projects_02_375: chip at 40% opacity —
+     the card list has no category filter). The select also gets the disabled ATTRIBUTE (JS),
+     so the OS picker can't open; pointer-events:none keeps iOS from flashing a focus ring. */
+  .mp-all.is-disabled{opacity:.4;cursor:default}
+  .mp-all.is-disabled .mp-all-select{pointer-events:none;cursor:default}
   /* invisible native select, full chip coverage — iOS/Android render this as the system
      bottom-sheet/dropdown picker; font-size:16px prevents iOS Safari's auto-zoom-on-focus */
   .mp-all-select{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:none;
@@ -1151,9 +1156,24 @@ html.lenis,html.lenis body{height:auto}
   .mp-card{position:relative;aspect-ratio:416/560;overflow:hidden;border-radius:20px}   /* PC .pj-card ratio (416×560 @2560 = tablet 259.44×349.25) kept at any col width */
   .mp-card:nth-child(-n+2){border-radius:12px}
   .mp-card img{display:block;width:100%;height:100%;object-fit:cover}
-  /* 진행중 has no mobile Figma content — plain centred placeholder message instead of the PC table */
-  .mp-empty-msg{grid-column:1/-1;margin:0;padding:80px 0;text-align:center;color:#B5B5B5;
-    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:600;font-size:15px;line-height:1.5}
+  /* 진행중 card list (Figma official_05_projects_02_375 node 2590:43560): full-width column, 16px
+     between cards. .mp-list overrides the panel's display:contents with a real layout — it must
+     span both grid tracks (grid-column:1/-1); the .mp-panel[hidden]{display:none} rule above still
+     wins on specificity (0-2-0 vs 0-1-0), so the toggle's hidden swap keeps working. */
+  .mp-list{display:flex;flex-direction:column;gap:16px;grid-column:1/-1}
+  /* card: Figma 335w hug — padding 20/24 with the 1px #E5E5E5 stroke INSIDE, so the CSS border
+     eats 1px of the padding (19/23 + 1, same trick as .mp-toggle). #FFF, r12. Rows stack with
+     no gap: top strip h48 (logo 98×48 vs 분류), name row h80, period row h48 → 216 total. */
+  .mp-ocard{display:flex;flex-direction:column;padding:19px 23px;box-sizing:border-box;
+    background:#FFF;border:1px solid #E5E5E5;border-radius:12px;color:#3E3F44;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
+  .mp-ocard-top{display:flex;align-items:center;justify-content:space-between;gap:10px;height:48px}
+  .mp-ocard-logo{display:block;flex:none;width:98px;height:48px;object-fit:cover}
+  .mp-ocard-cat{font-weight:700;font-size:14px;line-height:1.5}
+  .mp-ocard-name{margin:0;display:flex;align-items:flex-end;height:80px;   /* Figma 2590:43575: name sits at the row bottom */
+    font-weight:700;font-size:20px;line-height:1.5;word-break:keep-all}
+  .mp-ocard-period{margin:0;display:flex;align-items:center;height:48px;
+    font-weight:700;font-size:14px;line-height:1.5}
 
   /* reveal: born-hidden via html.ct-rv (PC .pj-card port — same rise/easing as .mc-field), the inline
      script adds row 1's .in immediately on load and observes rows 2+ on scroll. col 2 lags col 1 by .07s. */
