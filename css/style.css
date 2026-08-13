@@ -1147,7 +1147,7 @@ html.lenis,html.lenis body{height:auto}
     .mp-t1,.mp-t2,.mp-sub-head,.mp-sub-body,.mp-filter{opacity:1;filter:none;transform:none;transition:none}
     .mp-dot{opacity:1;transform:none}}
 
-  /* project grid — 2-col, 8 dummy cards (images/projects/mobile/pm1..8.png). cards 1-2 (row 1) get the
+  /* project grid — 2-col, 8 cards (images/projects/thumb-01..08.png). cards 1-2 (row 1) get the
      Figma's 12px radius, the rest 20px. .mp-panel wraps each status's content with display:contents so
      its children stay direct grid items (the 2-col track). */
   .mp-grid-section{position:relative;z-index:1;padding:80px 20px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
