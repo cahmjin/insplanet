@@ -13,6 +13,11 @@
   html,body{overflow-x:clip}                   /* safety: no horizontal scroll/expansion.
      clip, NOT hidden — overflow-x:hidden makes body a scroll container, which
      KILLS position:sticky (used elsewhere on mobile pages). clip blocks the bleed without that. */
+  /* bg arcs: the FIXED #bg-line chrome (global CSS positions it), sized like mobile.html —
+     stays put while the page scrolls, same as the home hero */
+  #bg-line .circ{width:160.8vw;height:160.8vw;border-radius:50%}
+  #bg-line .circ-1{left:35.2vw;top:-0.8vw}
+  #bg-line .circ-2{left:0.53vw;top:13.87vw}
 </style>
 <!-- set before paint so the form's scroll-reveal areas start hidden without a flash (PC contact.html parity; removed if JS is off) -->
 <script>document.documentElement.classList.add('ct-rv')</script>
@@ -20,7 +25,6 @@
 <body>
 <div id="page-root">
 <section class="mc-hero">
-  <div class="mc-hero-bg" aria-hidden="true"><span class="circ circ-1"></span><span class="circ circ-2"></span></div>
   <div class="mc-head">
     <img class="mc-symbol" src="assets/symbol.svg" alt="">
     <h1 class="mc-title">

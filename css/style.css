@@ -862,15 +862,11 @@ html.lenis,html.lenis body{height:auto}
      and the sub/title stack up from it with fixed 32/40 gaps — shortening the copy moves the TOP of
      the group down, never the button. Top padding is only a safety clearance for the fixed header;
      on short viewports the section grows past 100vh and scrolls instead of overlapping. */
-  .mc-hero{position:relative;min-height:100vh;background:#FFF;overflow:hidden;
+  .mc-hero{position:relative;min-height:100vh;background:transparent;   /* transparent so the fixed #bg-line shows through (body is #fff) */
     display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
     padding:120px 20px 5.91vh}   /* bottom: Figma brief ends 764 -> 48/812 */
-  /* bg arcs: same look as the home hero's #bg-line circles (border 1px #000 @ 6% opacity),
-     but scoped to this section (position:absolute, not fixed) since this page has no #bg-line. */
-  .mc-hero-bg{position:absolute;inset:0;overflow:hidden}
-  .mc-hero-bg .circ{position:absolute;border-radius:50%;border:1px solid #000;opacity:.06;width:160.8vw;height:160.8vw}
-  .mc-hero-bg .circ-1{left:35.2vw;top:-0.8vw}
-  .mc-hero-bg .circ-2{left:0.53vw;top:13.87vw}
+  /* bg arcs come from the FIXED #bg-line chrome (sized in the page's inline style, like mobile.html)
+     — the hero stays transparent so they show through and stay put while the page scrolls */
 
   .mc-head{position:relative}   /* in flow — start point comes from the hero's 38.67vh padding-top */
   .mc-symbol{display:block;width:117px;height:6px}
@@ -927,7 +923,7 @@ html.lenis,html.lenis body{height:auto}
          chip select. Colours/behaviour match PC .ct-block-head/.ct-line/.ct-chip 1:1; sizes are the
          375 Figma values (PC has no matching breakpoint here — mobile design starts flat). --- */
   .mc-form{padding:80px 20px;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
-  .mc-form-headwrap{display:flex;justify-content:center}   /* Figma: heading block sits centred in the gutter, text itself stays left-aligned */
+  .mc-form-headwrap{display:block}   /* left-aligned at the 20px gutter — centring the fit-content block read as fake side padding at wider viewports */
   .mc-form-head{margin:0;font-weight:700;font-size:32px;line-height:1.2}
   /* heading fill sweep: dark colour fills in from the LEFT as it scrolls up (per-line --fill set by the
      inline script, line 1 first then line 2) — same gradient-clip trick as PC .ct-block-head .ct-line */
