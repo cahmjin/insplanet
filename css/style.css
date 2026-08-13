@@ -1145,10 +1145,10 @@ html.lenis,html.lenis body{height:auto}
   /* project grid — 2-col, 8 dummy cards (images/projects/mobile/pm1..8.png). cards 1-2 (row 1) get the
      Figma's 12px radius, the rest 20px. .mp-panel wraps each status's content with display:contents so
      its children stay direct grid items (the 2-col track). */
-  .mp-grid-section{position:relative;z-index:1;background:#FFF;padding:80px 20px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .mp-grid-section{position:relative;z-index:1;padding:80px 20px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
   .mp-panel{display:contents}
   .mp-panel[hidden]{display:none}
-  .mp-card{position:relative;height:216px;overflow:hidden;border-radius:20px}
+  .mp-card{position:relative;aspect-ratio:416/560;overflow:hidden;border-radius:20px}   /* PC .pj-card ratio (416×560 @2560 = tablet 259.44×349.25) kept at any col width */
   .mp-card:nth-child(-n+2){border-radius:12px}
   .mp-card img{display:block;width:100%;height:100%;object-fit:cover}
   /* 진행중 has no mobile Figma content — plain centred placeholder message instead of the PC table */
