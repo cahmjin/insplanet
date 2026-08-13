@@ -441,6 +441,20 @@
     },{threshold:0.2});
     io.observe(section);
   })();
+
+  // chapter 08 reveal: footer CI — wordmark blur-fades up, planet scales in a beat later
+  // (PC .footer.in port from main.js; CSS in style.css ≤767 .m-footer.in)
+  (function(){
+    var footer=document.querySelector('.m-footer');
+    if(!footer)return;
+    if(!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion:reduce)').matches){
+      footer.classList.add('in');return;
+    }
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ footer.classList.add('in'); io.disconnect(); } });
+    },{threshold:0.18});
+    io.observe(footer);
+  })();
 </script>
 <!-- mobile full-menu overlay (shared across ≤767 pages): injects #menu-overlay markup + wires open/close -->
 <script src="js/mobile-menu.js"></script>

@@ -809,6 +809,17 @@ html.lenis,html.lenis body{height:auto}
   .m-footer-ci{position:relative;width:246px;line-height:0;margin:auto 0}   /* centres between header pad and info block */
   .m-footer-ci-wordmark{display:block;width:100%;height:auto}     /* in flow -> sizes the container */
   .m-footer-ci-planet{position:absolute;inset:0;width:100%;height:100%}   /* overlay, same coords */
+  /* CI reveal on scroll-in (.m-footer.in, IO in the page scripts) — PC .footer.in port: wordmark
+     blur-fades up first, then the planet "arrives" with a soft overshoot a beat later */
+  .m-footer-ci-wordmark,.m-footer-ci-planet{opacity:0;will-change:opacity,filter,transform}
+  .m-footer-ci-wordmark{filter:blur(14px);transform:translateY(12px);
+    transition:opacity .9s ease,filter .9s ease,transform .9s cubic-bezier(.22,1,.36,1)}
+  .m-footer-ci-planet{transform-origin:90% 33%;transform:scale(.35);
+    transition:opacity .4s ease .24s,transform .55s cubic-bezier(.34,1.56,.64,1) .24s}
+  .m-footer.in .m-footer-ci-wordmark{opacity:1;filter:blur(0);transform:translateY(0)}
+  .m-footer.in .m-footer-ci-planet{opacity:1;transform:scale(1)}
+  @media (prefers-reduced-motion:reduce){
+    .m-footer-ci-wordmark,.m-footer-ci-planet{opacity:1;filter:none;transform:none;transition:none}}
   .m-footer-info{font-style:normal}   /* bottom-anchored by the CI's auto margins above */
   .m-footer-info p{margin:0;font-weight:600;font-size:13px;line-height:1.5}
   .m-footer-info p + p{margin-top:16px}
