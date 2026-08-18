@@ -654,7 +654,8 @@ html.lenis,html.lenis body{height:auto}
   /* --- content: symbol + title + subtitle, anchored bottom-left, 20px gutters --- */
   #left-block{left:20px;right:20px;bottom:48px}
   #symbol{width:117px;height:6px}
-  #head-title{width:auto;font-size:clamp(64px,21.3vw,88px);margin-top:20px}  /* fluid: 320→68 / 375→80 / 414→88 */
+  #head-title{width:auto;font-size:clamp(64px,21.3vmin,88px);margin-top:20px}  /* fluid on the phone's SHORT side: 320→68 / 375→80 / 414→88;
+     vmin (not vw) so rotating to landscape keeps the portrait size instead of jumping to the 88 cap */
   #head-title .line-2{margin-top:-0.5em}                    /* overlap scales with the font */
   #sub-title{width:100%;margin-top:24px;gap:16px}
   #sub-title .subtitle-head{font-size:16px}
