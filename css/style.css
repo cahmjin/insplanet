@@ -1200,7 +1200,7 @@ html.lenis,html.lenis body{height:auto}
      the TOP of the group moves. Top padding = fixed-header safety clearance. z:2 = above the card. */
   .ma-hero-inner{position:relative;z-index:2;height:100%;box-sizing:border-box;
     display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
-    padding:120px 20px calc(10vh + 48px)}
+    padding:120px 20px 129px}   /* 81px card peek + 48 gap — fixed px so the browser address bar can't shift the text/card gap */
   .ma-head{position:relative}
   .ma-symbol{display:block;width:117px;height:6px;transition:filter .35s ease}   /* same assets/symbol.svg, sized to the 375 Figma */
   .ma-title{margin:16px 0 0}   /* 16px gap: symbol y362+6 -> title y384 */
@@ -1223,7 +1223,7 @@ html.lenis,html.lenis body{height:auto}
   .ma-hero.is-covered .ma-symbol{filter:brightness(0) invert(1)}
   /* the black-hole card — state-A geometry in CSS (matches the JS at scrub 0, so no jump on load;
      also the reduced-motion / no-JS resting state): strip x20 top 90vh 335x480 R24 #000. JS overrides inline. */
-  .ma-banner{position:absolute;z-index:1;top:90vh;left:20px;right:20px;height:480px;border-radius:24px;overflow:hidden;background:#000}
+  .ma-banner{position:absolute;z-index:1;top:calc(100% - 81px);left:20px;right:20px;height:480px;border-radius:24px;overflow:hidden;background:#000}   /* 81px peek measured from the stage bottom (same box as the text) */
   .ma-banner #about-blackhole{position:absolute;inset:0;width:100%;height:100%;display:block}
 
   /* load reveal — PC about-hero port (same as .mc-hero/.mp-hero): title lines settle from a soft blur
@@ -1324,6 +1324,57 @@ html.lenis,html.lenis body{height:auto}
   @media (prefers-reduced-motion:reduce){
     .ma-gallery-track{animation:none}
     .ct-rv .ma-gallery{opacity:1;transform:none;transition:none}}
+
+  /* ===== 04 Beyond UX / The AX Creator + stats — PC about.css .about-axcreator port (Figma Frame 1910801892
+     @375: x0 y5029 375x1153, pad 160/20/160/20, gap 80: [title 24/700 Cormorant lh.8 (2 lines = 38) -> 48 ->
+     copy (lead 28/700 -> 32 -> para 15/400 lh1.5 -> 32 -> para)] -> 80 -> [Projects done: label 13/700 -> 48 ->
+     100+ 246x62.8] -> 80 -> [Years / Team row: 2 cols 157.5 gap 20; label -> 48 -> 8+ 68x48.9 / 30+ 87.5x49.2].
+     Figures are the PC stat SVGs; heights set, widths auto (same aspect ratios as the Figma vectors).
+     NOTE: the mobile Figma keeps the section title SMALL (24px), unlike the PC's 48-80px display. ===== */
+  .ma-beyond{position:relative;z-index:1;padding:160px 20px 160px;color:#3E3F44}
+  .ma-beyond-title{margin:0;display:flex;flex-direction:column;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;line-height:.8;letter-spacing:0}
+  .ma-beyond-copy{margin:48px 0 0;display:flex;flex-direction:column;gap:32px}
+  .ma-beyond-lead{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:28px;line-height:1.2;word-break:keep-all}   /* 3 lines = 99 */
+  .ma-beyond-para{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;font-size:15px;line-height:1.5}
+  .ma-stats{margin:80px 0 0;display:flex;flex-direction:column;gap:80px}
+  .ma-stats-row{display:flex;gap:20px}
+  .ma-stats-row .ma-stat{flex:1 1 0;min-width:0}   /* years / team split the row into equal 157.5 halves (Figma) */
+  .ma-stat{display:flex;flex-direction:column;gap:48px}
+  .ma-stat-label{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:13px;line-height:1.2}
+  .ma-stat-num{margin:0;line-height:0}
+  .ma-stat-num img{display:block;width:auto;max-width:100%}
+  .ma-stat-projects .ma-stat-num img{height:63px}   /* 100+ 246x62.8 */
+  .ma-stat-years .ma-stat-num img{height:49px}      /* 8+   68x48.9  */
+  .ma-stat-team .ma-stat-num img{height:49px}       /* 30+  87.5x49.2 */
+  /* scroll reveal (PC port): title + copy rise+fade (copy .1s behind); the stats "land" — bigger 96px rise
+     on the elastic curve, stagger .1 / .25 / .35 (Projects / Years / Team). Two [data-rv] roots like PC. */
+  .ct-rv .ma-beyond-title,.ct-rv .ma-beyond-copy{opacity:0;transform:translateY(72px);transition:opacity .8s ease,transform 1.1s cubic-bezier(.34,1.45,.5,1)}
+  .ct-rv .ma-beyond-copy{transition-delay:.1s}
+  .ct-rv .ma-beyond-head.in .ma-beyond-title,.ct-rv .ma-beyond-head.in .ma-beyond-copy{opacity:1;transform:none}
+  .ct-rv .ma-stat{opacity:0;transform:translateY(96px);transition:opacity .8s ease,transform 1.1s cubic-bezier(.34,1.45,.5,1)}
+  .ct-rv .ma-stat-projects{transition-delay:.1s}
+  .ct-rv .ma-stat-years{transition-delay:.25s}
+  .ct-rv .ma-stat-team{transition-delay:.35s}
+  .ct-rv .ma-stats.in .ma-stat{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .ct-rv .ma-beyond-title,.ct-rv .ma-beyond-copy,.ct-rv .ma-stat{opacity:1;transform:none;transition:none}}
+
+  /* ===== 05 closing image — PC about.css .about-fullbleed port: PINNED EXPANSION. Figma (Frame 1216117571
+     @375: y6182 375x812) draws the END state — a plain full-viewport photo, 0 gap above (the Beyond frame's
+     160 pad) and 0 gap to the footer. Wrapper = 100vh (stage only, no hold), sticky 100vh stage, the box
+     starts as a small centered card: 25vw wide (94 @375; the PC's 6.25vw = 23px here would be a speck),
+     landscape x0.62 (15.5vw = 58), r12 — state-A geometry == the inline scrub script, so no jump on load.
+     vh, not svh (mobile pins). ===== */
+  .ma-close{position:relative;z-index:1;height:100vh;margin:0}
+  .ma-close-pin{position:sticky;top:0;height:100vh;overflow:hidden}
+  .ma-close-box{position:absolute;z-index:1;
+    top:calc((100vh - 15.5vw) / 2);   /* startH = 25vw * 0.62 */
+    left:37.5vw;right:37.5vw;         /* (100vw - 25vw) / 2 */
+    height:15.5vw;border-radius:12px;overflow:hidden;background:#3E3F44}
+  .ma-close-box img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);transform-origin:center}
+  @media (prefers-reduced-motion:reduce){
+    .ma-close-box{top:0;left:0;right:0;width:100%;height:100vh;border-radius:0}
+    .ma-close-box img{transform:none}}
 
   /* tap feedback (js/tap-feel.js): spring scale on touch — the hover-less mobile "press feel".
      Runs as an ANIMATION (not an :active transition) so it can't collide with elements that

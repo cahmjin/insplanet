@@ -137,11 +137,55 @@
   </div>
 </div>
 
-<!-- ======================================================================================
-     NEXT SECTIONS GO HERE — the rest of the mobile About (Figma Frame 45 @y7831 / Frame 47 @y8643,
-     and whatever lands between y4981 and y7831) is still in progress in Figma. Add them between
-     the Experience photo band above and the shared header chrome below, in Figma order.
-     ====================================================================================== -->
+<!-- 04 Beyond UX / The AX Creator + key stats — PC .about-axcreator port (Figma Frame 1910801892 @y5029,
+     375x1153: pad 160/20/160/20; title "Beyond UX / The AX Creator" Cormorant 24/700 lh.8 (2 lines, 38 tall —
+     the mobile Figma keeps this SMALL, not the PC 48-80px display) -> 48 -> lead 28/700 -> 32 -> body 15/400
+     lh1.5 x2 -> 80 -> "Projects done" (label 13/700 -> 48 -> 100+ figure 246x62.8) -> 80 -> Years / Team row
+     (2 cols 157.5, gap 20; label -> 48 -> 8+ 68x48.9 / 30+ 87.5x49.2). Figures = the PC stat SVGs
+     (assets/about/stat-*.svg, same aspect ratios). Reveal roots (PC split): title+copy [data-rv] (rise+fade
+     0/.1s), stats [data-rv] (bigger 96px elastic land, stagger .1/.25/.35). Same inline IO, born-hidden via html.ct-rv. -->
+<section class="ma-beyond">
+  <div class="ma-beyond-head" data-rv>
+    <h2 class="ma-beyond-title"><span class="line-1">Beyond UX</span><span class="line-2">The AX Creator</span></h2>
+    <div class="ma-beyond-copy">
+      <p class="ma-beyond-lead">단순한 경험의 개선을 넘어, <br>기술이 스스로 가치를 창출하는 시대를 엽니다.</p>
+      <p class="ma-beyond-para">우리는 기존의 사용자 경험(UX)이라는 틀에<br>안주하지 않습니다. 인스플래닛의 사고방식은 고도화된 <br>AI 기술을 비즈니스 본질에 이식하여, 스스로 진화하고 <br>최적의 해답을 제시하는 AX(AI Experience)를 <br>설계하는 데 있습니다.</p>
+      <p class="ma-beyond-para">우리는 고객의 요청을 구현하는 것에 그치지 않고, <br>데이터 너머의 맥락을 읽어내어 비즈니스의 다음 차원을 창조합니다.</p>
+    </div>
+  </div>
+  <dl class="ma-stats" data-rv>
+    <div class="ma-stat ma-stat-projects">
+      <dt class="ma-stat-label">Projects done</dt>
+      <dd class="ma-stat-num"><img src="assets/about/stat-projects.svg" alt="100+"></dd>
+    </div>
+    <div class="ma-stats-row">
+      <div class="ma-stat ma-stat-years">
+        <dt class="ma-stat-label">Years of experience</dt>
+        <dd class="ma-stat-num"><img src="assets/about/stat-years.svg" alt="8+"></dd>
+      </div>
+      <div class="ma-stat ma-stat-team">
+        <dt class="ma-stat-label">Team members</dt>
+        <dd class="ma-stat-num"><img src="assets/about/stat-team.svg" alt="30+"></dd>
+      </div>
+    </div>
+  </dl>
+</section>
+
+<!-- 05 closing image — PC .about-fullbleed port: PINNED EXPANSION (js/about-hero.js closing IIFE shape, inline
+     below). The mobile Figma (Frame 1216117571 @y6182, 375x812) draws it as a plain in-flow full-viewport photo
+     block, 0 gap to the Beyond frame's 160 pad above and 0 gap to the footer — the end state of the PC expand.
+     Ported as the expand for PC parity: a small centered card (25vw x 25vw*0.62 = 94x58 @375, r12 — the PC's
+     6.25vw would be 23px here, too small to read as an image) inside a 100vh sticky stage grows to 100vw x 100vh
+     r0 as the section approaches (p = clamp((vh - top)/vh), easeInOutCubic, img 1.08 -> 1); wrapper = 100vh so
+     there is NO pinned hold. Header / SCROLL chrome flip .on-dark while the box covers their bands. Reduced-motion:
+     static full-bleed end state. Same b&w office photo as PC. Footer follows with 0 gap. -->
+<section class="ma-close">
+  <div class="ma-close-pin">
+    <div class="ma-close-box">
+      <img src="assets/about/fullbleed.jpg" alt="" loading="lazy" decoding="async">
+    </div>
+  </div>
+</section>
 
 <!-- shared header chrome — inlined for the isolated workspace (mirrors js/shared-ui.js) -->
 <div id="bg-line">
@@ -212,21 +256,24 @@
   // (project rule: mobile pins use vh, never svh). smoothstep easing = PC.
   (function(){
     var sec=document.querySelector('.ma-hero'), card=document.querySelector('.ma-banner'), head=document.querySelector('.ma-head');
+    var pin=document.querySelector('.ma-hero-pin');
     if(!sec||!card)return;
     if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;   // static strip; no scrub (CSS state A)
     var clamp=function(v){return Math.min(1,Math.max(0,v));};
     var lerp=function(a,b,t){return a+(b-a)*t;};
     var ss=function(x){return x*x*(3-2*x);};                          // smoothstep — soft ends, scrub-safe
-    var PEEK=0.1, GUT=20, H=480, RAD=24;                               // state-A geometry (== css .ma-banner)
+    var PEEK=81, GUT=20, H=480, RAD=24;                                // state-A geometry (== css .ma-banner): 81px peek FIXED
     var ticking=false;
     function render(){
       ticking=false;
-      var cw=document.documentElement.clientWidth, vh=innerHeight;
+      // vh = the sticky stage's real height (CSS 100vh) — NOT innerHeight, which shrinks while the mobile
+      // address bar is showing and would drift the card away from the text (text is laid out in the same stage)
+      var cw=document.documentElement.clientWidth, vh=(pin&&pin.offsetHeight)||innerHeight;
       var r=sec.getBoundingClientRect();
       var scrub=sec.offsetHeight-vh;                                  // the track's extra height
       var p=scrub>0?clamp(-r.top/scrub):0;
       var q=ss(p);
-      var aTop=vh*(1-PEEK);
+      var aTop=vh-PEEK;
       card.style.top=lerp(aTop,0,q).toFixed(1)+'px';
       card.style.left=lerp(GUT,0,q).toFixed(1)+'px';
       card.style.right='auto';
@@ -245,6 +292,61 @@
       var botOn=c.top<=vh-70 && c.bottom>=vh-24;
       [['ci-logo',topOn],['lets-talk',topOn],['full-menu',topOn],['scroll-hint',botOn]]
         .forEach(function(pair){var el=document.getElementById(pair[0]);if(el)el.classList.toggle('on-dark',pair[1]);});
+    }
+    addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(render);}},{passive:true});
+    addEventListener('resize',render);
+    render();
+  })();
+
+  // closing image — PINNED EXPANSION, ported from js/about-hero.js (closing IIFE) with mobile numbers.
+  // A small centered card (start 25vw wide, x0.62 tall, r12 — == css .ma-close-box, so no jump on load;
+  // the PC's 6.25vw would be a 23px speck at 375) inside a 100vh sticky stage grows to 100vw x 100vh r0.
+  // p = 0 when the wrapper's top reaches the viewport bottom, 1 when it reaches the top — the wrapper is
+  // EXACTLY 100vh so the sticky stage releases the instant the grow finishes (no hold; footer follows).
+  // easeInOutCubic (holds small a beat, swells through the back half — PC reasoning), img 1.08 -> 1.
+  // While the box's own rect covers the FIXED mobile chrome bands (logo/Let's Talk/menu: y16..75; SCROLL
+  // hint: bottom 24..88) it flips them .on-dark. vh = innerHeight (mobile pins use vh, never svh).
+  // Reduced-motion: static full-bleed end state (CSS), no listeners.
+  (function(){
+    var wrap=document.querySelector('.ma-close'), box=document.querySelector('.ma-close-box');
+    var img=box&&box.querySelector('img');
+    if(!wrap||!box)return;
+    var clamp=function(v){return Math.min(1,Math.max(0,v));};
+    var lerp=function(a,b,t){return a+(b-a)*t;};
+    var easeInOutCubic=function(x){return x<0.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;};
+    var START_W=0.25, ASPECT=0.62, RAD=12;                             // state-A geometry (== css .ma-close-box)
+    function setChrome(r,vh){
+      // vertical band check (PC) + a horizontal one (mobile addition): the growing card is centred, so mid-scrub
+      // it can sit in the chrome's row without reaching the logo at x20 / menu & SCROLL at the right gutter
+      var cw=document.documentElement.clientWidth;
+      var wide=r.left<=20 && r.right>=cw-12;
+      var topOn=wide && r.top<=75 && r.bottom>=16;                     // covers the logo / Let's Talk / menu band
+      var botOn=wide && r.top<=vh-24 && r.bottom>=vh-88;               // covers the SCROLL hint band
+      [['ci-logo',topOn],['lets-talk',topOn],['full-menu',topOn],['scroll-hint',botOn]]
+        .forEach(function(pair){var el=document.getElementById(pair[0]);if(el)el.classList.toggle('on-dark',pair[1]);});
+    }
+    var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;   // static end state: no scrub, chrome flip only
+    var ticking=false;
+    function render(){
+      ticking=false;
+      var cw=document.documentElement.clientWidth, vh=innerHeight;
+      var startW=cw*START_W, startH=startW*ASPECT;
+      var inset=(cw-startW)/2, topInset=(vh-startH)/2;               // centered in the 100vw x 100vh stage
+      var r=wrap.getBoundingClientRect();
+      if(!reduce){
+        var p=clamp((vh-r.top)/vh);
+        var q=easeInOutCubic(p);
+        box.style.left=lerp(inset,0,q).toFixed(1)+'px';
+        box.style.right='auto';
+        box.style.top=lerp(topInset,0,q).toFixed(1)+'px';
+        box.style.width=lerp(startW,cw,q).toFixed(1)+'px';
+        box.style.height=lerp(startH,vh,q).toFixed(1)+'px';
+        box.style.borderRadius=lerp(RAD,0,q).toFixed(1)+'px';
+        if(img)img.style.transform='scale('+lerp(1.08,1,q).toFixed(3)+')';
+      }
+      // only own the chrome while this section is anywhere near the viewport — the hero scrub above writes
+      // the same .on-dark flags every frame, and the two must not fight (their regions never overlap)
+      if(r.bottom>-vh && r.top<vh*2) setChrome(box.getBoundingClientRect(),vh);
     }
     addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(render);}},{passive:true});
     addEventListener('resize',render);
