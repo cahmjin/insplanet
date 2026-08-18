@@ -1185,6 +1185,146 @@ html.lenis,html.lenis body{height:auto}
   @media (prefers-reduced-motion:reduce){
     .ct-rv .mp-card{opacity:1;transform:none;transition:none;pointer-events:auto}}
 
+  /* ===== mobile-about.html — "Who / We Are." hero (Figma official_03_about_375, node 2489:50521),
+         PC about.html/about.css .about-hero* port: symbol + stacked title + dot + lead/body over the
+         fixed #bg-line arcs, and the black-hole card as a PINNED EXPANSION (200vh track, sticky
+         100vh stage; the inline script in mobile-about.html scrubs top/left/width/height/radius —
+         js/about-hero.js shape). Header/footer/menu/scroll-hint reuse the shared rules above.
+         Figma @375x812: symbol x20 y362 117x6 -> title y384 (72px Cormorant, lines 55 apart) ->
+         dot 12px x243 y494 -> lead y550 (16/600, 2 lines) -> body y614 (15/400, 3 lines) ends 683
+         -> card x20 y731 335x480 R24 #000 (81px = ~10vh peeks in above the fold). ===== */
+  .ma-hero{position:relative;z-index:1;height:200vh;background:transparent}   /* 100vh stage + 100vh scrub; transparent so the fixed #bg-line shows through */
+  .ma-hero-pin{position:sticky;top:0;height:100vh;overflow:hidden}
+  /* text column: bottom-anchored like .mc-hero/.mp-hero — the copy's bottom edge sits 48px above the
+     card's resting top (10vh peek), so on any phone height the text/card gap is the Figma 48 and only
+     the TOP of the group moves. Top padding = fixed-header safety clearance. z:2 = above the card. */
+  .ma-hero-inner{position:relative;z-index:2;height:100%;box-sizing:border-box;
+    display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
+    padding:120px 20px calc(10vh + 48px)}
+  .ma-head{position:relative}
+  .ma-symbol{display:block;width:117px;height:6px;transition:filter .35s ease}   /* same assets/symbol.svg, sized to the 375 Figma */
+  .ma-title{margin:16px 0 0}   /* 16px gap: symbol y362+6 -> title y384 */
+  .ma-title-lines{display:flex;flex-direction:column;font-family:'Cormorant Garamond',serif;font-weight:600;
+    color:#3E3F44;line-height:1.21;letter-spacing:-0.01em;transition:color .35s ease}
+  .ma-t1,.ma-t2{font-size:72px}
+  .ma-t2{margin-top:-32px}   /* Figma: "We Are" line top 55 below "Who" (87px auto box) */
+  /* dot rides the "We Are" baseline like a full stop — same Figma math as .mp-dot (dot column h52
+     centred, row align-end -> dot bottom 20px above the 87px line-box bottom = .009em below baseline);
+     8px Figma gap = margin-left. background (not color) so it stays red when the cover flips text white. */
+  .ma-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#F03A3A;
+    margin-left:8px;vertical-align:-.009em}
+  .ma-sub{position:relative;width:100%;max-width:335px;margin-top:24px;display:flex;flex-direction:column;gap:16px;color:#3E3F44}
+  .ma-sub-head{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-weight:600;font-size:16px;line-height:1.5;word-break:keep-all;transition:color .35s ease}
+  .ma-sub-body{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-weight:400;font-size:15px;line-height:1.5;word-break:keep-all;transition:color .35s ease}
+  /* covered state: the card is behind the text -> text goes light, symbol inverts (header flips via .on-dark) */
+  .ma-hero.is-covered .ma-title-lines,.ma-hero.is-covered .ma-sub{color:#FFF}
+  .ma-hero.is-covered .ma-symbol{filter:brightness(0) invert(1)}
+  /* the black-hole card — state-A geometry in CSS (matches the JS at scrub 0, so no jump on load;
+     also the reduced-motion / no-JS resting state): strip x20 top 90vh 335x480 R24 #000. JS overrides inline. */
+  .ma-banner{position:absolute;z-index:1;top:90vh;left:20px;right:20px;height:480px;border-radius:24px;overflow:hidden;background:#000}
+  .ma-banner #about-blackhole{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+  /* load reveal — PC about-hero port (same as .mc-hero/.mp-hero): title lines settle from a soft blur
+     (.in added once the serif webfont is ready), the intro follows, then the red dot stamps in ~1.2s
+     with a back-ease overshoot. */
+  .ma-t1,.ma-t2{opacity:0;filter:blur(18px);transform:translateY(.05em) scale(1.04);transform-origin:left center;
+    transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.22,1,.36,1)}
+  .ma-t2{transition-delay:.14s}
+  .ma-dot{opacity:0;transform:scale(0);transform-origin:center center}
+  .ma-sub-head,.ma-sub-body{opacity:0;filter:blur(8px);transform:translateY(10px);
+    transition:opacity .9s ease,filter .9s ease,transform .9s cubic-bezier(.22,1,.36,1),color .35s ease}
+  .ma-sub-head{transition-delay:.5s,.5s,.5s,0s}
+  .ma-sub-body{transition-delay:.62s,.62s,.62s,0s}
+  .ma-hero.in .ma-t1,.ma-hero.in .ma-t2,
+  .ma-hero.in .ma-sub-head,.ma-hero.in .ma-sub-body{opacity:1;filter:blur(0);transform:none}
+  .ma-hero.in .ma-dot{opacity:1;transform:scale(1);
+    transition:transform .42s cubic-bezier(.34,1.56,.64,1) 1.2s,opacity .18s ease 1.18s}
+  @media (prefers-reduced-motion:reduce){
+    .ma-t1,.ma-t2,.ma-sub-head,.ma-sub-body{opacity:1;filter:none;transform:none;transition:none}
+    .ma-dot{opacity:1;transform:none}}
+
+  /* ===== 02 Mission & Vision + the three I's — PC about.css .about-mission port (Figma Frame 32 @375:
+     x0 y1211 375x2073, pad 160/20/160/20, gap 80; head group gap 48 (eyebrow -> headline+body, gap 32);
+     values stacked, gap 80: 240 ring (#fff, 1px #3E3F44 inside) -> 48 -> title 18/700 lh1.4 -> 24 ->
+     body 14/400 lh1.5, centred). Content 335 = 20px gutters, fluid to 1023 (width:100%, only the ring is fixed). ===== */
+  .ma-mission{position:relative;z-index:1;padding:160px 20px;color:#3E3F44}
+  .ma-mission-head{display:flex;flex-direction:column;align-items:flex-start;width:100%}
+  .ma-eyebrow{margin:0 0 48px;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;line-height:1.2}   /* Figma h29 */
+  .ma-headline{margin:0 0 32px;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:28px;line-height:1.2;word-break:keep-all}   /* 2 lines = 66 (auto lh) */
+  .ma-paragraph{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;font-size:15px;line-height:1.5;word-break:keep-all}   /* 6 lines = 138 */
+  .ma-values{list-style:none;margin:80px 0 0;padding:0;display:flex;flex-direction:column;align-items:center;gap:80px;width:100%}
+  .ma-value{display:flex;flex-direction:column;align-items:center;text-align:center;width:100%}
+  .ma-value-pill{display:flex;align-items:center;justify-content:center;flex:none;width:240px;height:240px;box-sizing:border-box;
+    border-radius:999px;background:#fff;border:1px solid #3E3F44;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:20px;line-height:1.2}
+  .ma-value-text{display:flex;flex-direction:column;align-items:center;gap:24px;margin-top:48px;width:100%}
+  .ma-value-title{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:18px;line-height:1.4;word-break:keep-all}
+  .ma-value-body{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;font-size:14px;line-height:1.5;word-break:keep-all}
+  /* scroll reveal (PC about.css port, born-hidden under html.ct-rv so no-JS shows everything): head children
+     rise+fade staggered 0/.08/.16, each value card rises+fades (PC .1s lead-in kept; the row stagger .1/.2/.3
+     becomes per-card since the cards are stacked and each is its own IO root). Same 72px elastic rise family. */
+  .ct-rv .ma-mission-head > *{opacity:0;transform:translateY(72px);transition:opacity .8s ease,transform 1.1s cubic-bezier(.34,1.45,.5,1)}
+  .ct-rv .ma-mission-head > *:nth-child(2){transition-delay:.08s}
+  .ct-rv .ma-mission-head > *:nth-child(3){transition-delay:.16s}
+  .ct-rv .ma-mission-head.in > *{opacity:1;transform:none}
+  .ct-rv .ma-value{opacity:0;transform:translateY(72px);transition:opacity .8s ease .1s,transform 1.1s cubic-bezier(.34,1.45,.5,1) .1s}
+  .ct-rv .ma-value.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .ct-rv .ma-mission-head > *,.ct-rv .ma-value{opacity:1;transform:none;transition:none}}
+
+  /* ===== 03 Experience — PC about.css .about-fusion port (Figma Frame 1910801891 @375: x0 y3284 375x1273,
+     pad 160/20/160/20, gap 80; "Experience" Cormorant 72/700 lh1 -> 48 -> copy 28/700 (auto lh, 4 lines = 132)
+     -> 80 -> capabilities 2x2 grid, col gap 20 (cards 157.5), row gap 64; card: icon 64 -> 40 -> title 20/700
+     -> 32 -> desc 14/400 lh1.5). The photo band (.ma-gallery, sibling right after) closes the frame:
+     64 below the caps, then the frame's 160 bottom pad lives on the band. ===== */
+  .ma-exp{position:relative;z-index:1;padding:160px 20px 0;color:#3E3F44}
+  .ma-exp-title{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:72px;line-height:1;letter-spacing:0}
+  .ma-exp-copy{margin:48px 0 0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:28px;line-height:1.2;word-break:keep-all}
+  .ma-caps{list-style:none;margin:80px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:64px 20px;width:100%}
+  .ma-cap{display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-width:0}
+  .ma-cap-icon{display:block;width:64px;height:64px;margin:0 0 40px}
+  .ma-cap-icon img{width:100%;height:100%;object-fit:contain;display:block}
+  .ma-cap-title{margin:0 0 32px;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:20px;line-height:1.2}   /* 2 lines = 48 */
+  .ma-cap-desc{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;font-size:14px;line-height:1.5}   /* Figma wraps mid-phrase at 157 — default (normal) Korean breaking */
+  /* scroll reveal (PC port): title blur-in, copy rise+fade .15s behind it, capability cards rise+fade with
+     the PC per-item stagger .07/.14/.21 (each card is its own IO root). */
+  .ct-rv .ma-exp-title{opacity:0;filter:blur(18px);transform:translateY(24px);
+    transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.22,1,.36,1)}
+  .ct-rv .ma-exp-title.in{opacity:1;filter:blur(0);transform:none}
+  .ct-rv .ma-exp-copy{opacity:0;transform:translateY(72px);transition:opacity .8s ease .15s,transform 1.1s cubic-bezier(.34,1.45,.5,1) .15s}
+  .ct-rv .ma-exp-copy.in{opacity:1;transform:none}
+  .ct-rv .ma-cap{opacity:0;transform:translateY(60px);transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}
+  .ct-rv .ma-caps li:nth-child(2){transition-delay:.07s}
+  .ct-rv .ma-caps li:nth-child(3){transition-delay:.14s}
+  .ct-rv .ma-caps li:nth-child(4){transition-delay:.21s}
+  .ct-rv .ma-cap.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .ct-rv .ma-exp-title{opacity:1;filter:none;transform:none;transition:none}
+    .ct-rv .ma-exp-copy,.ct-rv .ma-cap{opacity:1;transform:none;transition:none}}
+
+  /* ===== Experience photo band — PC about.css .about-gallery port 1:1 (Figma 2692:45590 @375: x20 y4461,
+     cards 266x360 r24, gap 20, starts at the 20px gutter and bleeds right; 64 below the caps grid, then the
+     Experience frame's 160 bottom pad). CSS marquee: 4 cards duplicated once (8 in the track, clones
+     aria-hidden), gap:0 + item margin-right = the 20 gap so translateX(-50%) is exactly one 4-card set
+     (seamless loop). Gutter offset sits on the CLIPPER (.ma-gallery), track margin-left 0. Duration: PC 40s
+     for a 4312px set (1046 cards + 32 gap @2560) = 108px/s; the mobile set is 4x(266+20) = 1144 -> 10.6s at
+     the same speed feels frantic on a phone, so clamped to 18s (~64px/s). No hover pause, no interaction. */
+  .ma-gallery{position:relative;z-index:1;margin:64px 0 0 20px;padding-bottom:160px;overflow:hidden;overflow:clip}
+  /* the whole band rises+fades as one unit; the transform lives on THIS wrapper only — the marquee's own
+     continuous translateX loop stays on .ma-gallery-track, unaffected. */
+  .ct-rv .ma-gallery{opacity:0;transform:translateY(72px);transition:opacity .8s ease,transform 1.1s cubic-bezier(.34,1.45,.5,1)}
+  .ct-rv .ma-gallery.in{opacity:1;transform:none}
+  .ma-gallery-track{display:flex;gap:0;width:max-content;margin-left:0;
+    animation:ma-marquee 18s linear infinite;animation-play-state:paused}   /* parked at frame 0 until the band reveals */
+  .ma-gallery.in .ma-gallery-track{animation-play-state:running}            /* starts flowing only once it's in view */
+  .ma-gallery-item{margin:0 20px 0 0;flex:none;width:266px;height:360px;border-radius:24px;overflow:hidden}
+  .ma-gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
+  @keyframes ma-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media (prefers-reduced-motion:reduce){
+    .ma-gallery-track{animation:none}
+    .ct-rv .ma-gallery{opacity:1;transform:none;transition:none}}
+
   /* tap feedback (js/tap-feel.js): spring scale on touch — the hover-less mobile "press feel".
      Runs as an ANIMATION (not an :active transition) so it can't collide with elements that
      carry their own delayed transform transitions (reveals). */

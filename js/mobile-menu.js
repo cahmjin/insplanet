@@ -16,8 +16,8 @@
       '<div class="m-menu-scroll" data-lenis-prevent>' +
         '<nav class="m-menu-nav">' +
           '<a class="m-menu-item" href="mobile-projects.html"><span>Projects</span><span class="m-menu-badge">42</span></a>' +
-          '<a class="m-menu-item" href="#"><span>About</span></a>' +
-          '<a class="m-menu-item" href="mobile-contact.html"><span>Contact</span></a>' +   // About stays "#" until its mobile page exists
+          '<a class="m-menu-item" href="mobile-about.html"><span>About</span></a>' +
+          '<a class="m-menu-item" href="mobile-contact.html"><span>Contact</span></a>' +
         '</nav>' +
         '<ul class="m-menu-family">' +
           '<li><span>RoAI</span><span class="m-menu-fam-ico"><img src="assets/icon_arrow_round.svg" alt=""></span></li>' +
