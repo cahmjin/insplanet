@@ -1381,6 +1381,52 @@ html.lenis,html.lenis body{height:auto}
     .ma-close-box{top:0;left:0;right:0;width:100%;height:100vh;border-radius:0}
     .ma-close-box img{transform:none}}
 
+  /* ============================================================================
+     mobile-contact.html — Careers recruit popup (Figma 2701:45651, 375×958). Full-screen port of the
+     PC .rc-modal (contact.css): the X floats fixed top-right, Careers + copy + form scroll inside
+     .mr-scroll (data-lenis-prevent), 입사지원 stays fixed at the bottom. Leaf controls reuse the page's
+     .mc-* classes with popup-only overrides below. Figma anchors: X 48-box @(315,16) with a 24 mark /
+     head @y90 (Careers 56 serif → 16 → lead 14/1.5) / 64 / 지원분야 18-700 → 24 → 2-col chips gap 12 /
+     64 / 기본정보 → 24 → rows gap 20 (inputs 56 r12, file name+16+button 97 r8) / 64 / 입사지원 335×64
+     r999, 32 above the frame bottom. Sits above the fixed chrome (z 60) and below nothing that can open.
+     ============================================================================ */
+  .mr-popup{position:fixed;inset:0;z-index:105;background:#FFF;overflow:hidden;overflow-x:clip;color:#3E3F44;
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
+    opacity:0;visibility:hidden;pointer-events:none;transform:translateY(24px);
+    transition:opacity .4s ease,transform .45s cubic-bezier(.22,1,.36,1),visibility 0s linear .45s}   /* PC: dim fade .4 + card rise .45 → here the sheet itself fades + rises */
+  .mr-popup.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:none;
+    transition:opacity .4s ease,transform .45s cubic-bezier(.22,1,.36,1)}
+  .mr-form{position:absolute;inset:0;margin:0;border:0;padding:0;display:flex;flex-direction:column}
+  .mr-close{position:absolute;z-index:2;top:16px;right:12px;width:48px;height:48px;display:grid;place-items:center;
+    margin:0;padding:0;background:none;border:0;cursor:pointer;color:#3E3F44}   /* fixed top-right, floats over the scroll */
+  .mr-close svg{display:block;width:24px;height:24px;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .mr-close:active svg{transform:rotate(90deg)}   /* PC hover-spin → press quarter-turn on touch */
+  /* the scroller: only the X + CTA stay fixed; heights come from the fixed inset (no vh needed).
+     bottom padding clears the fixed CTA (24 fade + 64 button + 32 margin) + the design's 64 gap. */
+  .mr-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    padding:90px 20px calc(184px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:64px}
+  .mr-head{display:flex;flex-direction:column;gap:16px}
+  .mr-title{margin:0;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:56px;line-height:1.21;letter-spacing:0}   /* Figma 68 auto box @56 */
+  .mr-lead{margin:0;font-weight:400;font-size:14px;line-height:1.5;word-break:keep-all}
+  .mr-sec{display:flex;flex-direction:column;gap:24px}
+  .mr-label{margin:0;font-weight:700;font-size:18px;line-height:1.5}
+  /* control overrides: 지원분야 chips 2-up gap 12 (Figma 161.5×45); file row sits in the 20-gap column (no own margin) */
+  .mr-popup .mc-chips{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .mr-popup .mc-file{margin-top:0}
+  /* footer: fixed at the sheet bottom, white fade so scrolled content slides under it; the button spans the gutter width */
+  .mr-footer{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:24px 20px calc(32px + env(safe-area-inset-bottom));
+    background:linear-gradient(to bottom, rgba(255,255,255,0) 0, #FFF 24px);pointer-events:none}
+  .mr-footer .mc-submit{width:100%;pointer-events:auto}
+  /* the page-level .ct-rv scroll-reveal hides every .mc-submit until observed in; the popup's isn't part of
+     that pass, so keep it visible + restore its own background transition (PC .rc-footer .ct-submit parity) */
+  .ct-rv .mr-popup .mc-submit{opacity:1;transform:none;pointer-events:auto;transition:background-color .25s ease}
+  @media (prefers-reduced-motion:reduce){
+    .mr-popup{transform:none;transition:opacity .2s ease,visibility 0s linear .2s}
+    .mr-popup.is-open{transition:opacity .2s ease}
+    .mr-close svg{transition:none}
+    .mr-close:active svg{transform:none}
+    .mr-close:active{opacity:.55}}
+
   /* tap feedback (js/tap-feel.js): spring scale on touch — the hover-less mobile "press feel".
      Runs as an ANIMATION (not an :active transition) so it can't collide with elements that
      carry their own delayed transform transitions (reveals). */
