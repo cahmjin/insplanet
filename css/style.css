@@ -877,7 +877,7 @@ html.lenis,html.lenis body{height:auto}
      and the sub/title stack up from it with fixed 32/40 gaps — shortening the copy moves the TOP of
      the group down, never the button. Top padding is only a safety clearance for the fixed header;
      on short viewports the section grows past 100vh and scrolls instead of overlapping. */
-  .mc-hero{position:relative;min-height:100vh;background:transparent;   /* transparent so the fixed #bg-line shows through (body is #fff) */
+  .mc-hero{position:relative;z-index:1;min-height:100vh;background:transparent;   /* transparent so the fixed #bg-line shows through (body is #fff); z:1 = above the arcs like every section, so the white .mc-brief button isn't crossed by them */
     display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
     padding:120px 20px 5.91vh}   /* bottom: Figma brief ends 764 -> 48/812 */
   /* bg arcs come from the FIXED #bg-line chrome (sized in the page's inline style, like mobile.html)
@@ -937,7 +937,8 @@ html.lenis,html.lenis body{height:auto}
          from PC contact.css/.html: heading colour-sweep (.mc-line/--fill), rise-reveal (html.ct-rv),
          chip select. Colours/behaviour match PC .ct-block-head/.ct-line/.ct-chip 1:1; sizes are the
          375 Figma values (PC has no matching breakpoint here — mobile design starts flat). --- */
-  .mc-form{padding:80px 20px;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
+  .mc-form{position:relative;z-index:1;   /* above the fixed #bg-line (z:0) — static content paints UNDER a positioned z:0 layer, so without this the arcs drew across the white chips/inputs */
+    padding:80px 20px;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#3E3F44}
   .mc-form-headwrap{display:block}   /* left-aligned at the 20px gutter — centring the fit-content block read as fake side padding at wider viewports */
   .mc-form-head{margin:0;font-weight:700;font-size:32px;line-height:1.2}
   /* heading fill sweep: dark colour fills in from the LEFT as it scrolls up (per-line --fill set by the
@@ -1073,7 +1074,7 @@ html.lenis,html.lenis body{height:auto}
   /* hero: bottom-anchored flow like .mc-hero — filter bar sits 48/812 (5.91vh) off the viewport
      bottom (same value mobile-contact used for its Company Brief button), with fixed 24/48px gaps
      stacking the sub-copy and filter bar up from it, so shortening any line only moves the TOP. */
-  .mp-hero{position:relative;min-height:100vh;background:transparent;   /* transparent so the fixed #bg-line shows through (body is #fff) */
+  .mp-hero{position:relative;z-index:1;min-height:100vh;background:transparent;   /* transparent so the fixed #bg-line shows through (body is #fff); z:1 = above the arcs (else they cross the white .mp-toggle) */
     display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
     padding:120px 20px 5.91vh}
 
