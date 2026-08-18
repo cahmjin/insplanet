@@ -1,9 +1,9 @@
 /* ===== mobile full-menu overlay (shared) =====
-   Mobile-only (≤767) full-menu: circular reveal + radial halftone edge, opened from the
+   Mobile-only (≤1023) full-menu: circular reveal + radial halftone edge, opened from the
    #full-menu hamburger that every mobile page's header chrome ships. Separate from
    js/shared-ui.js, which injects/drives the DESKTOP full-menu (different markup, 2-col
    .menu-inner layout, cursor-anchored origin) — do not merge the two.
-   Loaded by every ≤767 page (mobile.html, mobile-contact.html, …) after that page's own
+   Loaded by every ≤1023 page (mobile.html, mobile-contact.html, …) after that page's own
    Lenis setup (so window.__lenis is already exposed for the scroll lock below). On run,
    injects the #menu-overlay markup at the end of #page-root (or body) if it isn't already
    on the page, then wires up open/close. ES5 (matches the inline-script convention used

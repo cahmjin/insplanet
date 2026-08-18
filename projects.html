@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- stop iOS Safari from auto-linking phone numbers / emails / addresses (turns them blue) -->
 <meta name="format-detection" content="telephone=no, email=no, address=no, date=no">
-<!-- adaptive routing: phones (≤767) get the dedicated mobile page; runs before CSS so no PC flash -->
-<script>if(matchMedia('(max-width:767px)').matches)location.replace('mobile-projects.html'+location.search+location.hash);</script>
+<!-- adaptive routing: phones + tablets (≤1023) get the dedicated mobile page; runs before CSS so no PC flash -->
+<script>if(matchMedia('(max-width:1023px)').matches)location.replace('mobile-projects.html'+location.search+location.hash);</script>
 <title>Insplanet — Projects</title>
 <!-- self-hosted webfonts (Pretendard, Cormorant Garamond, Roboto Serif) — no external CDN -->
 <link rel="stylesheet" href="css/fonts.css">

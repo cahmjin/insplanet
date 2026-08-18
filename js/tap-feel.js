@@ -1,5 +1,5 @@
 /* tap feedback for the mobile pages — the hover-less "press feel".
-   Visual spring on tap (all platforms): .is-tapped runs the m-tap keyframe (style.css ≤767).
+   Visual spring on tap (all platforms): .is-tapped runs the m-tap keyframe (style.css ≤1023).
    An ANIMATION, not an :active transition, so it can't collide with the elements' own
    reveal transitions (.mc-brief / .m-cta-arrow carry delayed transform transitions).
    NOTE: haptics were tried and removed (2026-08-13) — Android's vibrate() felt like nothing

@@ -626,12 +626,12 @@ html.lenis,html.lenis body{height:auto}
 .sb-br-m{display:none}
 
 /* ============================================================================
-   MOBILE (≤767px) — HOME HERO only. Figma official_01_main_375 (375×812).
+   MOBILE (≤1023px) — HOME HERO only. Figma official_01_main_375 (375×812).
    First pass: just the #stage hero. The sections below the hero stay desktop
    for now. Header controls (shared-ui) reposition site-wide to the 375 layout
    (they were floored at the 1024 design values, so off-screen on a phone).
    ============================================================================ */
-@media (max-width:767px){
+@media (max-width:1023px){
   /* --- header: logo / Let's Talk / hamburger / scroll-hint @ 375 --- */
   #ci-logo{left:20px;top:31px;width:104.9px;height:18px}   /* logo 104.9×18 */
   #lets-talk{right:73px;top:27px}                 /* left edge ≈ x249 */
@@ -1052,8 +1052,8 @@ html.lenis,html.lenis body{height:auto}
   .mc-join-inner{position:absolute;inset:0}
   .mc-join-title{margin:0;position:absolute;left:20px;top:80px;
     font-family:'Cormorant Garamond',serif;font-weight:600;font-size:72px;line-height:1.21;letter-spacing:-0.01em}
-  .mc-join-sub{margin:0;position:absolute;left:20px;top:191px;width:335px;font-weight:600;font-size:16px;line-height:1.5;word-break:keep-all}
-  .mc-join-desc{margin:0;position:absolute;left:20px;top:231px;width:335px;font-weight:400;font-size:15px;line-height:1.5;word-break:keep-all}
+  .mc-join-sub{margin:0;position:absolute;left:20px;top:191px;width:calc(100% - 40px);font-weight:600;font-size:16px;line-height:1.5;word-break:keep-all}
+  .mc-join-desc{margin:0;position:absolute;left:20px;top:231px;width:calc(100% - 40px);font-weight:400;font-size:15px;line-height:1.5;word-break:keep-all}
   .mc-join-btn{position:absolute;left:20px;top:420px;width:208px;height:64px;padding:0 24px;
     display:inline-flex;align-items:center;justify-content:space-between;gap:12px;
     background:#3E3F44;border-radius:999px;color:#FFF;text-decoration:none;font-weight:600;font-size:16px;line-height:1.5}

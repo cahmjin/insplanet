@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="format-detection" content="telephone=no, email=no, address=no, date=no">
-<!-- adaptive routing: desktop/tablet (≥768) bounce to the PC page; runs before CSS so no mobile flash -->
-<script>if(matchMedia('(min-width:768px)').matches)location.replace('index.html'+location.search+location.hash);</script>
+<!-- adaptive routing: desktop (≥1024) bounce to the PC page; runs before CSS so no mobile flash -->
+<script>if(matchMedia('(min-width:1024px)').matches)location.replace('index.html'+location.search+location.hash);</script>
 <title>Insplanet — Mobile (hero WIP)</title>
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/style.css">
@@ -14,7 +14,7 @@
      Only the hero — NO below-fold sections — so nothing overflows horizontally
      and the layout viewport stays = device width (the below-hero desktop sections
      were blowing vw out to 496 and pushing the fixed right-side controls off the
-     375 screen). Merge the mobile rules (already in style.css @media ≤767) back
+     375 screen). Merge the mobile rules (already in style.css @media ≤1023) back
      into index.html once the lower sections are built for mobile. */
   html,body{overflow-x:clip}                   /* safety: no horizontal scroll/expansion.
      clip, NOT hidden — overflow-x:hidden makes body a scroll container, which
@@ -443,7 +443,7 @@
   })();
 
   // chapter 08 reveal: footer CI — wordmark blur-fades up, planet scales in a beat later
-  // (PC .footer.in port from main.js; CSS in style.css ≤767 .m-footer.in)
+  // (PC .footer.in port from main.js; CSS in style.css ≤1023 .m-footer.in)
   (function(){
     var footer=document.querySelector('.m-footer');
     if(!footer)return;
@@ -456,7 +456,7 @@
     io.observe(footer);
   })();
 </script>
-<!-- mobile full-menu overlay (shared across ≤767 pages): injects #menu-overlay markup + wires open/close -->
+<!-- mobile full-menu overlay (shared across ≤1023 pages): injects #menu-overlay markup + wires open/close -->
 <script src="js/mobile-menu.js"></script>
 <!-- tap feedback experiment: haptic (Android vibrate / iOS switch-hack) + spring scale. restore point: c07d11d -->
 <script src="js/tap-feel.js"></script>
