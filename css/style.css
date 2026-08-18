@@ -1,5 +1,6 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;background:#fff}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}   /* iOS Safari inflates long text blocks on landscape rotation (hit the About mission paragraph) — keep our sizes */
 /* reserve the scrollbar's space so toggling overflow (page-transition lock) doesn't reflow/jolt the
    layout. No effect with overlay scrollbars (mac/iOS default); fixes the jolt on classic scrollbars. */
 html{scrollbar-gutter:stable}
