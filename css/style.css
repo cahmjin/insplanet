@@ -1286,6 +1286,9 @@ html.lenis,html.lenis body{height:auto}
   .ma-cap-icon{display:block;width:64px;height:64px;margin:0 0 40px}
   .ma-cap-icon img{width:100%;height:100%;object-fit:contain;display:block}
   .ma-cap-title{margin:0 0 32px;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:20px;line-height:1.2}   /* 2 lines = 48 */
+  /* all four titles carry the same Figma <br> so they stay 2 lines together on phones; once a column can hold
+     the longest title on one line (~600px viewport) the breaks drop and all four go single-line TOGETHER */
+  @media (min-width:600px){ .ma-cap-title br{display:none} }
   .ma-cap-desc{margin:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;font-size:14px;line-height:1.5}   /* Figma wraps mid-phrase at 157 — default (normal) Korean breaking */
   /* scroll reveal (PC port): title blur-in, copy rise+fade .15s behind it, capability cards rise+fade with
      the PC per-item stagger .07/.14/.21 (each card is its own IO root). */
