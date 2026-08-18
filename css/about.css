@@ -5,9 +5,8 @@
      --g : 0px -> 1px as the viewport goes 1920 -> 2560 (flat outside)
      value(A@1024, B@1920, C@2560) = calc(Apx + (B-A)*var(--v) + (C-B)*var(--g))
    Below 1024 everything is flat at the 1024 design (same convention as the main page). The only
-   un-interpolatable difference is the fusion headline's line count (3 lines up to 1920 / 2 @2560,
-   flipped via .br-1920 at 2240px) and the fusion graphic artwork (different crop at 1024, swapped
-   at 1472px). */
+   un-interpolatable difference is the Experience capabilities grid, which flips from 2x2 to 4x1 at
+   2240px, and the AX copy's line breaks (.br-1024 / .br-desk), which swap at 1472px. */
 
 .about-page{background:#fff}
 .about{
@@ -84,65 +83,101 @@
 .about-mission-head .about-headline{margin-bottom:calc(32px + 16 * var(--v))}
 
 .value-cards{list-style:none;margin:calc(120px + 40 * var(--v)) 0 0;padding:0;display:flex;justify-content:space-between}
-.value-card{display:flex;flex-direction:column;align-items:center;text-align:center}
-/* per-card widths: equal thirds (277) @1024 -> Figma 400 / 421 / 416 @1920+ — li order: card, arrow, card, arrow, card */
-.value-cards li:nth-child(1){flex:0 0 calc(277px + 123 * var(--v))}
-.value-cards li:nth-child(3){flex:0 0 calc(277px + 144 * var(--v))}
-.value-cards li:nth-child(5){flex:0 0 calc(277px + 139 * var(--v))}
+.value-card{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1 1 0}   /* three equal columns — li order: card, arrow, card, arrow, card */
 .value-pill{display:flex;align-items:center;justify-content:center;width:calc(240px + 80 * var(--v) + 80 * var(--g));height:calc(240px + 80 * var(--v) + 80 * var(--g));
-  border-radius:999px;background:#3E3F44;color:#fff;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(20px + 4 * var(--v));letter-spacing:0.01em}   /* pill 240 -> 320 -> 400 */
+  border-radius:999px;background:#fff;border:1px solid #3E3F44;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(20px + 4 * var(--v));letter-spacing:0.01em}   /* pill 240 -> 320 -> 400 */
 .value-card-title{margin:calc(48px + 32 * var(--v)) 0 calc(24px + 8 * var(--v));color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(18px + 6 * var(--v));line-height:1.4}
-.value-card-body{margin:0;width:max-content;max-width:96vw;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 6 * var(--v));line-height:1.5}   /* hug the <br> lines (don't wrap to the narrow card) — Figma lets the body overflow the pill column, centred */
+.value-card-body{margin:0;width:max-content;max-width:96vw;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 4 * var(--v) + 2 * var(--g));line-height:1.5}   /* hug the <br> lines (don't wrap to the narrow card) — Figma lets the body overflow the pill column, centred */
 /* plus-arrows between the pills, centred at pill height; arrow 48 -> 64 -> 80 */
 .value-arrow{display:flex;align-self:flex-start;height:calc(240px + 80 * var(--v) + 80 * var(--g));align-items:center;flex:none}
 .value-arrow img{width:calc(48px + 16 * var(--v) + 16 * var(--g));height:calc(48px + 16 * var(--v) + 16 * var(--g));display:block}
 
-/* ---------- 04 finance × mobility + core values — left column @48/218, 928 -> 1486 -> 1662 wide;
-   gap to mission 180 -> 360 -> 400; graphic at the column's right edge (234x114 art @1024, swapped
-   for the 312x252 art at 1472px); core values: flat 64 -> 120 gap, no dividers. ---------- */
-.about-fusion{padding-top:calc(180px + 180 * var(--v) + 40 * var(--g))}
-.about-fusion .about-inner{width:calc(928px + 558 * var(--v) + 176 * var(--g));margin:0 auto 0 max(calc(48px + 168 * var(--v) + 2 * var(--g)), calc((100vw - 2124px) / 2))}   /* gutter 48->216->218; above 2560 the left edge caps with the content column (centred), width/right stay as designed */
-.about-fusion-head{position:relative}
-.about-fusion-head .about-headline{margin:0 0 calc(32px + 16 * var(--v))}
-.about-fusion-head .about-paragraph{max-width:calc(694px + 29 * var(--v))}
-.about-fusion-graphic{position:absolute;top:0;right:0;width:calc(234px + 78 * var(--v));height:auto}
-.about-fusion-graphic--desk{display:none}
-@media (min-width:1472px){
-  .about-fusion-graphic--1024{display:none}
-  .about-fusion-graphic--desk{display:block}}
+/* scroll reveal — eyebrow/headline/paragraph stagger 0/.08/.16s, then the 3 value cards rise+fade
+   staggered .1/.2/.3s, then the "+" separators fade in last (~.35s); TWO IOs (js inline in about.html):
+   the head group and the value-card row are separate [data-rv] roots so each fires independently once
+   IT crosses the reveal gate, instead of the row finishing off-screen before the section's top edge
+   even reaches it. Same elastic rise family as the Projects grid / Our Services cards, bigger travel
+   (72px) so the rise reads as scroll-driven. */
+.about-mission-head > *{opacity:0;transform:translateY(72px);transition:opacity .8s ease,transform 1.1s cubic-bezier(.34,1.45,.5,1)}
+.about-mission-head > *:nth-child(2){transition-delay:.08s}
+.about-mission-head > *:nth-child(3){transition-delay:.16s}
+.value-card{opacity:0;transform:translateY(72px);transition:opacity .8s ease,transform 1.1s cubic-bezier(.34,1.45,.5,1)}
+.value-arrow{opacity:0;transition:opacity .5s ease}
+.value-cards li:nth-child(1){transition-delay:.1s}
+.value-cards li:nth-child(3){transition-delay:.2s}
+.value-cards li:nth-child(5){transition-delay:.3s}
+.value-cards li:nth-child(2),.value-cards li:nth-child(4){transition-delay:.35s}
+.about-mission-head.in > *,
+.value-cards.in .value-card{opacity:1;transform:none}
+.value-cards.in .value-arrow{opacity:1}
+@media (prefers-reduced-motion:reduce){
+  .about-mission-head > *,.value-card,.value-arrow{opacity:1;transform:none;transition:none}}
 
-.core-values{list-style:none;margin:calc(96px + 64 * var(--v)) 0 0;padding:0;display:flex;flex-direction:column;gap:calc(64px + 56 * var(--v))}
-.core-value{display:grid;grid-template-columns:calc(448px + 128 * var(--v)) 1fr;align-items:center;gap:32px}
-.core-value-head{display:flex;align-items:center;gap:24px}
-.core-value-icon{flex:none;width:80px;height:80px;display:flex;align-items:center;justify-content:center}
+/* ---------- 04 Experience — big serif headline, bold 3-line statement, 4 capability cards (2x2 ->
+   4x1 @2240), then an auto-marquee photo band as the section's last child (no separate padded
+   section). Vertical stack gap between title/copy/capabilities/band = 96 -> 160 (flat above 1920).
+   Gap to mission 200 -> 320 -> 400. ---------- */
+.about-fusion{padding-top:calc(200px + 120 * var(--v) + 80 * var(--g))}
+.about-fusion-title{margin:0;color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;
+  font-size:calc(160px + 160 * var(--v) + 80 * var(--g));line-height:1;letter-spacing:0;text-align:left;
+  opacity:0;filter:blur(18px);transform:translateY(24px);
+  transition:opacity 1.1s ease,filter 1.1s ease,transform 1.1s cubic-bezier(.22,1,.36,1)}
+.about-fusion-title.in{opacity:1;filter:blur(0);transform:none}
+.about-exp-copy{margin:calc(96px + 64 * var(--v)) 0 0}   /* reuses .about-headline's type (32/56/56, Pretendard 700, lh 1.5) */
+/* rise+fade after the title — same IO trigger as .about-fusion-title (js below), baked-in .15s delay */
+.about-exp-copy{opacity:0;transform:translateY(72px);transition:opacity .8s ease .15s,transform 1.1s cubic-bezier(.34,1.45,.5,1) .15s}
+.about-exp-copy.in{opacity:1;transform:none}
+
+.core-values{list-style:none;margin:calc(96px + 64 * var(--v)) 0 0;padding:0;display:grid;grid-template-columns:repeat(2, 1fr);gap:64px 32px}
+@media (min-width:2540px){ .core-values{grid-template-columns:repeat(4, 1fr);column-gap:120px} }
+.core-value{display:flex;flex-direction:column;align-items:flex-start;text-align:left;
+  opacity:0;transform:translateY(60px);transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}
+.core-value.in{opacity:1;transform:none}   /* per-item scroll-reveal stagger, same easing as the Projects grid */
+.core-values li:nth-child(2){transition-delay:.07s}
+.core-values li:nth-child(3){transition-delay:.14s}
+.core-values li:nth-child(4){transition-delay:.21s}
+.core-value-icon{display:block;width:calc(64px + 16 * var(--v) + 16 * var(--g));height:calc(64px + 16 * var(--v) + 16 * var(--g));margin:0 0 calc(40px + 8 * var(--v) + 16 * var(--g))}
 .core-value-icon img{width:100%;height:100%;object-fit:contain;display:block}
-.core-value-title{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(20px + 4 * var(--v));line-height:1.3}
+.core-value-title{margin:0 0 32px;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(20px + 4 * var(--v));line-height:normal}
 .core-value-desc{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 4 * var(--v));line-height:1.5}
 
-/* the fusion headline is 3 lines up to 1920 and 2 lines @2560 — the only line-count flip */
-@media (min-width:2240px){ .br-1920{display:none} }
-
-/* the AX copy breaks differently in the 1024 frame — swap the break set at 1472 (same as the graphic) */
+/* the AX copy breaks differently in the 1024 frame — swap the break set at 1472 */
 .br-1024{display:none}
 @media (max-width:1471px){ .br-1024{display:inline} .br-desk{display:none} }
 
-/* ---------- 05 gallery — four rounded cards from the left gutter, bleeding past the right edge;
-   288x356 R20.5 gap21 @1024 -> 584x720 R32 gap32 @1920+; gap to fusion 130 -> 240. ---------- */
-.about-gallery{padding-top:calc(130px + 110 * var(--v));overflow:hidden;overflow:clip}   /* self-clip the right-bleed at the section box so it never widens the page. hidden;clip = progressive: old Safari (<16, no overflow:clip) falls back to hidden; modern uses clip (no scroll-container side effects). .about's overflow:clip can't be the only guard — it's silently ignored pre-Safari-16, which is what made the iPad scroll horizontally. No sticky lives in this section, so hidden is safe here (unlike .about, which hosts the hero-pin). */
-.about-gallery .about-inner{margin:0 0 0 max(calc(48px + 168 * var(--v) + 2 * var(--g)), calc((100vw - 2124px) / 2))}   /* gutter 48->216->218; above 2560 left edge caps with the content column; still bleeds right */
-.about-gallery-grid{display:grid;grid-template-columns:repeat(4, calc(288px + 296 * var(--v)));gap:calc(21.3px + 10.7 * var(--v))}
-.about-gallery-item{margin:0;height:calc(356px + 364 * var(--v));border-radius:calc(20.5px + 11.5 * var(--v));overflow:hidden}
-.about-gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
+@media (prefers-reduced-motion:reduce){
+  .about-fusion-title{opacity:1;filter:none;transform:none;transition:none}
+  .about-exp-copy,.about-gallery{opacity:1;transform:none;transition:none}
+  .core-value{opacity:1;transform:none;transition:none}}
 
-/* ---------- 06 Beyond UX / The AX Creator + stats — title left (48 -> 80px), right column
-   480 -> 698 wide: copy -> stats blocks 96 -> 160 apart; Years/Team spread across the column.
-   Gap to gallery 160 -> 240 -> 400. Title line boxes 42 -> 64px vs Figma auto-boxes -> glyphs sit
-   8 -> 16px high; padding compensates. ---------- */
-.about-axcreator{padding-top:calc(160px + 80 * var(--v) + 160 * var(--g))}
-.about-axcreator-grid{display:flex;justify-content:space-between;align-items:flex-start}
+/* photo band — auto-marquee, LAST child of the Experience section (stack gap, no extra top padding).
+   Track starts at the content-left gutter and bleeds right; the section self-clips the bleed (hidden;clip
+   = progressive fallback, see .about's overflow:clip note). 4 cards duplicated once (8 in the track,
+   clones aria-hidden) slide right->left, looping seamlessly at -50% of the track's own width. */
+.about-gallery{margin-top:calc(96px + 64 * var(--v));overflow:hidden;overflow:clip;
+  margin-left:max(calc(48px + 168 * var(--v) + 2 * var(--g)), calc((100vw - 2124px) / 2))}
+/* the whole band rises+fades as one unit; transform lives on THIS wrapper only — the marquee's own
+   continuous transform (translateX loop) stays on .about-gallery-track, unaffected. */
+.about-gallery{opacity:0;transform:translateY(72px);transition:opacity .8s ease,transform 1.1s cubic-bezier(.34,1.45,.5,1)}
+.about-gallery.in{opacity:1;transform:none}
+.about-gallery-track{display:flex;gap:0;width:max-content;margin-left:0;
+  animation:about-marquee 40s linear infinite;animation-play-state:paused}   /* parked at frame 0 until the band reveals */
+.about-gallery.in .about-gallery-track{animation-play-state:running}         /* starts flowing only once it's in view */
+.about-gallery-item{margin:0 32px 0 0;flex:none;width:calc(448px + 278 * var(--v) + 320 * var(--g));height:calc(360px + 200 * var(--v) + 160 * var(--g));border-radius:32px;overflow:hidden}
+.about-gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
+@keyframes about-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){ .about-gallery-track{animation:none} }
+
+/* ---------- 06 Beyond UX / The AX Creator + stats — title left, fixed-width so the right column
+   starts at exactly 480 -> 790 -> 1078 from the gutter: copy -> stats blocks 96 -> 160 apart;
+   Years/Team spread across the column. Gap to gallery 200 -> 320 -> 400. Title line boxes 42 -> 64px
+   vs Figma auto-boxes -> glyphs sit 8 -> 16px high; padding compensates. ---------- */
+.about-axcreator{padding-top:calc(200px + 120 * var(--v) + 80 * var(--g))}
+.about-axcreator-grid{display:flex;justify-content:flex-start;align-items:flex-start}
 .about-display{margin:0;padding-top:calc(8px + 8 * var(--v));color:#3E3F44;font-family:'Cormorant Garamond',serif;font-weight:700;
-  font-size:calc(48px + 32 * var(--v));line-height:calc(42px + 22 * var(--v));display:flex;flex-direction:column}
-.about-axcreator-right{width:calc(448px + 250 * var(--v));display:flex;flex-direction:column;gap:calc(96px + 64 * var(--v))}
+  font-size:calc(48px + 32 * var(--v));line-height:calc(42px + 22 * var(--v));display:flex;flex-direction:column;
+  flex:0 1 calc(480px + 310 * var(--v) + 288 * var(--g))}   /* right col left edge = gutter + 480/790/1078 */
+.about-axcreator-right{flex:none;width:calc(448px + 250 * var(--v));display:flex;flex-direction:column;gap:calc(96px + 64 * var(--v))}
 .about-axcreator-copy{display:flex;flex-direction:column;gap:32px}
 .about-stats{margin:0;display:flex;flex-direction:column;gap:calc(96px + 64 * var(--v))}
 .about-stats-row{display:flex}
@@ -155,8 +190,46 @@
 .about-stats-row .about-stat:first-child .about-stat-num img{height:calc(71px + 47 * var(--v))}   /* 8+  */
 .about-stats-row .about-stat:last-child .about-stat-num img{height:calc(82px + 54 * var(--v))}    /* 30+ */
 
-/* ---------- 07 closing image — rounded card; 928x480 R32 @1024 -> 920 R64 @1920 -> 1080 @2560 ---------- */
-.about-fullbleed{height:calc(480px + 440 * var(--v) + 160 * var(--g));
-  margin:calc(160px + 80 * var(--v)) calc(48px + 168 * var(--v) + 2 * var(--g)) 0 calc(48px + 168 * var(--v) + 2 * var(--g));   /* left +2*g (was 216 at 2560) */
-  border-radius:calc(32px + 32 * var(--v));overflow:hidden}
-.about-fullbleed img{width:100%;height:100%;object-fit:cover;display:block}
+/* scroll reveal — title rises+fades in, the right-column copy follows .1s behind, then the stat
+   groups land with a bigger rise (96px) + the elastic ease (the 100+/8+/30+ figures are SVGs, so a
+   count-up isn't possible); labels move with their figure as one unit. TWO IOs (js inline in
+   about.html): .about-axcreator (the section itself — tall, since the right column stacks copy+stats
+   below the fold, so it's observed at threshold 0) drives the title+copy; .about-stats is its own
+   [data-rv] root so the stat row fires independently once IT crosses the gate, instead of finishing
+   off-screen long before it's seen. */
+.about-display,.about-axcreator-copy{opacity:0;transform:translateY(72px);transition:opacity .8s ease,transform 1.1s cubic-bezier(.34,1.45,.5,1)}
+.about-axcreator-copy{transition-delay:.1s}
+.about-stat{opacity:0;transform:translateY(96px);transition:opacity .8s ease,transform 1.1s cubic-bezier(.34,1.45,.5,1)}
+.about-stats > .about-stat{transition-delay:.1s}
+.about-stats-row .about-stat:first-child{transition-delay:.25s}
+.about-stats-row .about-stat:last-child{transition-delay:.35s}
+.about-axcreator.in .about-display,
+.about-axcreator.in .about-axcreator-copy{opacity:1;transform:none}
+.about-stats.in .about-stat{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .about-display,.about-axcreator-copy,.about-stat{opacity:1;transform:none;transition:none}}
+
+/* ---------- 07 closing image — PINNED EXPANSION, same mechanism as the 01 hero above: a TINY
+   rounded card (6.25vw wide, landscape 1:0.62) centered in a 100vh sticky stage grows (scrubbed by
+   scroll) to true full-bleed 100vw x 100vh, radius 0. The wrapper is EXACTLY 100vh (stage only, no
+   extra scroll distance) so the growth finishes exactly as the sticky stage would engage, then it
+   immediately releases and scrolls away as a normal section — no pinned full-bleed hold. Gap to
+   Beyond UX 200 -> 320 -> 400, 0 gap to the footer. #ci-logo / #lets-talk / #full-menu /
+   #scroll-hint flip .on-dark while the (currently sized) box covers their fixed position
+   (js/about-hero.js). Card start geometry: width = 6.25vw -> 64 -> 120 -> 160 @1024/1920/2560;
+   height = width * 0.62 -> ~40 -> 74 -> 99; radius = ~20% of width, capped by the hero banner's own
+   radius (min(32/64/64px, width*0.2)) so a 64-160px card never gets an oversized 32-64px radius.
+   JS drives top/left/width/height/border-radius every frame; the CSS below only sets the matching
+   state-A geometry so there's no jump before JS's first render(). ---------- */
+.about-fullbleed{position:relative;height:100vh;margin:calc(200px + 120 * var(--v) + 80 * var(--g)) 0 0}   /* stage only — no hold */
+.about-fullbleed-pin{position:sticky;top:0;height:100vh;overflow:hidden}
+.about-fullbleed-box{position:absolute;z-index:1;
+  top:calc((100vh - 3.875vw) / 2);   /* startH = 6.25vw * 0.62 = 3.875vw */
+  left:46.875vw;right:46.875vw;      /* (100vw - 6.25vw) / 2 */
+  height:3.875vw;
+  border-radius:min(calc(32px + 32 * var(--v)), 1.25vw);   /* 1.25vw = 6.25vw * 0.2 */
+  overflow:hidden;background:#3E3F44}
+.about-fullbleed-box img{width:100%;height:100%;object-fit:cover;display:block}
+/* reduced-motion: static full-bleed end state, no scrub (js/about-hero.js also skips its listeners) */
+@media (prefers-reduced-motion:reduce){
+  .about-fullbleed-box{top:0;left:0;width:100%;height:100vh;border-radius:0}}
