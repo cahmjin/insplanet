@@ -542,12 +542,48 @@
     var locked=false;
     var SCROLL_KEYS={' ':1,'Spacebar':1,'PageUp':1,'PageDown':1,'Home':1,'End':1,'ArrowUp':1,'ArrowDown':1};
     function inScroll(e){return e.target&&e.target.closest&&e.target.closest('.mr-scroll');}
+    // iOS: Lenis is touch-native here (smoothWheel only), so Lenis.stop() does NOT stop the finger from
+    // scrolling the page — and when .mr-scroll hits its top/bottom, iOS chains the gesture to the page
+    // (rubber-band → body scrolls, even with overscroll-behavior:contain on older WebKit). Two guards:
+    //  1) edge guard: touch that starts inside .mr-scroll and pulls past an edge is cancelled (no chaining);
+    //     touches outside .mr-scroll are always cancelled (passive:false so preventDefault is honoured).
+    //  2) body lock (lockBody below): position:fixed body — the one lock iOS respects for native touch.
+    var startY=0;
+    addEventListener('touchstart',function(e){ if(locked&&e.touches&&e.touches.length)startY=e.touches[0].clientY; },{passive:true});
     addEventListener('wheel',function(e){if(locked&&!inScroll(e))e.preventDefault();},{passive:false});
-    addEventListener('touchmove',function(e){if(locked&&!inScroll(e))e.preventDefault();},{passive:false});
+    addEventListener('touchmove',function(e){
+      if(!locked)return;
+      if(!inScroll(e)){e.preventDefault();return;}
+      if(!scroller||!e.touches||e.touches.length!==1)return;   // pinch etc.: leave alone
+      var dy=e.touches[0].clientY-startY;   // >0 = finger moving down = scrolling up
+      var top=scroller.scrollTop, max=scroller.scrollHeight-scroller.clientHeight;
+      if(max<=0 || (top<=0&&dy>0) || (top>=max-1&&dy<0)) e.preventDefault();   // at an edge (or nothing to scroll): block chaining
+    },{passive:false});
     addEventListener('keydown',function(e){if(locked&&SCROLL_KEYS[e.key]&&!inScroll(e))e.preventDefault();},{passive:false});   // inputs/chips inside .mr-scroll keep Space/arrows
+    // native body lock: freeze the page in place with position:fixed (no overflow:hidden on html/body — the
+    // project rule; sticky is irrelevant while the full-screen popup covers everything). Fixed chrome (#bg-line,
+    // #ci-logo, …) and the popup (fixed, outside #page-root) are unaffected. On unlock restore the exact scrollY.
+    var savedY=0;
+    function lockBody(on){
+      var bs=document.body.style;
+      if(on){
+        savedY=window.scrollY||window.pageYOffset||0;
+        bs.position='fixed'; bs.top=(-savedY)+'px'; bs.left='0'; bs.right='0'; bs.width='100%';
+      }else{
+        bs.position=''; bs.top=''; bs.left=''; bs.right=''; bs.width='';
+        window.scrollTo(0,savedY);
+        if(window.__lenis&&window.__lenis.scrollTo) window.__lenis.scrollTo(savedY,{immediate:true,force:true});   // resync Lenis's internal target (it saw scrollY→0 while fixed)
+      }
+    }
     function lockScroll(on){
       locked=on;
-      if(window.__lenis){ if(on)window.__lenis.stop(); else window.__lenis.start(); }
+      if(on){
+        if(window.__lenis)window.__lenis.stop();
+        lockBody(true);
+      }else{
+        lockBody(false);
+        if(window.__lenis)window.__lenis.start();
+      }
     }
     popup.inert=true;   // closed by default (also set in markup): out of focus order / assistive tech
     function open(e){
