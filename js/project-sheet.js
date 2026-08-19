@@ -376,12 +376,28 @@
       void sheet.offsetHeight;   // force reflow so re-opening quickly still plays the slide-up from translateY(100%)
       requestAnimationFrame(function(){ sheet.classList.add('is-open'); });   // start the slide on the NEXT frame, after the body lock has laid out
       syncSbw(); syncEnd();
+      startSheetLenis();
     });
+  }
+  // ---- sheet-local Lenis: same elastic wheel feel as the pages (page Lenis is stopped while open) ----
+  var sheetLenis=null, sheetRaf=0;
+  function startSheetLenis(){
+    if(sheetLenis||!window.Lenis||reduce||!scrollEl)return;
+    try{
+      sheetLenis=new Lenis({wrapper:scrollEl, content:bodyEl, lerp:0.09, smoothWheel:true, autoRaf:false});
+      var loop=function(t){ if(!sheetLenis)return; sheetLenis.raf(t); sheetRaf=requestAnimationFrame(loop); };
+      sheetRaf=requestAnimationFrame(loop);
+    }catch(e){ sheetLenis=null; }
+  }
+  function stopSheetLenis(){
+    if(sheetRaf){ cancelAnimationFrame(sheetRaf); sheetRaf=0; }
+    if(sheetLenis){ try{ sheetLenis.destroy(); }catch(e){} sheetLenis=null; }
   }
   function closeSheet(){
     if(pending){ pending=false; loadSeq++; barStopTrickle(); barHide(); if(bodyEl){bodyEl.innerHTML='';} openedViaPush=false; document.documentElement.classList.remove('ps-open'); return; }   // cancelled mid-load
     if(!sheet||!sheet.classList.contains('is-open'))return;
     sheet.classList.remove('is-open');
+    stopSheetLenis();   // hand scrolling back to the page Lenis right away
     sheet.setAttribute('aria-hidden','true');
     lockScroll(false);
     document.documentElement.classList.remove('ps-open');
@@ -390,6 +406,7 @@
     function finish(){
       if(done)return; done=true;
       sheet.removeEventListener('transitionend', onEnd);
+      stopSheetLenis();
       bodyEl.innerHTML='';
       bodyEl.classList.remove('is-loaded');
       sheet.classList.remove('is-own-close');
