@@ -365,7 +365,7 @@
   var closeTimer=null;
   // expose the sheet scroller's scrollbar width so injected fixed chrome (the designed .pd-close) can
   // sit 48u from the CONTENT edge instead of over the bar
-  function syncSbw(){ if(sheet&&scrollEl)sheet.style.setProperty('--ps-sbw',(scrollEl.offsetWidth-scrollEl.clientWidth)+'px'); }
+  function syncSbw(){ if(sheet&&scrollEl){ sheet.style.setProperty('--ps-sbw',(scrollEl.offsetWidth-scrollEl.clientWidth)+'px'); sheet.style.setProperty('--ps-vh',scrollEl.clientHeight+'px'); } }   // also the scroller's real height → the hero's 100% (mobile address bar safe)
   addEventListener('resize', function(){ if(sheet&&sheet.classList.contains('is-open'))syncSbw(); });
   // scroll-hint end-fade: mark the sheet once its scroller has (nearly) reached the end (site rule: the hint hides at the bottom)
   function syncEnd(){ if(!sheet||!scrollEl)return; var atEnd=scrollEl.scrollTop+scrollEl.clientHeight>=scrollEl.scrollHeight-scrollEl.clientHeight*0.5; sheet.classList.toggle('is-at-end',atEnd); }

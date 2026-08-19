@@ -38,7 +38,9 @@
 /* one viewport tall (100vh — project rule; inside the sheet .ps-scroll IS the viewport). Figma 1024×768 / 1920×1080 /
    2560×1440: CI top-left 48/48 → 64/48 → 64/64, 105×18 → 141×25 → 141×25; title group vertically CENTRED in all
    three (ko 24 → 32 → 32, en 64 → 96 → 96); info + scroll hint bottom 48 → 64 → 64. */
-.pd-hero{position:relative;overflow:hidden;height:100vh;min-height:0;background:#0C0C0C;color:#FFF}
+.pd-hero{position:relative;overflow:hidden;height:100vh;height:100dvh;height:var(--ps-vh,100dvh);min-height:0;background:#0C0C0C;color:#FFF}
+/* hero height = the sheet scroller's REAL height (--ps-vh, set by js/project-sheet.js) — on phones 100vh is the large
+   viewport (address bar hidden) and overshoots the visible area; standalone falls back to 100dvh */
 .pd-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block}
 .pd-hero-ci{position:absolute;left:var(--gx);top:calc(48 * var(--q) + 16 * var(--dt));width:calc(105 * var(--q) + 36 * var(--dv));height:calc(18 * var(--q) + 7 * var(--dv))}
 .pd-hero-ci img{display:block;width:100%;height:100%}
@@ -196,7 +198,7 @@
   .pd-hero-scroll .bar{height:64px}
   .pd-hero-scroll .label{font-size:11px}
   .pd-close{top:16px;right:calc(16px + var(--ps-sbw,0px));width:36px;height:36px;border-width:0.7692px;border-radius:6.1538px}
-  .pd-close svg{width:36.9231px;height:36.9231px}
+  .pd-close svg{width:33.2308px;height:33.2308px}   /* 44.3077 × 36/48 — fits the 36 box (36.92 overflowed → chevron looked off-centre) */
 
   /* ---- band + cards ---- */
   .pd-secs{padding:16px 16px 48px;gap:16px}
