@@ -125,11 +125,40 @@
     // locked page behind the overlay.
     function inMenuScroll(e){return e.target&&e.target.closest&&e.target.closest('.m-menu-scroll');}
     addEventListener('wheel',function(e){if(scrollLocked&&!inMenuScroll(e))e.preventDefault();},{passive:false});
-    addEventListener('touchmove',function(e){if(scrollLocked&&!inMenuScroll(e))e.preventDefault();},{passive:false});
+    // touch: outside the menu scroller -> block; inside -> block only at the scroller's edges so the
+    // gesture can't chain (rubber-band) into the page behind (iOS hands it over at scrollTop 0/max)
+    var startY=0;
+    addEventListener('touchstart',function(e){ if(e.touches&&e.touches.length===1)startY=e.touches[0].clientY; },{passive:true});
+    addEventListener('touchmove',function(e){
+      if(!scrollLocked)return;
+      var sc=inMenuScroll(e);
+      if(!sc){e.preventDefault();return;}
+      if(!e.touches||e.touches.length!==1)return;
+      var dy=e.touches[0].clientY-startY, top=sc.scrollTop, max=sc.scrollHeight-sc.clientHeight;
+      if(max<=0 || (top<=0&&dy>0) || (top>=max-1&&dy<0))e.preventDefault();
+    },{passive:false});
     addEventListener('keydown',function(e){if(scrollLocked&&SCROLL_KEYS[e.key])e.preventDefault();},{passive:false});
+    // body lock — the ONE lock iOS respects for native touch scrolling (Lenis.stop() only kills wheel;
+    // touch is native in this config). Freeze the body in place and put it back exactly on close.
+    // NOT overflow:hidden (kills position:sticky elsewhere).
+    var savedY=0;
+    function lockBody(on){
+      var b=document.body, s=b.style;
+      if(on){
+        savedY=window.scrollY||window.pageYOffset||0;
+        s.position='fixed';s.top=(-savedY)+'px';s.left='0';s.right='0';s.width='100%';
+      } else {
+        s.position='';s.top='';s.left='';s.right='';s.width='';
+        window.scrollTo(0,savedY);
+      }
+    }
     function lockScroll(on){
       scrollLocked=on;
-      if(window.__lenis){ if(on)window.__lenis.stop(); else window.__lenis.start(); }
+      if(on){ if(window.__lenis)window.__lenis.stop(); lockBody(true); }
+      else {
+        lockBody(false);
+        if(window.__lenis){ window.__lenis.start(); window.__lenis.scrollTo(savedY,{immediate:true,force:true}); }   // resync Lenis's target (it saw scrollY→0 while fixed)
+      }
     }
     overlay.inert=true;   // closed by default: keep it out of focus order / assistive tech
     function open(){
