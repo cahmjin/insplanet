@@ -1,9 +1,10 @@
 /* ===== project-detail SHEET (prototype) =====
    Clicking a project thumbnail does NOT navigate: it fetches that project's detail HTML
-   (projects/<slug>.html — a standalone doc whose <main class="pd"> is the region we inject)
+   (projects/<slug>/index.html — a standalone doc whose <main class="pd"> is the region we inject;
+   its images live in projects/<slug>/img/)
    and shows it in a full-screen sheet that slides up from the bottom. Same behaviour on PC/
    tablet/mobile; wires PC `.pj-card` and mobile `.mp-card`, both of which carry data-slug (every
-   card points at the slug "kb-app" for now — projects/kb-app.html; projects/test.html is a dummy kept for testing).
+   card points at the slug "kb-app" for now — projects/kb-app/index.html; projects/test/index.html is a dummy kept for testing).
 
    URL: open -> history.pushState to `?p=<slug>` on the list page. Back (popstate w/o `p`) closes.
    Loading the list page with `?p=<slug>` already in the URL opens the sheet immediately (no push —
@@ -100,7 +101,7 @@
     }
   }
 
-  // ---- fetch + inject projects/<slug>.html's <main class="pd"> ----
+  // ---- fetch + inject projects/<slug>/index.html's <main class="pd"> ----
   var loadedHrefs={};   // stylesheet hrefs already appended to THIS page's <head> (append once)
   function qualifyAttr(el,attr,base){
     var v=el.getAttribute(attr);
@@ -166,7 +167,7 @@
     bodyEl.classList.remove('is-loaded');
     bodyEl.innerHTML='';
     barShow(); barReal(0.08); barTrickle(0.08,0.2);
-    var url='projects/'+encodeURIComponent(slug)+'.html';
+    var url='projects/'+encodeURIComponent(slug)+'/index.html';   // one folder per project: projects/<slug>/index.html + projects/<slug>/img/
     fetch(url).then(function(res){
       if(!res.ok)throw new Error('project-sheet: fetch failed ('+res.status+') for '+url);
       return res.text();
