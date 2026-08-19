@@ -6,7 +6,8 @@
 <!-- stop iOS Safari from auto-linking phone numbers / emails / addresses (turns them blue) -->
 <meta name="format-detection" content="telephone=no, email=no, address=no, date=no">
 <title>Insplanet — 헤이영 캠퍼스 고도화</title>
-<!-- Project detail — Figma official_05_projects_03_detail_01_2560 (1785:22992) + _1920 (2074:35563).
+<!-- Project detail — Figma official_05_projects_03_detail_01_2560 (1785:22992) + _1920 (2074:35563) + _1024 (1785:25796)
+     + MOBILE _360 (2456:39735, ≤1023 via @media in css/project-detail.css — its own hero bg + section image set).
      Paths are relative to /projects/ so this file works BOTH standalone (opened directly) and under any
      subpath (js/project-sheet.js rewrites these same relative paths against the fetched URL when it
      injects main.pd into the sheet on the list page).
@@ -22,7 +23,11 @@
 
   <!-- ===== HERO (Main Container 2560×1440) ===== -->
   <section class="pd-hero">
-    <img class="pd-hero-bg" src="img/hero-bg.jpg" alt="" loading="eager" decoding="async">
+    <!-- hero bg: PC 4096×2286 landscape / mobile (≤1023) 720×1600 portrait — the browser fetches ONLY the matching source -->
+    <picture>
+      <source media="(max-width:1023px)" srcset="img/m-hero-bg.jpg">
+      <img class="pd-hero-bg" src="img/hero-bg.jpg" alt="" loading="eager" decoding="async">
+    </picture>
     <div class="pd-hero-ci" aria-hidden="true"><img src="../../assets/ci_logo_white.svg" alt=""></div>
     <!-- designed close (Figma `close`): fixed; js/project-sheet.js wires it to close the sheet. Standalone: back to the list -->
     <a class="pd-close" href="../../projects.html" aria-label="닫기">
@@ -47,20 +52,30 @@
     <section class="pd-summary">
       <h2 class="pd-summary-head">Overview</h2>
       <div class="pd-summary-body">
-        <h3 class="pd-summary-title">스마트한 대학생활 필수 통합앱</h3>
-        <p class="pd-summary-text">학생증부터 학사 일정관리 등을 하나의 앱에서 모두 할 수 있는 헤이영 캠퍼스는<br>신한은행이 금융권 최초로 추진한 대학생 전용 모바일 서비스입니다. 인스플래닛은 2차 고도화 사업에 참여하여,<br>다크테마를 포함한 컬러 테마와 모바일 학생증 커스텀 기능 등 디자인 구성요소의 고도화 및 차별화를 구현하고<br>게시판, 소모임 등의 프로세스 개선 등 서비스를 업그레이드 하였습니다.</p>
+        <h3 class="pd-summary-title">스마트한 <br class="pd-m-only">대학생활 필수 통합앱</h3>
+        <p class="pd-summary-text">학생증부터 학사 일정관리 등을 하나의 앱에서 모두 할 수 있는 헤이영 캠퍼스는 <br>신한은행이 금융권 최초로 추진한 대학생 전용 모바일 서비스입니다. 인스플래닛은 2차 고도화 사업에 참여하여, <br>다크테마를 포함한 컬러 테마와 모바일 학생증 커스텀 기능 등 디자인 구성요소의 고도화 및 차별화를 구현하고 <br>게시판, 소모임 등의 프로세스 개선 등 서비스를 업그레이드 하였습니다.</p>
         <div class="pd-summary-actions">
           <a class="pd-btn pd-btn--primary" href="" target="_blank" rel="noopener"><span class="pd-btn-label">View Platform</span><svg class="pd-btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 8H16V15M16 8L8 16" stroke="currentColor" stroke-width="1.5"/></svg></a>
           <button type="button" class="pd-btn pd-btn--copy" data-copy=""><span class="pd-btn-label">Copy URL</span><svg class="pd-btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11.437 8.059L12.563 6.933C13.807 5.689 15.823 5.689 17.067 6.933C18.311 8.177 18.311 10.193 17.067 11.437L15.941 12.563M12.563 15.941L11.437 17.067C10.193 18.311 8.177 18.311 6.933 17.067C5.689 15.823 5.689 13.807 6.933 12.563L8.059 11.437M9.185 14.815L14.815 9.185" stroke="currentColor" stroke-width="1.5"/></svg></button>
         </div>
       </div>
     </section>
-    <figure class="pd-sec"><img src="img/sec-02.png" alt="" loading="eager" decoding="async"></figure>
-    <figure class="pd-sec"><img src="img/sec-03.png" alt="" loading="eager" decoding="async"></figure>
-    <figure class="pd-sec"><img src="img/sec-04.png" alt="" loading="eager" decoding="async"></figure>
-    <figure class="pd-sec"><img src="img/sec-05.png" alt="" loading="eager" decoding="async"></figure>
-    <figure class="pd-sec"><img src="img/sec-06.jpg" alt="" loading="eager" decoding="async"></figure>
-    <figure class="pd-sec"><img src="img/sec-07.png" alt="" loading="eager" decoding="async"></figure>
+    <!-- PC set (≥1024): the 1920 exports. Mobile set (≤1023): exported from the 360 frame (2456:39735 Contents, 328 wide @2×).
+         Only the active set is display'd (css). Both sets are loading="lazy": a lazy image inside a display:none figure is never
+         fetched, and js/project-sheet.js only force-eagers / counts images whose figure is actually displayed, so the inactive
+         set neither downloads nor gates the loading bar. -->
+    <figure class="pd-sec pd-sec--pc"><img loading="lazy" src="img/sec-02.png" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--pc"><img loading="lazy" src="img/sec-03.png" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--pc"><img loading="lazy" src="img/sec-04.png" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--pc"><img loading="lazy" src="img/sec-05.png" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--pc"><img loading="lazy" src="img/sec-06.jpg" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--pc"><img loading="lazy" src="img/sec-07.png" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--m"><img loading="lazy" src="img/m-sec-01.png" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--m"><img loading="lazy" src="img/m-sec-02.png" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--m"><img loading="lazy" src="img/m-sec-03.png" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--m"><img loading="lazy" src="img/m-sec-04.png" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--m"><img loading="lazy" src="img/m-sec-05.jpg" alt="" decoding="async"></figure>
+    <figure class="pd-sec pd-sec--m"><img loading="lazy" src="img/m-sec-06.png" alt="" decoding="async"></figure>
   </div>
 
 </main>

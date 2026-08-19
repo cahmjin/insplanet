@@ -1,66 +1,71 @@
-/* ===== project detail (projects/<slug>.html → main.pd) =====
-   Figma: official_05_projects_03_detail_01_2560 (1785:22992) + _1920 (2074:35563). Injected into the list
-   page's sheet by js/project-sheet.js (which copies THIS stylesheet into the list page's <head>), so
+/* ===== project detail (projects/<slug>/index.html → main.pd) =====
+   Figma: official_05_projects_03_detail_01_2560 (1785:22992) + _1920 (2074:35563) + _1024 (1785:25796). Injected
+   into the list page's sheet by js/project-sheet.js (which copies THIS stylesheet into the list page's <head>), so
    everything scopes under `.pd` and must not collide with the list page's CSS.
 
-   Fluid model — TWO anchors (1920 / 2560), measured against the .pd container's inline size (container-query
+   Fluid model — THREE anchors (1024 / 1920 / 2560), measured against the .pd container's inline size (container-query
    units, so the sheet's own scrollbar never breaks 100vw):
-     --p  = min(1px, 1cqw/19.2)  → 1px from 1920 up, proportional below (1024 = 0.533×). Nearly every hero /
-            summary number is IDENTICAL in the 1920 and 2560 frames (64 gutters, 141×25 CI, 32/96 title, 18/28
-            info, 48 close, 21×134 scroll hint, 120 card pads, 48/32/16 summary type, 40-high buttons) — those
-            are written `N * var(--p)`: fixed px between the anchors, scaled below 1920.
-     --dt = clamp(0px, (100cqw − 1920px)/640, 1px) → 0px at ≤1920, 1px at ≥2560: the interpolation weight
-            for the handful of numbers that DO differ between the frames (CI top 48→64, close top 32→48, band
-            pads 32/160→48/240 + gap 32→48, section radius 16→21.71, summary side pads 304→462 + Overview
-            column 424→738). Written `calc(A1920 * var(--p) + (A2560 − A1920) * var(--dt))`.
-   Type gets a px floor so it stays legible at 1024 (floors sit below every 1920 number, so they never bite
-   at ≥1920). Above 2560 the reading content stays 2560-wide centred (site content-cap rule) via --gx; the
-   hero image / dark band / footer image keep spreading full-bleed.
+     --q  = min(1px, 1cqw/10.24) → 1px from 1024 up, proportional below (the ≤1024 regime scales the 1024 numbers).
+     --dv = clamp(0px, (100cqw − 1024px)/896, 1px) → 0 at ≤1024, 1 at ≥1920: weight for the 1024→1920 change.
+     --dt = clamp(0px, (100cqw − 1920px)/640, 1px) → 0 at ≤1920, 1 at ≥2560: weight for the 1920→2560 change.
+     --p  = min(1px, 1cqw/19.2) → true width scale below 1920 — used ONLY for the exported section cards' radius
+            (those images are the 1920 designs scaled by width; 1024 r8.57 = 16 × 960/1792).
+   A number that is A@1024, B@1920, C@2560 is written `calc(A * var(--q) + (B − A) * var(--dv) + (C − B) * var(--dt))`;
+   a number identical in all three frames is `calc(N * var(--q))` (fixed px ≥1024). NO px floors — every anchor is
+   exact and below 1024 everything simply scales with width. Above 2560 the reading content stays 2560-wide centred
+   (site content-cap rule) via --gx; the hero image / dark band / footer image keep spreading full-bleed.
 
    HERO = live HTML/CSS. Everything below the hero = one Figma export per section (.pd-sec img),
-   stacked in the design's own dark band (#0C0C0C, 64 gutters, 48 gaps, 48 top / 240 bottom). */
+   stacked in the design's own dark band (#0C0C0C). */
 
 .pd-page{margin:0;background:#0C0C0C}
 
 .pd{display:block;position:relative;width:100%;container-type:inline-size;
-  --p:min(1px, calc(100vw / 1920));                    /* fallback (no cq units) */
-  --p:min(1px, calc(1cqw / 19.2));                     /* 1/1920 of .pd's width, capped at 1px (2560 = 1px too) */
-  --dt:clamp(0px, calc((100vw - 1920px) / 640), 1px);  /* fallback */
-  --dt:clamp(0px, calc((100cqw - 1920px) / 640), 1px); /* 1920→2560 interpolation weight, as a 0–1px length */
-  --gx:max(calc(64 * var(--p)), calc((100cqw - 2560px) / 2 + 64px));   /* side gutter (64 in both frames), content-capped >2560 */
+  --q:min(1px, calc(100vw / 1024));                     /* fallback (no cq units) */
+  --q:min(1px, calc(1cqw / 10.24));                     /* 1/1024 of .pd's width, capped at 1px */
+  --dv:clamp(0px, calc((100vw - 1024px) / 896), 1px);   /* fallback */
+  --dv:clamp(0px, calc((100cqw - 1024px) / 896), 1px);  /* 1024→1920 interpolation weight, as a 0–1px length */
+  --dt:clamp(0px, calc((100vw - 1920px) / 640), 1px);   /* fallback */
+  --dt:clamp(0px, calc((100cqw - 1920px) / 640), 1px);  /* 1920→2560 interpolation weight */
+  --p:min(1px, calc(100vw / 1920));                     /* fallback */
+  --p:min(1px, calc(1cqw / 19.2));                      /* width scale vs 1920 (section-card radius only) */
+  --gx:max(calc(48 * var(--q) + 16 * var(--dv)), calc((100cqw - 2560px) / 2 + 64px));   /* hero side gutter 48 → 64 → 64, content-capped >2560 */
+  --gb:max(calc(32 * var(--q) + 32 * var(--dv)), calc((100cqw - 2560px) / 2 + 64px));   /* dark-band side gutter 32 → 64 → 64 (cards 960 / 1792 / 2432 wide), content-capped >2560 */
   color:#3E3F44;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
   -webkit-font-smoothing:antialiased}
 
-/* ---- hero: 2560×1440 full-bleed image, white type ---- */
-/* one viewport tall (100vh — project rule; inside the sheet .ps-scroll IS the viewport). Figma 2560×1440 and
-   1920×1080 are both 16:9: CI top-left 64/64 (1920: 64/48), title group vertically CENTRED (639+81.5 = 720 = 1440/2;
-   458.5+81.5 = 540 = 1080/2), info + scroll hint bottom 64 in both. */
+/* ---- hero: full-bleed image, white type ---- */
+/* one viewport tall (100vh — project rule; inside the sheet .ps-scroll IS the viewport). Figma 1024×768 / 1920×1080 /
+   2560×1440: CI top-left 48/48 → 64/48 → 64/64, 105×18 → 141×25 → 141×25; title group vertically CENTRED in all
+   three (ko 24 → 32 → 32, en 64 → 96 → 96); info + scroll hint bottom 48 → 64 → 64. */
 .pd-hero{position:relative;overflow:hidden;height:100vh;min-height:0;background:#0C0C0C;color:#FFF}
 .pd-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block}
-.pd-hero-ci{position:absolute;left:var(--gx);top:calc(48 * var(--p) + 16 * var(--dt));width:calc(141 * var(--p));height:calc(25 * var(--p));min-width:56px;min-height:10px}
+.pd-hero-ci{position:absolute;left:var(--gx);top:calc(48 * var(--q) + 16 * var(--dt));width:calc(105 * var(--q) + 36 * var(--dv));height:calc(18 * var(--q) + 7 * var(--dv))}
 .pd-hero-ci img{display:block;width:100%;height:100%}
 
 .pd-hero-title{position:absolute;left:var(--gx);right:var(--gx);top:50%;transform:translateY(-50%);margin:0;
   display:flex;flex-direction:column;align-items:center;text-align:center;word-break:keep-all}
 .pd-hero-title .ko{display:block;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;
-  font-size:max(20px, calc(32 * var(--p)));line-height:150%;letter-spacing:0}
+  font-size:calc(24 * var(--q) + 8 * var(--dv));line-height:150%;letter-spacing:0}
 .pd-hero-title .en,.pd-title-en{display:block;font-family:'Montserrat',sans-serif;font-weight:700;
-  font-size:max(48px, calc(96 * var(--p)));line-height:120%;letter-spacing:0}
+  font-size:calc(64 * var(--q) + 32 * var(--dv));line-height:120%;letter-spacing:0}
 
-.pd-hero-info{position:absolute;left:var(--gx);bottom:calc(64 * var(--p));margin:0;
-  display:flex;gap:calc(96 * var(--p))}
-.pd-hero-info > div{display:flex;flex-direction:column;gap:calc(8 * var(--p))}
-.pd-hero-info dt{font-weight:700;font-size:max(12px, calc(18 * var(--p)));line-height:150%}
-.pd-hero-info dd{margin:0;font-weight:700;font-size:max(16px, calc(28 * var(--p)));line-height:150%;white-space:nowrap}
+/* info: label 13 → 18, value 16 → 28, label/value gap 4 → 8, group gap 48 → 96, bottom 48 → 64 (1024 → 1920 = 2560) */
+.pd-hero-info{position:absolute;left:var(--gx);bottom:calc(48 * var(--q) + 16 * var(--dv));margin:0;
+  display:flex;gap:calc(48 * var(--q) + 48 * var(--dv))}
+.pd-hero-info > div{display:flex;flex-direction:column;gap:calc(4 * var(--q) + 4 * var(--dv))}
+.pd-hero-info dt{font-weight:700;font-size:calc(13 * var(--q) + 5 * var(--dv));line-height:150%}
+.pd-hero-info dd{margin:0;font-weight:700;font-size:calc(16 * var(--q) + 12 * var(--dv));line-height:150%;white-space:nowrap}
 
-/* scroll hint (design: 21×134 at right 64 / bottom 64 in BOTH frames) — same anatomy as #scroll-hint on the list page. FIXED to the
-   viewport like the site's other pages (was inside the hero); offset by the sheet scroller's bar width like .pd-close;
-   fades out once the sheet is scrolled to its end (js/project-sheet.js toggles .is-at-end on the sheet). */
-.pd-hero-scroll{position:fixed;z-index:5;right:calc(var(--gx) + var(--ps-sbw,0px));bottom:calc(64 * var(--p));width:calc(21 * var(--p));min-width:14px;
-  display:flex;flex-direction:column;align-items:center;gap:calc(16 * var(--p));pointer-events:none;user-select:none;-webkit-user-select:none;
+/* scroll hint (design: 21 wide, bar 64, gap 16 in ALL frames; label 11 → 14; right/bottom 48 → 64) — same anatomy as
+   #scroll-hint on the list page. FIXED to the viewport like the site's other pages (was inside the hero); offset by the
+   sheet scroller's bar width like .pd-close; fades out once the sheet is scrolled to its end (js/project-sheet.js
+   toggles .is-at-end on the sheet). */
+.pd-hero-scroll{position:fixed;z-index:5;right:calc(var(--gx) + var(--ps-sbw,0px));bottom:calc(48 * var(--q) + 16 * var(--dv));width:calc(21 * var(--q));
+  display:flex;flex-direction:column;align-items:center;gap:calc(16 * var(--q));pointer-events:none;user-select:none;-webkit-user-select:none;
   transition:opacity .35s ease}
 .ps-sheet.is-at-end .pd-hero-scroll{opacity:0}
-.pd-hero-scroll .bar{position:relative;width:1px;height:calc(64 * var(--p));background:rgba(255,255,255,.25);overflow:hidden}
+.pd-hero-scroll .bar{position:relative;width:1px;height:calc(64 * var(--q));background:rgba(255,255,255,.25);overflow:hidden}
 .pd-hero-scroll .bar::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;background:#FFF;transform-origin:top;transform:scaleY(0);
   animation:pd-scroll-draw 2.2s cubic-bezier(.65,0,.35,1) infinite}
 @keyframes pd-scroll-draw{
@@ -69,22 +74,22 @@
   55%  {transform:scaleY(1);transform-origin:bottom}
   100% {transform:scaleY(0);transform-origin:bottom}
 }
-.pd-hero-scroll .label{font-weight:700;font-size:max(11px, calc(14 * var(--p)));line-height:150%;writing-mode:vertical-rl;letter-spacing:0}
+.pd-hero-scroll .label{font-weight:700;font-size:calc(11 * var(--q) + 3 * var(--dv));line-height:150%;writing-mode:vertical-rl;letter-spacing:0}
 @media (prefers-reduced-motion:reduce){
   .pd-hero-scroll .bar{background:#FFF}
   .pd-hero-scroll .bar::after{display:none}
 }
 
-/* close (Figma `close` in both hero frames: 48×48 white, r7.38, 0.92 inside stroke #3E3F44, chevron-down 14.77×6.76
-   stroke 2.22 round #3E3F44; 2560: top 48 / right 64 (x2448), 1920: top 32 / right 64 (x1808)). Fixed so it stays
-   reachable while the sheet scrolls; js/project-sheet.js closes the sheet on click and hides its generic .ps-close
-   when this exists. */
-.pd-close{position:fixed;z-index:5;top:calc(32 * var(--p) + 16 * var(--dt));right:calc(64 * var(--p) + var(--ps-sbw,0px));   /* --ps-sbw = the sheet scroller's scrollbar width (set by js/project-sheet.js) so 64 is measured from the content edge, not over the bar */
-  width:calc(48 * var(--p));height:calc(48 * var(--p));min-width:36px;min-height:36px;box-sizing:border-box;
+/* close (Figma `close`: 1920/2560 = 48×48 white, r7.38, 0.92 inside stroke #3E3F44, chevron-down 14.77×6.76 stroke 2.22
+   round #3E3F44; 1024 = the same at ×0.8333 (40×40, r6.15, stroke 0.77). Position: 1024 top 36 / right 48 (x936),
+   1920 top 32 / right 64 (x1808), 2560 top 48 / right 64 (x2448). Fixed so it stays reachable while the sheet scrolls;
+   js/project-sheet.js closes the sheet on click and hides its generic .ps-close when this exists. */
+.pd-close{position:fixed;z-index:5;top:calc(36 * var(--q) - 4 * var(--dv) + 16 * var(--dt));right:calc(var(--gx) + var(--ps-sbw,0px));   /* --ps-sbw = the sheet scroller's scrollbar width (set by js/project-sheet.js) so the gutter is measured from the content edge, not over the bar */
+  width:calc(40 * var(--q) + 8 * var(--dv));height:calc(40 * var(--q) + 8 * var(--dv));box-sizing:border-box;
   display:grid;place-items:center;margin:0;padding:0;cursor:pointer;color:#3E3F44;
-  background:#FFF;border:max(1px, calc(0.9231 * var(--p))) solid #3E3F44;border-radius:calc(7.3846 * var(--p))}
+  background:#FFF;border:calc(0.7692 * var(--q) + 0.1539 * var(--dv)) solid #3E3F44;border-radius:calc(6.1538 * var(--q) + 1.2308 * var(--dv))}
 .pd-close{will-change:transform}   /* magnetic hover: js/project-sheet.js drives the BUTTON transform (icon stays put) */
-.pd-close svg{display:block;width:calc(44.3077 * var(--p));height:calc(44.3077 * var(--p));min-width:33px;min-height:33px;transform-origin:50% 50%}
+.pd-close svg{display:block;width:calc(36.9231 * var(--q) + 7.3846 * var(--dv));height:calc(36.9231 * var(--q) + 7.3846 * var(--dv));transform-origin:50% 50%}
 /* hover: the chevron slides DOWN out of the button, then re-enters from the TOP and settles centred (one pass; the
    button clips it). */
 .pd-close{overflow:hidden}
@@ -110,42 +115,102 @@
   .pd.rv .pd-summary,.pd.rv .pd-sec{opacity:1;transform:none;transition:none}
 }
 
-/* ---- below the hero: exported sections in the dark band (Figma `container`: 2560 pad 48/64/240/64 gap 48, cards
-   2432 wide r21.71; 1920 pad 32/64/160/64 gap 32, cards 1792 wide r16 — cards 2..6 are the same designs scaled ×0.7368,
-   so the one image set is reused). ---- */
-.pd-secs{background:#0C0C0C;padding:calc(32 * var(--p) + 16 * var(--dt)) var(--gx) calc(160 * var(--p) + 80 * var(--dt));
-  display:flex;flex-direction:column;gap:calc(32 * var(--p) + 16 * var(--dt))}
+/* ---- below the hero: exported sections in the dark band (Figma `container`: 1024 pad 24/32/64/32 gap 24, cards 960
+   wide r8.57; 1920 pad 32/64/160/64 gap 32, cards 1792 wide r16; 2560 pad 48/64/240/64 gap 48, cards 2432 wide r21.71 —
+   cards 2..7 are the same designs scaled by width (1024 = 1920 × 0.5357, 2560 = 1920 × 1.357), so the one image set
+   is reused and their radius follows the width scale (--p) rather than the anchor interpolation). ---- */
+.pd-secs{background:#0C0C0C;padding:calc(24 * var(--q) + 8 * var(--dv) + 16 * var(--dt)) var(--gb) calc(64 * var(--q) + 96 * var(--dv) + 80 * var(--dt));
+  display:flex;flex-direction:column;gap:calc(24 * var(--q) + 8 * var(--dv) + 16 * var(--dt))}
 .pd-sec{margin:0;display:block;border-radius:calc(16 * var(--p) + 5.7143 * var(--dt));overflow:hidden;background:#0C0C0C}
 
-/* ---- Summary / Overview card (Figma 2149:85332 @2560 / 2149:85284 @1920): white r16, pad 120 top/bottom, a 12-col
-   (1920) / 16-col (2560) grid, gap 32: 2560 = 2432 wide, "Overview" column at x462 w738, body column at x1232 w738,
-   right pad 462; 1920 = 1792 wide, Overview at x304 w424, body at x760 w728, right pad 304 → side pads 304→462 and the
-   Overview column 424→738 interpolate, the body column is the remainder (1fr = 728 / 738). Type identical in both:
-   Overview Cormorant Garamond 700 48/150%; title Pretendard 700 32/150%, para 400 16/150% (gap 16), buttons row 48
-   below (h40 r32, pad 10/19, label 700 14/20px, icon 24, gap 10; 16 between). ---- */
-.pd-summary{box-sizing:border-box;background:#FFF;border-radius:calc(16 * var(--p));color:#3E3F44;
-  padding:calc(120 * var(--p)) calc(304 * var(--p) + 158 * var(--dt));
-  display:grid;grid-template-columns:calc(424 * var(--p) + 314 * var(--dt)) minmax(0, 1fr);column-gap:calc(32 * var(--p));align-items:start}
-.pd-summary-head{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:max(28px, calc(48 * var(--p)));line-height:150%;letter-spacing:0}
+/* ---- Summary / Overview card (Figma 2149:85332 @2560 / 2149:85284 @1920 / 2144:23725 @1024): white r16 in all three,
+   a 12-col grid (16-col at 2560), gap 32, always the same 2-column Overview | body layout (1024 does NOT stack):
+     1024 =  960 wide, pad  80 top/bottom, Overview at x176 w208, body at x416 w368, right pad 176
+     1920 = 1792 wide, pad 120 top/bottom, Overview at x304 w424, body at x760 w728, right pad 304
+     2560 = 2432 wide, pad 120 top/bottom, Overview at x462 w738, body at x1232 w738, right pad 462
+   → side pads 176→304→462, Overview column 208→424→738 interpolate, the body column is the remainder (1fr).
+   Type: Overview Cormorant Garamond 700 24→48/150%; title Pretendard 700 20→32/150%, para 400 14→16/150% (gap 16),
+   buttons row 48 below — 1920/2560: h40 r32, pad 10/19, label 700 14/20px, icon 24, gap 10, 16 between; 1024 = the
+   same at ×0.8 (h32 r25.6, pad 8/15.2, label 11.2/16, icon 19.2, gap 8, 12.8 between). ---- */
+.pd-summary{box-sizing:border-box;background:#FFF;border-radius:calc(16 * var(--q));color:#3E3F44;
+  padding:calc(80 * var(--q) + 40 * var(--dv)) calc(176 * var(--q) + 128 * var(--dv) + 158 * var(--dt));
+  display:grid;grid-template-columns:calc(208 * var(--q) + 216 * var(--dv) + 314 * var(--dt)) minmax(0, 1fr);column-gap:calc(32 * var(--q));align-items:start}
+.pd-summary-head{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:calc(24 * var(--q) + 24 * var(--dv));line-height:150%;letter-spacing:0}
 .pd-summary-body{display:flex;flex-direction:column;min-width:0}
-.pd-summary-title{margin:0;font-weight:700;font-size:max(20px, calc(32 * var(--p)));line-height:150%;letter-spacing:0;word-break:keep-all}
-.pd-summary-text{margin:calc(16 * var(--p)) 0 0;font-weight:400;font-size:max(13px, calc(16 * var(--p)));line-height:150%;letter-spacing:0;word-break:keep-all}
-/* the design's 4 hard line breaks (identical at 1920 and 2560: 16px in a 728/738 column) hold while the paragraph is
-   still fully width-fluid (16p ≥ 13px floor ⇔ ≥1560 wide); below that let it wrap naturally in the column */
-@container (max-width:1559px){ .pd-summary-text br{display:none} }
-.pd-summary-actions{display:flex;flex-wrap:wrap;gap:calc(16 * var(--p));margin-top:calc(48 * var(--p))}
+.pd-summary-title{margin:0;font-weight:700;font-size:calc(20 * var(--q) + 12 * var(--dv));line-height:150%;letter-spacing:0;word-break:keep-all}
+.pd-summary-text{margin:calc(16 * var(--q)) 0 0;font-weight:400;font-size:calc(14 * var(--q) + 2 * var(--dv));line-height:150%;letter-spacing:0;word-break:keep-all}
+/* the design's 4 hard line breaks (identical at 1920 and 2560: 16px in a 728/738 column) only fit from 1920 up — between
+   1024 and 1920 the column grows faster than the type shrinks the other way (368/14 → 728/16), so let it wrap naturally there */
+@container (max-width:1919px){ .pd-summary-text br{display:none} }
+.pd-summary-actions{display:flex;flex-wrap:wrap;gap:calc(12.8 * var(--q) + 3.2 * var(--dv));margin-top:calc(48 * var(--q))}
 .pd-copy-hint{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,6px);white-space:nowrap;pointer-events:none;
   padding:8px 12px;border-radius:8px;background:#3E3F44;color:#FFF;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:600;font-size:13px;line-height:1.4;
   opacity:0;transition:opacity .2s ease,transform .25s cubic-bezier(.22,1,.36,1)}
 .pd-copy-hint::after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#3E3F44}
 .pd-copy-hint.is-on{opacity:1;transform:translate(-50%,0)}
 .pd-btn--copy{position:relative}
-.pd-btn{box-sizing:border-box;display:inline-flex;align-items:center;gap:calc(10 * var(--p));height:max(32px, calc(40 * var(--p)));
-  padding:0 max(14px, calc(19 * var(--p)));border-radius:calc(32 * var(--p));border:1px solid #3E3F44;
-  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:max(12px, calc(14 * var(--p)));line-height:1;
+.pd-btn{box-sizing:border-box;display:inline-flex;align-items:center;gap:calc(8 * var(--q) + 2 * var(--dv));height:calc(32 * var(--q) + 8 * var(--dv));
+  padding:0 calc(15.2 * var(--q) + 3.8 * var(--dv));border-radius:calc(25.6 * var(--q) + 6.4 * var(--dv));border:calc(0.8 * var(--q) + 0.2 * var(--dv)) solid #3E3F44;
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:calc(11.2 * var(--q) + 2.8 * var(--dv));line-height:1;
   color:#3E3F44;background:#FFF;text-decoration:none;cursor:pointer;margin:0;white-space:nowrap;will-change:transform;appearance:none;-webkit-appearance:none}
 .pd-btn--primary{background:#3E3F44;color:#FFF}
-.pd-btn-label{display:block;line-height:calc(20 / 14)}
-.pd-btn-icon{display:block;flex:none;width:max(18px, calc(24 * var(--p)));height:max(18px, calc(24 * var(--p)))}
+.pd-btn-label{display:block;line-height:calc(20 / 14)}   /* 16/11.2 at 1024 = the same ratio */
+.pd-btn-icon{display:block;flex:none;width:calc(19.2 * var(--q) + 4.8 * var(--dv));height:calc(19.2 * var(--q) + 4.8 * var(--dv))}
 .pd-btn:focus-visible{outline:2px solid #3E3F44;outline-offset:2px}
 .pd-sec img{width:100%;height:auto;display:block}
+
+/* ===================================================================================================================
+   MOBILE (≤1023 — the site's adaptive boundary; iPad portrait included). Figma official_05_projects_03_detail_01_360
+   (2456:39735, 360×7210): fixed px per the 360 node, fluid widths (16 gutters, cards width:100%).
+   HERO (360×800 → 100vh, project rule): the STRUCTURE differs from PC — the title sits at the TOP-LEFT (x16 y96,
+   328 wide with 24 right pad → 304 text col, LEFT-aligned, ko 16/150% + 8 gap + en Montserrat 35/120%), NOT centred;
+   CI x16 y25 105×18; close 36×36 at right 16 / top 16 (r6.15, stroke .77, chevron 12.31×5.64 stroke 1.85); info
+   bottom-left x16 bottom 24 (label 11 / value 14, 2 gap, 32 between groups); scroll hint right 16 / bottom 24 (21 wide,
+   bar 64, 16 gap, label 11). Its own portrait bg (m-hero-bg.jpg 720×1600, FILL = cover centre).
+   BAND (Slot): pad 16 / 16 / 48 / 16, gap 16, cards 328 wide r16.
+   SUMMARY: white r16, pad 56/32, STACKED — Overview (Cormorant 24/150%) → 16 → title (20/150%, 32 right pad → 232 col,
+   the design breaks after "스마트한") → 16 → body 14/150% → 40 → buttons (h36 r25.6 pad 8/16 border .8, label 11.2/16,
+   icon 19.2, 8 gaps, 8 between).
+   SECTIONS: a separate mobile image set (m-sec-01..06, exported 2× from the 360 frame, 328 wide each) — .pd-sec--m
+   shown here, the PC set .pd-sec--pc display:none (and vice-versa ≥1024; js/project-sheet.js skips images inside a
+   display:none figure when counting/decoding, so only the active set gates the loading bar).
+   =================================================================================================================== */
+.pd-sec--m{display:none}
+.pd-m-only{display:none}
+@media (max-width:1023px){
+  .pd-sec--pc{display:none}
+  .pd-sec--m{display:block}
+  .pd-m-only{display:initial}
+  .pd-pc-only{display:none}
+
+  /* ---- hero ---- */
+  .pd-hero-ci{left:16px;top:25px;width:105px;height:18px}
+  .pd-hero-title{left:16px;right:40px;top:96px;transform:none;align-items:flex-start;text-align:left;gap:8px}
+  .pd-hero-title .ko{font-size:16px;line-height:150%}
+  .pd-hero-title .en,.pd-title-en{font-size:35px;line-height:120%}
+  .pd-hero-info{left:16px;bottom:24px;gap:32px}
+  .pd-hero-info > div{gap:2px}
+  .pd-hero-info dt{font-size:11px;line-height:150%}
+  .pd-hero-info dd{font-size:14px;line-height:150%}
+  .pd-hero-scroll{right:calc(16px + var(--ps-sbw,0px));bottom:24px;width:21px;gap:16px}
+  .pd-hero-scroll .bar{height:64px}
+  .pd-hero-scroll .label{font-size:11px}
+  .pd-close{top:16px;right:calc(16px + var(--ps-sbw,0px));width:36px;height:36px;border-width:0.7692px;border-radius:6.1538px}
+  .pd-close svg{width:36.9231px;height:36.9231px}
+
+  /* ---- band + cards ---- */
+  .pd-secs{padding:16px 16px 48px;gap:16px}
+  .pd-sec{border-radius:16px}
+
+  /* ---- summary: stacked ---- */
+  .pd-summary{border-radius:16px;padding:56px 32px;display:flex;flex-direction:column;gap:16px}
+  .pd-summary-head{font-size:24px;line-height:150%}
+  .pd-summary-title{font-size:20px;line-height:150%;padding-right:32px}
+  .pd-summary-text{margin-top:16px;font-size:14px;line-height:150%}
+  .pd-summary-text br{display:none}
+  .pd-summary-actions{gap:8px;margin-top:40px}
+  .pd-btn{gap:8px;height:36px;padding:0 16px;border-radius:25.6px;border-width:0.8px;font-size:11.2px}
+  .pd-btn-label{line-height:16px}
+  .pd-btn-icon{width:19.2px;height:19.2px}
+  /* copy hint stays centred above the button (Copy URL centre ≈ x256 on 360, bubble ≈ 154 wide → 179..333: fits) */
+}

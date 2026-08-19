@@ -184,7 +184,10 @@
         var styles=doc.head.querySelectorAll('style');
         for(var i=0;i<styles.length;i++)styleHtml+=styles[i].outerHTML;
       }
-      // copy <link rel=stylesheet> not already on this page's head — append once
+      // copy <link rel=stylesheet> not already on this page's head — append once. Newly appended sheets are awaited
+      // (capped) before the image step below: which section-image SET is active (.pd-sec--pc / .pd-sec--m, PC vs
+      // mobile) is decided by css/project-detail.css, so it must be applied before we decide which images to count.
+      var newLinks=[];
       if(doc.head){
         var links=doc.head.querySelectorAll('link[rel="stylesheet"]');
         for(var j=0;j<links.length;j++){
@@ -197,7 +200,7 @@
           for(var k=0;k<existing.length;k++){ if(existing[k].href===abs){ already=true; break; } }
           if(!already){
             var l=document.createElement('link'); l.rel='stylesheet'; l.href=abs;
-            document.head.appendChild(l);
+            document.head.appendChild(l); newLinks.push(l);
           }
         }
       }
@@ -206,8 +209,19 @@
       // detail ships its own designed close (.pd-close) -> hide the generic .ps-close (css: .is-own-close)
       sheet.classList.toggle('is-own-close', !!main.querySelector('.pd-close'));
       barStopTrickle(); barReal(0.2);
-      // wait for the detail's images (the real wait) — the sheet is still offscreen, so force eager loading
-      var imgs=bodyEl.querySelectorAll('img'), n=imgs.length, done=0, settled=false;
+      var cssReady=Promise.all(newLinks.map(function(l){ return new Promise(function(r){ l.addEventListener('load',r,{once:true}); l.addEventListener('error',r,{once:true}); setTimeout(r,2500); }); }));
+      cssReady.then(function(){ if(seq!==loadSeq)return; waitImages(); });
+      function waitImages(){
+      // wait for the detail's images (the real wait) — the sheet is still offscreen, so force eager loading.
+      // Skip images whose enclosing <figure> is display:none (the inactive PC/mobile section set — see
+      // projects/<slug>/index.html): they neither load (loading=lazy + no box) nor should gate the bar.
+      var all=bodyEl.querySelectorAll('img'), imgs=[];
+      for(var a=0;a<all.length;a++){
+        var fig=all[a].closest?all[a].closest('figure'):null;
+        if(fig&&getComputedStyle(fig).display==='none')continue;
+        imgs.push(all[a]);
+      }
+      var n=imgs.length, done=0, settled=false;
       if(n)barTrickle(0.2, 0.2+0.8*(1/n));
       function finishLoad(){
         if(settled||seq!==loadSeq)return; settled=true;
@@ -239,6 +253,7 @@
           else { img.addEventListener('load',settle,{once:true}); img.addEventListener('error',one,{once:true}); }
         })(im);
       }
+      }   // waitImages
     }).catch(function(err){
       if(seq!==loadSeq)return;
       barStopTrickle();
