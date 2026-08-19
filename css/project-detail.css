@@ -190,8 +190,8 @@
   .pd-hero-title .en,.pd-title-en{font-size:35px;line-height:120%}
   .pd-hero-info{left:16px;bottom:24px;gap:32px}
   .pd-hero-info > div{gap:2px}
-  .pd-hero-info dt{font-size:11px;line-height:150%}
-  .pd-hero-info dd{font-size:14px;line-height:150%}
+  .pd-hero-info dt{font-size:13px;line-height:150%}   /* user: 13 (Figma had 11) */
+  .pd-hero-info dd{font-size:15px;line-height:150%}   /* user: 15 (Figma had 14) */
   .pd-hero-scroll{right:calc(16px + var(--ps-sbw,0px));bottom:24px;width:21px;gap:16px}
   .pd-hero-scroll .bar{height:64px}
   .pd-hero-scroll .label{font-size:11px}
