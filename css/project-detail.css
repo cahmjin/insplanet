@@ -1,14 +1,21 @@
 /* ===== project detail (projects/<slug>.html → main.pd) =====
-   Figma: official_05_projects_03_detail_01_2560 (1785:22992), 2560-wide only. Injected into the list
+   Figma: official_05_projects_03_detail_01_2560 (1785:22992) + _1920 (2074:35563). Injected into the list
    page's sheet by js/project-sheet.js (which copies THIS stylesheet into the list page's <head>), so
    everything scopes under `.pd` and must not collide with the list page's CSS.
 
-   Fluid model: the design has ONE anchor (2560). Every hero number is written in `--u` = 1/2560 of
-   the .pd container's inline size (container-query unit, so the sheet's own scrollbar never breaks
-   100vw), capped at 1px so nothing grows above 2560 → 2560 exact, everything below scales linearly
-   (1024 = 0.4×). Type gets a px floor so it stays legible at 1024. Above 2560 the reading content
-   stays 2560-wide centred (site content-cap rule) via --gx; the hero image / dark band / footer image
-   keep spreading full-bleed.
+   Fluid model — TWO anchors (1920 / 2560), measured against the .pd container's inline size (container-query
+   units, so the sheet's own scrollbar never breaks 100vw):
+     --p  = min(1px, 1cqw/19.2)  → 1px from 1920 up, proportional below (1024 = 0.533×). Nearly every hero /
+            summary number is IDENTICAL in the 1920 and 2560 frames (64 gutters, 141×25 CI, 32/96 title, 18/28
+            info, 48 close, 21×134 scroll hint, 120 card pads, 48/32/16 summary type, 40-high buttons) — those
+            are written `N * var(--p)`: fixed px between the anchors, scaled below 1920.
+     --dt = clamp(0px, (100cqw − 1920px)/640, 1px) → 0px at ≤1920, 1px at ≥2560: the interpolation weight
+            for the handful of numbers that DO differ between the frames (CI top 48→64, close top 32→48, band
+            pads 32/160→48/240 + gap 32→48, section radius 16→21.71, summary side pads 304→462 + Overview
+            column 424→738). Written `calc(A1920 * var(--p) + (A2560 − A1920) * var(--dt))`.
+   Type gets a px floor so it stays legible at 1024 (floors sit below every 1920 number, so they never bite
+   at ≥1920). Above 2560 the reading content stays 2560-wide centred (site content-cap rule) via --gx; the
+   hero image / dark band / footer image keep spreading full-bleed.
 
    HERO = live HTML/CSS. Everything below the hero = one Figma export per section (.pd-sec img),
    stacked in the design's own dark band (#0C0C0C, 64 gutters, 48 gaps, 48 top / 240 bottom). */
@@ -16,41 +23,44 @@
 .pd-page{margin:0;background:#0C0C0C}
 
 .pd{display:block;position:relative;width:100%;container-type:inline-size;
-  --u:calc(100vw / 2560);                              /* fallback (no cq units) */
-  --u:min(1px, calc(1cqw / 25.6));                     /* 1/2560 of .pd's width, capped at 1px */
-  --gx:max(calc(64 * var(--u)), calc((100cqw - 2560px) / 2 + 64px));   /* side gutter, content-capped >2560 */
+  --p:min(1px, calc(100vw / 1920));                    /* fallback (no cq units) */
+  --p:min(1px, calc(1cqw / 19.2));                     /* 1/1920 of .pd's width, capped at 1px (2560 = 1px too) */
+  --dt:clamp(0px, calc((100vw - 1920px) / 640), 1px);  /* fallback */
+  --dt:clamp(0px, calc((100cqw - 1920px) / 640), 1px); /* 1920→2560 interpolation weight, as a 0–1px length */
+  --gx:max(calc(64 * var(--p)), calc((100cqw - 2560px) / 2 + 64px));   /* side gutter (64 in both frames), content-capped >2560 */
   color:#3E3F44;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
   -webkit-font-smoothing:antialiased}
 
 /* ---- hero: 2560×1440 full-bleed image, white type ---- */
-/* one viewport tall (100vh — project rule; inside the sheet .ps-scroll IS the viewport). Figma 2560×1440 = the
-   16:9 reference: CI top-left 64, title group at 639/1440 = 44.4% from the top, info + scroll hint bottom 64. */
+/* one viewport tall (100vh — project rule; inside the sheet .ps-scroll IS the viewport). Figma 2560×1440 and
+   1920×1080 are both 16:9: CI top-left 64/64 (1920: 64/48), title group vertically CENTRED (639+81.5 = 720 = 1440/2;
+   458.5+81.5 = 540 = 1080/2), info + scroll hint bottom 64 in both. */
 .pd-hero{position:relative;overflow:hidden;height:100vh;min-height:0;background:#0C0C0C;color:#FFF}
 .pd-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block}
-.pd-hero-ci{position:absolute;left:var(--gx);top:calc(64 * var(--u));width:calc(141 * var(--u));height:calc(25 * var(--u));min-width:56px;min-height:10px}
+.pd-hero-ci{position:absolute;left:var(--gx);top:calc(48 * var(--p) + 16 * var(--dt));width:calc(141 * var(--p));height:calc(25 * var(--p));min-width:56px;min-height:10px}
 .pd-hero-ci img{display:block;width:100%;height:100%}
 
-.pd-hero-title{position:absolute;left:var(--gx);right:var(--gx);top:44.4%;margin:0;
+.pd-hero-title{position:absolute;left:var(--gx);right:var(--gx);top:50%;transform:translateY(-50%);margin:0;
   display:flex;flex-direction:column;align-items:center;text-align:center;word-break:keep-all}
 .pd-hero-title .ko{display:block;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;
-  font-size:max(20px, calc(32 * var(--u)));line-height:150%;letter-spacing:0}
+  font-size:max(20px, calc(32 * var(--p)));line-height:150%;letter-spacing:0}
 .pd-hero-title .en,.pd-title-en{display:block;font-family:'Montserrat',sans-serif;font-weight:700;
-  font-size:max(48px, calc(96 * var(--u)));line-height:120%;letter-spacing:0}
+  font-size:max(48px, calc(96 * var(--p)));line-height:120%;letter-spacing:0}
 
-.pd-hero-info{position:absolute;left:var(--gx);bottom:calc(64 * var(--u));margin:0;
-  display:flex;gap:calc(96 * var(--u))}
-.pd-hero-info > div{display:flex;flex-direction:column;gap:calc(8 * var(--u))}
-.pd-hero-info dt{font-weight:700;font-size:max(12px, calc(18 * var(--u)));line-height:150%}
-.pd-hero-info dd{margin:0;font-weight:700;font-size:max(16px, calc(28 * var(--u)));line-height:150%;white-space:nowrap}
+.pd-hero-info{position:absolute;left:var(--gx);bottom:calc(64 * var(--p));margin:0;
+  display:flex;gap:calc(96 * var(--p))}
+.pd-hero-info > div{display:flex;flex-direction:column;gap:calc(8 * var(--p))}
+.pd-hero-info dt{font-weight:700;font-size:max(12px, calc(18 * var(--p)));line-height:150%}
+.pd-hero-info dd{margin:0;font-weight:700;font-size:max(16px, calc(28 * var(--p)));line-height:150%;white-space:nowrap}
 
-/* scroll hint (design: 21×134 at right 64 / bottom 64) — same anatomy as #scroll-hint on the list page. FIXED to the
+/* scroll hint (design: 21×134 at right 64 / bottom 64 in BOTH frames) — same anatomy as #scroll-hint on the list page. FIXED to the
    viewport like the site's other pages (was inside the hero); offset by the sheet scroller's bar width like .pd-close;
    fades out once the sheet is scrolled to its end (js/project-sheet.js toggles .is-at-end on the sheet). */
-.pd-hero-scroll{position:fixed;z-index:5;right:calc(var(--gx) + var(--ps-sbw,0px));bottom:calc(64 * var(--u));width:calc(21 * var(--u));min-width:14px;
-  display:flex;flex-direction:column;align-items:center;gap:calc(16 * var(--u));pointer-events:none;user-select:none;-webkit-user-select:none;
+.pd-hero-scroll{position:fixed;z-index:5;right:calc(var(--gx) + var(--ps-sbw,0px));bottom:calc(64 * var(--p));width:calc(21 * var(--p));min-width:14px;
+  display:flex;flex-direction:column;align-items:center;gap:calc(16 * var(--p));pointer-events:none;user-select:none;-webkit-user-select:none;
   transition:opacity .35s ease}
 .ps-sheet.is-at-end .pd-hero-scroll{opacity:0}
-.pd-hero-scroll .bar{position:relative;width:1px;height:calc(64 * var(--u));background:rgba(255,255,255,.25);overflow:hidden}
+.pd-hero-scroll .bar{position:relative;width:1px;height:calc(64 * var(--p));background:rgba(255,255,255,.25);overflow:hidden}
 .pd-hero-scroll .bar::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;background:#FFF;transform-origin:top;transform:scaleY(0);
   animation:pd-scroll-draw 2.2s cubic-bezier(.65,0,.35,1) infinite}
 @keyframes pd-scroll-draw{
@@ -59,21 +69,22 @@
   55%  {transform:scaleY(1);transform-origin:bottom}
   100% {transform:scaleY(0);transform-origin:bottom}
 }
-.pd-hero-scroll .label{font-weight:700;font-size:max(11px, calc(14 * var(--u)));line-height:150%;writing-mode:vertical-rl;letter-spacing:0}
+.pd-hero-scroll .label{font-weight:700;font-size:max(11px, calc(14 * var(--p)));line-height:150%;writing-mode:vertical-rl;letter-spacing:0}
 @media (prefers-reduced-motion:reduce){
   .pd-hero-scroll .bar{background:#FFF}
   .pd-hero-scroll .bar::after{display:none}
 }
 
-/* close (Figma `close` 2128:20907: 48×48 white, r7.38, 0.92 inside stroke #3E3F44, chevron-down 14.77×6.76
-   stroke 2.22 round #3E3F44, at top 48 / right 48). Fixed so it stays reachable while the sheet scrolls;
-   js/project-sheet.js closes the sheet on click and hides its generic .ps-close when this exists. */
-.pd-close{position:fixed;z-index:5;top:calc(48 * var(--u));right:calc(48 * var(--u) + var(--ps-sbw,0px));   /* --ps-sbw = the sheet scroller's scrollbar width (set by js/project-sheet.js) so 48 is measured from the content edge, not over the bar */
-  width:calc(48 * var(--u));height:calc(48 * var(--u));min-width:36px;min-height:36px;box-sizing:border-box;
+/* close (Figma `close` in both hero frames: 48×48 white, r7.38, 0.92 inside stroke #3E3F44, chevron-down 14.77×6.76
+   stroke 2.22 round #3E3F44; 2560: top 48 / right 64 (x2448), 1920: top 32 / right 64 (x1808)). Fixed so it stays
+   reachable while the sheet scrolls; js/project-sheet.js closes the sheet on click and hides its generic .ps-close
+   when this exists. */
+.pd-close{position:fixed;z-index:5;top:calc(32 * var(--p) + 16 * var(--dt));right:calc(64 * var(--p) + var(--ps-sbw,0px));   /* --ps-sbw = the sheet scroller's scrollbar width (set by js/project-sheet.js) so 64 is measured from the content edge, not over the bar */
+  width:calc(48 * var(--p));height:calc(48 * var(--p));min-width:36px;min-height:36px;box-sizing:border-box;
   display:grid;place-items:center;margin:0;padding:0;cursor:pointer;color:#3E3F44;
-  background:#FFF;border:max(1px, calc(0.9231 * var(--u))) solid #3E3F44;border-radius:calc(7.3846 * var(--u))}
+  background:#FFF;border:max(1px, calc(0.9231 * var(--p))) solid #3E3F44;border-radius:calc(7.3846 * var(--p))}
 .pd-close{will-change:transform}   /* magnetic hover: js/project-sheet.js drives the BUTTON transform (icon stays put) */
-.pd-close svg{display:block;width:calc(44.3077 * var(--u));height:calc(44.3077 * var(--u));min-width:33px;min-height:33px;transform-origin:50% 50%}
+.pd-close svg{display:block;width:calc(44.3077 * var(--p));height:calc(44.3077 * var(--p));min-width:33px;min-height:33px;transform-origin:50% 50%}
 /* hover: the chevron slides DOWN out of the button, then re-enters from the TOP and settles centred (one pass; the
    button clips it). */
 .pd-close{overflow:hidden}
@@ -99,37 +110,42 @@
   .pd.rv .pd-summary,.pd.rv .pd-sec{opacity:1;transform:none;transition:none}
 }
 
-/* ---- below the hero: exported sections in the dark band ---- */
-.pd-secs{background:#0C0C0C;padding:calc(48 * var(--u)) var(--gx) calc(240 * var(--u));
-  display:flex;flex-direction:column;gap:calc(48 * var(--u))}
-.pd-sec{margin:0;display:block;border-radius:calc(21.7143 * var(--u));overflow:hidden;background:#0C0C0C}
+/* ---- below the hero: exported sections in the dark band (Figma `container`: 2560 pad 48/64/240/64 gap 48, cards
+   2432 wide r21.71; 1920 pad 32/64/160/64 gap 32, cards 1792 wide r16 — cards 2..6 are the same designs scaled ×0.7368,
+   so the one image set is reused). ---- */
+.pd-secs{background:#0C0C0C;padding:calc(32 * var(--p) + 16 * var(--dt)) var(--gx) calc(160 * var(--p) + 80 * var(--dt));
+  display:flex;flex-direction:column;gap:calc(32 * var(--p) + 16 * var(--dt))}
+.pd-sec{margin:0;display:block;border-radius:calc(16 * var(--p) + 5.7143 * var(--dt));overflow:hidden;background:#0C0C0C}
 
-/* ---- Summary / Overview card (Figma 2149:85332): 2432×488 white r16, pad 120 top/bottom; "Overview" column at
-   x462 w738 (Cormorant Garamond 700 48/150%), body column at x1232 w738: title Pretendard 700 32/150%, para 400
-   16/150% (gap 16), buttons row 48 below (h40 r32, pad 10/19, label 700 14/20px, icon 24, gap 10; 16 between). ---- */
-.pd-summary{box-sizing:border-box;background:#FFF;border-radius:calc(16 * var(--u));color:#3E3F44;
-  padding:calc(120 * var(--u)) calc(64 * var(--u)) calc(120 * var(--u)) calc(462 * var(--u));
-  display:grid;grid-template-columns:calc(738 * var(--u)) minmax(0, calc(738 * var(--u)));column-gap:calc(32 * var(--u));align-items:start}
-.pd-summary-head{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:max(28px, calc(48 * var(--u)));line-height:150%;letter-spacing:0}
+/* ---- Summary / Overview card (Figma 2149:85332 @2560 / 2149:85284 @1920): white r16, pad 120 top/bottom, a 12-col
+   (1920) / 16-col (2560) grid, gap 32: 2560 = 2432 wide, "Overview" column at x462 w738, body column at x1232 w738,
+   right pad 462; 1920 = 1792 wide, Overview at x304 w424, body at x760 w728, right pad 304 → side pads 304→462 and the
+   Overview column 424→738 interpolate, the body column is the remainder (1fr = 728 / 738). Type identical in both:
+   Overview Cormorant Garamond 700 48/150%; title Pretendard 700 32/150%, para 400 16/150% (gap 16), buttons row 48
+   below (h40 r32, pad 10/19, label 700 14/20px, icon 24, gap 10; 16 between). ---- */
+.pd-summary{box-sizing:border-box;background:#FFF;border-radius:calc(16 * var(--p));color:#3E3F44;
+  padding:calc(120 * var(--p)) calc(304 * var(--p) + 158 * var(--dt));
+  display:grid;grid-template-columns:calc(424 * var(--p) + 314 * var(--dt)) minmax(0, 1fr);column-gap:calc(32 * var(--p));align-items:start}
+.pd-summary-head{margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:max(28px, calc(48 * var(--p)));line-height:150%;letter-spacing:0}
 .pd-summary-body{display:flex;flex-direction:column;min-width:0}
-.pd-summary-title{margin:0;font-weight:700;font-size:max(20px, calc(32 * var(--u)));line-height:150%;letter-spacing:0;word-break:keep-all}
-.pd-summary-text{margin:calc(16 * var(--u)) 0 0;font-weight:400;font-size:max(13px, calc(16 * var(--u)));line-height:150%;letter-spacing:0;word-break:keep-all}
-/* the design's 4 hard line breaks only hold while the paragraph is still fully width-fluid (16u ≥ 13px floor ⇔ ≥2080 wide);
-   below that let it wrap naturally in the 738u column */
-@container (max-width:2079px){ .pd-summary-text br{display:none} }
-.pd-summary-actions{display:flex;flex-wrap:wrap;gap:calc(16 * var(--u));margin-top:calc(48 * var(--u))}
+.pd-summary-title{margin:0;font-weight:700;font-size:max(20px, calc(32 * var(--p)));line-height:150%;letter-spacing:0;word-break:keep-all}
+.pd-summary-text{margin:calc(16 * var(--p)) 0 0;font-weight:400;font-size:max(13px, calc(16 * var(--p)));line-height:150%;letter-spacing:0;word-break:keep-all}
+/* the design's 4 hard line breaks (identical at 1920 and 2560: 16px in a 728/738 column) hold while the paragraph is
+   still fully width-fluid (16p ≥ 13px floor ⇔ ≥1560 wide); below that let it wrap naturally in the column */
+@container (max-width:1559px){ .pd-summary-text br{display:none} }
+.pd-summary-actions{display:flex;flex-wrap:wrap;gap:calc(16 * var(--p));margin-top:calc(48 * var(--p))}
 .pd-copy-hint{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,6px);white-space:nowrap;pointer-events:none;
   padding:8px 12px;border-radius:8px;background:#3E3F44;color:#FFF;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:600;font-size:13px;line-height:1.4;
   opacity:0;transition:opacity .2s ease,transform .25s cubic-bezier(.22,1,.36,1)}
 .pd-copy-hint::after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#3E3F44}
 .pd-copy-hint.is-on{opacity:1;transform:translate(-50%,0)}
 .pd-btn--copy{position:relative}
-.pd-btn{box-sizing:border-box;display:inline-flex;align-items:center;gap:calc(10 * var(--u));height:max(32px, calc(40 * var(--u)));
-  padding:0 max(14px, calc(19 * var(--u)));border-radius:calc(32 * var(--u));border:1px solid #3E3F44;
-  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:max(12px, calc(14 * var(--u)));line-height:1;
+.pd-btn{box-sizing:border-box;display:inline-flex;align-items:center;gap:calc(10 * var(--p));height:max(32px, calc(40 * var(--p)));
+  padding:0 max(14px, calc(19 * var(--p)));border-radius:calc(32 * var(--p));border:1px solid #3E3F44;
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:max(12px, calc(14 * var(--p)));line-height:1;
   color:#3E3F44;background:#FFF;text-decoration:none;cursor:pointer;margin:0;white-space:nowrap;will-change:transform;appearance:none;-webkit-appearance:none}
 .pd-btn--primary{background:#3E3F44;color:#FFF}
 .pd-btn-label{display:block;line-height:calc(20 / 14)}
-.pd-btn-icon{display:block;flex:none;width:max(18px, calc(24 * var(--u)));height:max(18px, calc(24 * var(--u)))}
+.pd-btn-icon{display:block;flex:none;width:max(18px, calc(24 * var(--p)));height:max(18px, calc(24 * var(--p)))}
 .pd-btn:focus-visible{outline:2px solid #3E3F44;outline-offset:2px}
 .pd-sec img{width:100%;height:auto;display:block}
