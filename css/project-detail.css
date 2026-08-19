@@ -72,8 +72,21 @@
   width:calc(48 * var(--u));height:calc(48 * var(--u));min-width:36px;min-height:36px;box-sizing:border-box;
   display:grid;place-items:center;margin:0;padding:0;cursor:pointer;color:#3E3F44;
   background:#FFF;border:max(1px, calc(0.9231 * var(--u))) solid #3E3F44;border-radius:calc(7.3846 * var(--u))}
-.pd-close{will-change:transform}   /* magnetic hover: js/project-sheet.js drives transform (button + icon) */
-.pd-close svg{display:block;width:calc(44.3077 * var(--u));height:calc(44.3077 * var(--u));min-width:33px;min-height:33px}
+.pd-close{will-change:transform}   /* magnetic hover: js/project-sheet.js drives the BUTTON transform (icon stays put) */
+.pd-close svg{display:block;width:calc(44.3077 * var(--u));height:calc(44.3077 * var(--u));min-width:33px;min-height:33px;transform-origin:50% 50%}
+/* hover: the chevron slides DOWN out of the button, then re-enters from the TOP and settles centred (one pass; the
+   button clips it). */
+.pd-close{overflow:hidden}
+@media (hover:hover){
+  .pd-close:hover svg{animation:pd-close-pass .55s cubic-bezier(.4,0,.2,1) 1}
+}
+@keyframes pd-close-pass{
+  0%  {transform:translateY(0)}
+  45% {transform:translateY(120%)}
+  50% {transform:translateY(-120%)}
+  100%{transform:translateY(0)}
+}
+@media (prefers-reduced-motion:reduce){ .pd-close:hover svg{animation:none} }
 .pd-close:focus-visible{outline:2px solid #3E3F44;outline-offset:2px}
 
 /* ---- scroll reveal (time-based one-shot rise): every block below the hero is born hidden ONLY once the JS
@@ -105,6 +118,12 @@
    below that let it wrap naturally in the 738u column */
 @container (max-width:2079px){ .pd-summary-text br{display:none} }
 .pd-summary-actions{display:flex;flex-wrap:wrap;gap:calc(16 * var(--u));margin-top:calc(48 * var(--u))}
+.pd-copy-hint{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,6px);white-space:nowrap;pointer-events:none;
+  padding:8px 12px;border-radius:8px;background:#3E3F44;color:#FFF;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:600;font-size:13px;line-height:1.4;
+  opacity:0;transition:opacity .2s ease,transform .25s cubic-bezier(.22,1,.36,1)}
+.pd-copy-hint::after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#3E3F44}
+.pd-copy-hint.is-on{opacity:1;transform:translate(-50%,0)}
+.pd-btn--copy{position:relative}
 .pd-btn{box-sizing:border-box;display:inline-flex;align-items:center;gap:calc(10 * var(--u));height:max(32px, calc(40 * var(--u)));
   padding:0 max(14px, calc(19 * var(--u)));border-radius:calc(32 * var(--u));border:1px solid #3E3F44;
   font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:max(12px, calc(14 * var(--u)));line-height:1;

@@ -50,7 +50,7 @@
         <h3 class="pd-summary-title">스마트한 대학생활 필수 통합앱</h3>
         <p class="pd-summary-text">학생증부터 학사 일정관리 등을 하나의 앱에서 모두 할 수 있는 헤이영 캠퍼스는<br>신한은행이 금융권 최초로 추진한 대학생 전용 모바일 서비스입니다. 인스플래닛은 2차 고도화 사업에 참여하여,<br>다크테마를 포함한 컬러 테마와 모바일 학생증 커스텀 기능 등 디자인 구성요소의 고도화 및 차별화를 구현하고<br>게시판, 소모임 등의 프로세스 개선 등 서비스를 업그레이드 하였습니다.</p>
         <div class="pd-summary-actions">
-          <a class="pd-btn pd-btn--primary" href="#" target="_blank" rel="noopener"><span class="pd-btn-label">View Platform</span><svg class="pd-btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 8H16V15M16 8L8 16" stroke="currentColor" stroke-width="1.5"/></svg></a>
+          <a class="pd-btn pd-btn--primary" href="" target="_blank" rel="noopener"><span class="pd-btn-label">View Platform</span><svg class="pd-btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 8H16V15M16 8L8 16" stroke="currentColor" stroke-width="1.5"/></svg></a>
           <button type="button" class="pd-btn pd-btn--copy" data-copy=""><span class="pd-btn-label">Copy URL</span><svg class="pd-btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11.437 8.059L12.563 6.933C13.807 5.689 15.823 5.689 17.067 6.933C18.311 8.177 18.311 10.193 17.067 11.437L15.941 12.563M12.563 15.941L11.437 17.067C10.193 18.311 8.177 18.311 6.933 17.067C5.689 15.823 5.689 13.807 6.933 12.563L8.059 11.437M9.185 14.815L14.815 9.185" stroke="currentColor" stroke-width="1.5"/></svg></button>
         </div>
       </div>
@@ -81,10 +81,10 @@
     }
   }
   document.addEventListener('click',function(e){
+    var vp=e.target.closest?e.target.closest('.pd-btn--primary'):null; if(vp&&!vp.getAttribute('href')){e.preventDefault();return;}   // no URL yet → inert
     var b=e.target.closest?e.target.closest('.pd-btn--copy'):null; if(!b)return;
     var url=b.getAttribute('data-copy'); if(!url||url==='#')url=location.href;
-    var lab=b.querySelector('.pd-btn-label')||b, orig=lab.getAttribute('data-orig')||lab.textContent; lab.setAttribute('data-orig',orig);
-    function done(){ lab.textContent='복사되었습니다'; b.classList.add('is-copied'); clearTimeout(b._t); b._t=setTimeout(function(){lab.textContent=orig;b.classList.remove('is-copied');},1500); }
+    function done(){ var h=b.querySelector('.pd-copy-hint'); if(!h){h=document.createElement('span');h.className='pd-copy-hint';h.setAttribute('role','status');h.textContent='URL이 복사되었습니다';b.appendChild(h);} h.classList.add('is-on'); clearTimeout(b._t); b._t=setTimeout(function(){h.classList.remove('is-on');},1600); }
     if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done,function(){fb();});}else fb();
     function fb(){var t=document.createElement('textarea');t.value=url;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch(err){}document.body.removeChild(t);done();}
   });

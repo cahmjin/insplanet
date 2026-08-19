@@ -51,7 +51,10 @@
       var own=e.target.closest ? e.target.closest('.pd-close') : null;
       if(own){ e.preventDefault(); requestClose(); return; }
       var cp=e.target.closest ? e.target.closest('.pd-btn--copy') : null;
-      if(cp){ e.preventDefault(); onCopyClick(cp); }
+      if(cp){ e.preventDefault(); onCopyClick(cp); return; }
+      // View Platform with no URL yet (publisher fills href): swallow the click instead of opening the current page in a new tab
+      var vp=e.target.closest ? e.target.closest('.pd-btn--primary') : null;
+      if(vp && !vp.getAttribute('href')){ e.preventDefault(); }
     });
   }
 
@@ -287,7 +290,7 @@
     var els=bodyEl.querySelectorAll('.pd-close,.pd-btn');
     for(var i=0;i<els.length;i++){
       var el=els[i];
-      magWire(el, el.classList.contains('pd-close') ? el.querySelector('svg') : null);
+      magWire(el, null);   // BUTTON-only magnet everywhere (.pd-close + .pd-btn): the icon stays put inside — user decision
     }
   }
 
@@ -311,7 +314,7 @@
   function teardownReveal(){ if(revealIO){revealIO.disconnect();revealIO=null;} }
 
   // ---- Copy URL (.pd-btn--copy inside the sheet): copies data-copy, or — when empty/'#' — the shareable
-  // deep link of the current detail (list page + ?p=<slug>). Brief "복사되었습니다" state, then restore. ----
+  // deep link of the current detail (list page + ?p=<slug>). Shows a brief hint bubble; the label never changes. ----
   var currentSlug=null;
   function shareUrl(){
     var u=new URL(location.href); u.hash='';
@@ -328,11 +331,12 @@
   }
   function onCopyClick(btn){
     var url=btn.getAttribute('data-copy'); if(!url||url==='#')url=shareUrl();
-    var lab=btn.querySelector('.pd-btn-label')||btn;
-    var orig=lab.getAttribute('data-orig')||lab.textContent; lab.setAttribute('data-orig',orig);
     copyText(url, function(){
-      lab.textContent='복사되었습니다'; btn.classList.add('is-copied');
-      clearTimeout(btn._copyT); btn._copyT=setTimeout(function(){ lab.textContent=orig; btn.classList.remove('is-copied'); },1500);
+      // hint bubble above the button (the label itself never changes)
+      var h=btn.querySelector('.pd-copy-hint');
+      if(!h){ h=document.createElement('span'); h.className='pd-copy-hint'; h.setAttribute('role','status'); h.textContent='URL이 복사되었습니다'; btn.appendChild(h); }
+      h.classList.add('is-on');
+      clearTimeout(btn._copyT); btn._copyT=setTimeout(function(){ h.classList.remove('is-on'); },1600);
     });
   }
 
