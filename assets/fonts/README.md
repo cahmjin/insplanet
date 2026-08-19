@@ -11,6 +11,7 @@ font dependency. `css/fonts.css` declares the `@font-face` rules; `index.html` l
 | Pretendard (body) | `pretendard-400.woff2`, `pretendard-700.woff2` | 400, 700 | github.com/orioncactus/pretendard, OFL 1.1 |
 | Cormorant Garamond (serif display) | `cormorant-garamond-600-latin*.woff2` | 600, 700 share one file | Google Fonts, OFL |
 | Roboto Serif (serif label) | `roboto-serif-400-latin*.woff2` | 400 | Google Fonts, OFL |
+| Montserrat (project-detail hero title) | `montserrat-700-latin.woff2` | 700 | Google Fonts, OFL |
 
 Only the weights actually used in `css/style.css` (Pretendard 400/700, Cormorant
 600/700, Roboto Serif 400) and only the **latin + latin-ext** subsets are included

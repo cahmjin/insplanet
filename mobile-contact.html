@@ -572,7 +572,6 @@
       }else{
         bs.position=''; bs.top=''; bs.left=''; bs.right=''; bs.width='';
         window.scrollTo(0,savedY);
-        if(window.__lenis&&window.__lenis.scrollTo) window.__lenis.scrollTo(savedY,{immediate:true,force:true});   // resync Lenis's internal target (it saw scrollY→0 while fixed)
       }
     }
     function lockScroll(on){
@@ -582,7 +581,10 @@
         lockBody(true);
       }else{
         lockBody(false);
-        if(window.__lenis)window.__lenis.start();
+        // start() resyncs Lenis from window.scrollY; resize() re-measures the document limit that
+        // went stale (=0) while the body was fixed. NEVER scrollTo(savedY) here — it clamps to the stale
+        // limit 0 and swallows the native scroll event → the next wheel lerps to the top.
+        if(window.__lenis){ window.__lenis.start(); window.__lenis.resize(); }
       }
     }
     popup.inert=true;   // closed by default (also set in markup): out of focus order / assistive tech

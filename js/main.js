@@ -120,7 +120,7 @@
   // Decide the cursor MODE each frame from the topmost element under the pointer (single source of
   // truth via elementFromPoint) instead of per-element mouseenter/leave. The top buttons overlap the
   // project panel AND drift (magnetic hover), which made enter/leave race and flicker is-view<->grow.
-  const GROW_SEL='#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.brief-btn,.project-head,.footer-links a';
+  const GROW_SEL='#ci-logo,#menu-logo,#lets-talk,#full-menu,#menu-close,.menu-item,.brief-btn,.project-head,.footer-links a,.pd-close,.pd-btn';   // .pd-close/.pd-btn = project-sheet detail's own controls
   let mode='';
   // smooth follow (no momentum): moves fast when far, decelerates to a soft stick as it nears.
   const FOLLOW=0.13;

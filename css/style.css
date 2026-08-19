@@ -626,6 +626,51 @@ html.lenis,html.lenis body{height:auto}
    "진화된" break (sb-br-m) is mobile-only. Defaults here = desktop unchanged. */
 .sb-br-m{display:none}
 
+/* ===== project-detail SHEET (prototype, js/project-sheet.js) — full-screen layer that slides up
+   from the bottom on a project-card click (PC .pj-card / mobile .mp-card, both data-slug), instead
+   of navigating. Built + appended to <body> at runtime, OUTSIDE #page-root so its position:fixed
+   stays viewport-relative regardless of any #page-root transform/animation. Sits above every other
+   fixed layer on the site (header/menu z:60-100, recruit popup z:105/110). Content = the fetched
+   projects/<slug>.html's <main class="pd">, injected into .ps-body; that doc supplies its own
+   main.pd sizing (min-height:100vh) via the <style> block js/project-sheet.js copies in, which
+   resolves against .ps-scroll's full-height box either way. Same behaviour/markup at every width;
+   only the close button's position shifts up top-right for larger pointers. */
+.ps-sheet{position:fixed;inset:0;z-index:150;overflow:visible;background:#FFF;will-change:transform;backface-visibility:hidden;   /* own compositor layer: the content must not repaint per frame while the sheet moves */
+  transform:translateY(100%);transition:transform 1.2s cubic-bezier(.2,1.1,.3,1)}   /* soft spring (previous curve), 1.2s per user */
+.ps-sheet.is-open{transform:none}
+/* the spring overshoots upward by a few px — bleed the sheet's own bg below it so the page never peeks through at the bottom edge */
+.ps-sheet::after{content:'';position:absolute;top:100%;left:0;right:0;height:12vh;background:#0C0C0C}
+.ps-bar{position:fixed;top:0;left:0;height:6px;width:100%;z-index:200;opacity:0;pointer-events:none;
+  transform:scaleX(0);transform-origin:0 50%;
+  background:linear-gradient(90deg,#61C7FF 0%,#B899FF 40%,#FF6BF2 75%,#FF1AD1 100%);   /* hero blob palette (js/blob.js), soft end */
+  transition:opacity .3s ease}   /* transform is driven per-frame by JS (no CSS transform transition — it would lag the rAF drive); top loading bar: fills while the detail (html + its images) loads, then the sheet slides up */
+.ps-close{position:fixed;z-index:2;top:16px;right:12px;width:48px;height:48px;display:grid;place-items:center;
+  margin:0;padding:0;background:none;border:0;cursor:pointer;color:#3E3F44}
+.ps-close svg{display:block;width:24px;height:24px;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.ps-close:hover svg{transform:rotate(90deg)}
+@media (min-width:1024px){
+  .ps-close{top:48px;right:48px;width:56px;height:56px}
+  .ps-close svg{width:28px;height:28px}
+}
+.ps-scroll{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  /* the sheet's own scrollbar stays visible (it's the only scroller while open); the page's html gutter
+     is dropped meanwhile — see html.ps-open — so there is exactly one bar */
+/* while a detail is loading/open (html.ps-open, toggled by js/project-sheet.js) html's reserved scrollbar gutter is dropped so
+   the sheet's own scroller is the only visible bar. Toggled at LOAD START (during the progress bar), well before the slide,
+   so the reflow never lands on the slide's first frame. */
+html.ps-open{scrollbar-gutter:auto}
+/* a detail file that ships its own designed close (.pd-close inside main.pd) → hide the generic X (js adds is-own-close) */
+.ps-sheet.is-own-close .ps-close{display:none}
+.ps-body{min-height:100%;opacity:0;transition:opacity .35s ease}
+.ps-body.is-loaded{opacity:1}
+.ps-error{margin:0;padding:160px 24px;text-align:center;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:18px;color:#3E3F44}
+@media (prefers-reduced-motion:reduce){
+  .ps-sheet{transition:none}
+  .ps-close svg{transition:none}
+  .ps-close:hover svg{transform:none}
+  .ps-body{transition:none}
+}
+
 /* ============================================================================
    MOBILE (≤1023px) — HOME HERO only. Figma official_01_main_375 (375×812).
    First pass: just the #stage hero. The sections below the hero stay desktop

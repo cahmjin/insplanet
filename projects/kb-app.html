@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- stop iOS Safari from auto-linking phone numbers / emails / addresses (turns them blue) -->
+<meta name="format-detection" content="telephone=no, email=no, address=no, date=no">
+<title>Insplanet — 헤이영 캠퍼스 고도화</title>
+<!-- Project detail — Figma official_05_projects_03_detail_01_2560 (1785:22992).
+     Paths are relative to /projects/ so this file works BOTH standalone (opened directly) and under any
+     subpath (js/project-sheet.js rewrites these same relative paths against the fetched URL when it
+     injects main.pd into the sheet on the list page).
+     HERO = live HTML/CSS (css/project-detail.css). Below the hero = one Figma export per section. -->
+<link rel="stylesheet" href="../css/fonts.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/project-detail.css">
+</head>
+<body class="pd-page">
+
+<!-- main.pd = the region js/project-sheet.js fetches + injects into the sheet on the list page. -->
+<main class="pd">
+
+  <!-- ===== HERO (Main Container 2560×1440) ===== -->
+  <section class="pd-hero">
+    <img class="pd-hero-bg" src="img/kb-app/hero-bg.jpg" alt="" loading="eager" decoding="async">
+    <div class="pd-hero-ci" aria-hidden="true"><img src="../assets/ci_logo_white.svg" alt=""></div>
+    <!-- designed close (Figma `close`): fixed; js/project-sheet.js wires it to close the sheet. Standalone: back to the list -->
+    <a class="pd-close" href="../projects.html" aria-label="닫기">
+      <svg viewBox="0 0 44.3077 44.3077" fill="none" aria-hidden="true"><path d="M14.7695 19.3066L22.1553 26.0709L29.5387 19.3066" stroke="currentColor" stroke-width="2.2154" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <h1 class="pd-hero-title">
+      <span class="ko">헤이영 캠퍼스 고도화</span>
+      <span class="en pd-title-en">HeyYoung Campus</span>
+    </h1>
+    <dl class="pd-hero-info">
+      <div><dt>Client</dt><dd>신한은행</dd></div>
+      <div><dt>Launch</dt><dd>Oct, 2022</dd></div>
+    </dl>
+    <div class="pd-hero-scroll" aria-hidden="true"><span class="bar"></span><span class="label">SCROLL</span></div>
+  </section>
+
+  <!-- ===== BELOW HERO: Figma section exports (container 1785:23004, 7 cards) ===== -->
+  <div class="pd-secs">
+    <!-- Summary / Overview card (Figma 2149:85332, 2432×488 r16 white) — real HTML because of the two buttons.
+         View Platform: no URL in the design yet -> href="#" (publisher fills). Copy URL: data-copy empty -> copies the
+         shareable deep link (projects.html?p=kb-app in the sheet / this page's URL standalone; see js/project-sheet.js). -->
+    <section class="pd-summary">
+      <h2 class="pd-summary-head">Overview</h2>
+      <div class="pd-summary-body">
+        <h3 class="pd-summary-title">스마트한 대학생활 필수 통합앱</h3>
+        <p class="pd-summary-text">학생증부터 학사 일정관리 등을 하나의 앱에서 모두 할 수 있는 헤이영 캠퍼스는<br>신한은행이 금융권 최초로 추진한 대학생 전용 모바일 서비스입니다. 인스플래닛은 2차 고도화 사업에 참여하여,<br>다크테마를 포함한 컬러 테마와 모바일 학생증 커스텀 기능 등 디자인 구성요소의 고도화 및 차별화를 구현하고<br>게시판, 소모임 등의 프로세스 개선 등 서비스를 업그레이드 하였습니다.</p>
+        <div class="pd-summary-actions">
+          <a class="pd-btn pd-btn--primary" href="#" target="_blank" rel="noopener"><span class="pd-btn-label">View Platform</span><svg class="pd-btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 8H16V15M16 8L8 16" stroke="currentColor" stroke-width="1.5"/></svg></a>
+          <button type="button" class="pd-btn pd-btn--copy" data-copy=""><span class="pd-btn-label">Copy URL</span><svg class="pd-btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11.437 8.059L12.563 6.933C13.807 5.689 15.823 5.689 17.067 6.933C18.311 8.177 18.311 10.193 17.067 11.437L15.941 12.563M12.563 15.941L11.437 17.067C10.193 18.311 8.177 18.311 6.933 17.067C5.689 15.823 5.689 13.807 6.933 12.563L8.059 11.437M9.185 14.815L14.815 9.185" stroke="currentColor" stroke-width="1.5"/></svg></button>
+        </div>
+      </div>
+    </section>
+    <figure class="pd-sec"><img src="img/kb-app/sec-02.png" alt="" loading="eager" decoding="async"></figure>
+    <figure class="pd-sec"><img src="img/kb-app/sec-03.png" alt="" loading="eager" decoding="async"></figure>
+    <figure class="pd-sec"><img src="img/kb-app/sec-04.png" alt="" loading="eager" decoding="async"></figure>
+    <figure class="pd-sec"><img src="img/kb-app/sec-05.png" alt="" loading="eager" decoding="async"></figure>
+    <figure class="pd-sec"><img src="img/kb-app/sec-06.jpg" alt="" loading="eager" decoding="async"></figure>
+    <figure class="pd-sec"><img src="img/kb-app/sec-07.png" alt="" loading="eager" decoding="async"></figure>
+  </div>
+
+</main>
+
+<!-- standalone only: Copy URL + magnetic buttons when NOT inside the list page's sheet (js/project-sheet.js
+     handles both there via delegation and skips when window.ProjectSheet exists). -->
+<script>
+(function(){
+  if(window.ProjectSheet)return;
+  // scroll reveal (viewport root here; in the sheet js/project-sheet.js roots it on .ps-scroll)
+  var main=document.querySelector('main.pd');
+  if(main&&!matchMedia('(prefers-reduced-motion:reduce)').matches&&('IntersectionObserver'in window)){
+    var els=main.querySelectorAll('.pd-summary,.pd-sec');
+    if(els.length){
+      main.classList.add('rv');
+      var io=new IntersectionObserver(function(es,o){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target);}});},{threshold:0,rootMargin:'0px 0px -10% 0px'});
+      for(var i=0;i<els.length;i++)io.observe(els[i]);
+    }
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.pd-btn--copy'):null; if(!b)return;
+    var url=b.getAttribute('data-copy'); if(!url||url==='#')url=location.href;
+    var lab=b.querySelector('.pd-btn-label')||b, orig=lab.getAttribute('data-orig')||lab.textContent; lab.setAttribute('data-orig',orig);
+    function done(){ lab.textContent='복사되었습니다'; b.classList.add('is-copied'); clearTimeout(b._t); b._t=setTimeout(function(){lab.textContent=orig;b.classList.remove('is-copied');},1500); }
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done,function(){fb();});}else fb();
+    function fb(){var t=document.createElement('textarea');t.value=url;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch(err){}document.body.removeChild(t);done();}
+  });
+})();
+</script>
+
+</body>
+</html>

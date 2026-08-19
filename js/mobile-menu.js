@@ -157,7 +157,10 @@
       if(on){ if(window.__lenis)window.__lenis.stop(); lockBody(true); }
       else {
         lockBody(false);
-        if(window.__lenis){ window.__lenis.start(); window.__lenis.scrollTo(savedY,{immediate:true,force:true}); }   // resync Lenis's target (it saw scrollY→0 while fixed)
+        // start()→reset() syncs Lenis to the restored window.scrollY; resize() re-measures its cached
+        // dimensions now (limit was cached as 0 while the body was fixed). NOT scrollTo(savedY,{immediate})
+        // — with the stale limit=0 that clamps to 0 and scrolls the window to the top (see js/project-sheet.js).
+        if(window.__lenis){ window.__lenis.start(); window.__lenis.resize(); }
       }
     }
     overlay.inert=true;   // closed by default: keep it out of focus order / assistive tech
