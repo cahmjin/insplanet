@@ -737,7 +737,7 @@
     try{
       const cw=64,ch=Math.round(cw*img.naturalHeight/img.naturalWidth)||72;
       const cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
-      const c=cv.getContext('2d');c.drawImage(img,0,0,cw,ch);
+      const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(img,0,0,cw,ch);
       const at=(rx,ry)=>{const d=c.getImageData(Math.round(rx*(cw-1)),Math.round(ry*(ch-1)),1,1).data;return 0.299*d[0]+0.587*d[1]+0.114*d[2];};
       lum[idx]={top:at(0.86,0.06)<110, bot:at(0.86,0.94)<110};
     }catch(e){}
