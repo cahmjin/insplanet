@@ -139,7 +139,7 @@
 .core-value-icon{display:block;width:calc(64px + 16 * var(--v) + 16 * var(--g));height:calc(64px + 16 * var(--v) + 16 * var(--g));margin:0 0 calc(40px + 8 * var(--v) + 16 * var(--g))}
 .core-value-icon img{width:100%;height:100%;object-fit:contain;display:block}
 .core-value-title{margin:0 0 32px;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:700;font-size:calc(20px + 4 * var(--v));line-height:normal}
-.core-value-desc{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 4 * var(--v));line-height:1.5}
+.core-value-desc{margin:0;color:#3E3F44;font-family:'Pretendard',sans-serif;font-weight:400;font-size:calc(14px + 4 * var(--v));line-height:1.5;word-break:keep-all}
 
 /* the AX copy breaks differently in the 1024 frame — swap the break set at 1472 */
 .br-1024{display:none}
