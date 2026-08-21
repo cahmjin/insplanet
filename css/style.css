@@ -407,7 +407,7 @@ html.lenis,html.lenis body{height:auto}
 /* right card column — anchored to the RIGHT of the frame. fixed card sizes (not scaled); pushed
    well down so they only rise in AFTER the title has shrunk (no overlap), each with an elastic ease. */
 .services-cards-wrap{position:relative;z-index:1}
-.services-cards{margin-left:auto;width:clamp(448px, calc(31.25vw + 128px), 728px);padding-top:160vh;
+.services-cards{margin-left:auto;width:clamp(448px, min(calc(31.25vw + 128px), calc(25.3125vw + 242px)), 890px);padding-top:160vh; /* 448@1024 -> 728@1920 -> 890@2560 (Figma card widened 728->890 at the 2560 anchor) */
   display:flex;flex-direction:column;gap:clamp(120px, calc(4.4643vw + 74.29px), 160px)}
 .svc-card{opacity:0;transform:translateY(64px);
   transition:opacity .6s ease,transform .9s cubic-bezier(.34,1.45,.5,1)}  /* elastic rise */
